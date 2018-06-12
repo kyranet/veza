@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "IPC Utilities",
   "main": "src/index",
+  "types": "typings/index.d.ts",
   "scripts": {
     "test": "eslint src"
   },
@@ -11,8 +12,9 @@
     "ipc-link"
   ],
   "devDependencies": {
-  	"eslint": "^4.19.1",
-  	"eslint-config-klasa": "github:dirigeants/klasa-lint"
+    "@types/node": "^10.3.2",
+    "eslint": "^4.19.1",
+    "eslint-config-klasa": "github:dirigeants/klasa-lint"
   },
   "author": "kyranet",
   "license": "MIT"

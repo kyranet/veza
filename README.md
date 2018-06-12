@@ -9,10 +9,10 @@ In IPC-Link Core, you have "nodes", which can either create a server (and receiv
 `hello.js`
 
 ```javascript
-const { Node } = require('../src/index');
+const { Node } = require('ipc-link-core');
 
 const node = new Node()
-	.on('connection', (socket, name) => {
+	.on('connection', (name, socket) => {
 		console.log(`Connected to ${name}`);
 		node.sendTo(socket, 'Hello')
 			.then(reply => console.log(`Hello ${reply}`));
@@ -26,7 +26,7 @@ node.serve('hello', 8001);
 `world.js`
 
 ```javascript
-const { Node } = require('../src/index');
+const { Node } = require('ipc-link-core');
 
 new Node()
 	.on('message', (message) => {

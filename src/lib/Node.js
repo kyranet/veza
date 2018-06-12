@@ -7,34 +7,92 @@ const kIdentify = Symbol('IPC-Identify');
 
 class Node extends EventEmitter {
 
-	constructor({ maxRetries = 5, retryTime = 200 } = {}) {
+	/**
+	 * @typedef {Object} NodeOptions
+	 * @property {number} [maxRetries = Infinity]
+	 * @property {number} [retryTime = 200]
+	 */
+
+	/**
+	 * @typedef {Object} NodeSocket
+	 * @property {string} name The label name for the socket
+	 * @property {net.Socket} [socket] The socket itself
+	 * @property {number} retriesRemaining The remaining reconnection retries
+	 */
+
+	/**
+	 * @typedef {Object} QueueEntry
+	 * @property {Function} resolve The resolve function
+	 * @property {Function} reject The reject function
+	 * @private
+	 */
+
+	/**
+	 * @param {NodeOptions} [options={}] The options for this Node instance
+	 */
+	constructor({ maxRetries = Infinity, retryTime = 200 } = {}) {
 		super();
+
+		/**
+		 * The amount of retries this Node will do when reconnecting
+		 * @type {number}
+		 */
 		this.maxRetries = maxRetries;
+
+		/**
+		 * The time between connection retries
+		 * @type {number}
+		 */
 		this.retryTime = retryTime;
 
 		Object.defineProperties(this, {
+			/**
+			 * @name Node#server
+			 * @type {?net.Socket}
+			 */
 			server: { value: null, writable: true },
+
+			/**
+			 * @name Node#sockets
+			 * @type {Map<string, NodeSocket>}
+			 */
 			sockets: { value: new Map() },
+
+			/**
+			 * @name Node#_queue
+			 * @type {Map<string, QueueEntry>}
+			 * @private
+			 */
 			_queue: { value: new Map() },
+
+			/**
+			 * @name Node#_serverNodes
+			 * @type {Map<string, Socket>}
+			 * @private
+			 */
 			_serverNodes: { value: new Map() }
 		});
 	}
 
+	/**
+	 * Create a server for this Node instance.
+	 * @param {string} name The label name for this server
+	 * @param {...*} options The options to pass to net.Server#listen
+	 */
 	serve(name, ...options) {
 		if (this.server) throw new Error('There is already a server.');
 		this.server = new net.Server()
 			.on('connection', (socket) => {
 				socket.on('data', (data) => this._onDataMessage(name, socket, data));
-				this.sendTo(socket, kIdentify)
-					.then(sName => {
-						this.sockets.set(sName, socket);
-						return sName;
-					})
-					.then(this.emit.bind(this, 'connection', socket));
+				this.sendTo(socket, kIdentify).then(sName => {
+					this._serverNodes.set(sName, socket);
+					this.emit('connection', sName, socket);
+				});
 			})
 			.on('close', () => {
 				this.server.removeAllListeners();
 				this.server = null;
+				this.emit('close');
 
 				const rejectError = new Error('Server has been disconnected.');
 				for (const element of this._queue.values()) element.reject(rejectError);
@@ -44,7 +102,24 @@ class Node extends EventEmitter {
 		this.server.listen(...options);
 	}
 
-	sendTo(name, data) {
+	/**
+	 * Broadcast a message to all connected sockets from this server
+	 * @param {*} data The data to send to other sockets
+	 * @param {boolean} [receptive] Whether this broadcast should wait for responses or not
+	 * @returns {Promise<Array<*>>}
+	 */
+	broadcast(data, receptive) {
+		return Promise.all([...this._serverNodes.values()].map(socket => this.sendTo(socket, data, receptive)));
+	}
+
+	/**
+	 * Send a message to a connected socket
+	 * @param {string} name The label name of the socket to send the message to
+	 * @param {*} data The data to send to the socket
+	 * @param {boolean} receptive Whether this message should wait for a response or not
+	 * @returns {Promise<*>}
+	 */
+	sendTo(name, data, receptive = true) {
 		const socket = name instanceof net.Socket ? name : this.sockets.get(name);
 		if (!socket) return Promise.reject(new Error('Failed to send to the socket.'));
 		if (!socket.writable) return Promise.reject(new Error('The Socket is not writable.'));
@@ -52,9 +127,11 @@ class Node extends EventEmitter {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const id = Node.createID();
-				const message = Node.packMessage(id, data, true);
+				const message = Node.packMessage(id, data, receptive);
 				console.log(id, message);
 				socket.write(message);
+
+				if (!receptive) return resolve(undefined);
 
 				const send = (fn, response) => {
 					this._queue.delete(id);
@@ -67,6 +144,11 @@ class Node extends EventEmitter {
 		});
 	}
 
+	/**
+	 * Measure the latency with other websockets
+	 * @param {string} name The label name of the socket to measure latency with
+	 * @returns {Promise<number>}
+	 */
 	pingTo(name) {
 		const now = Date.now();
 		return this.sendTo(name, kPing).then(future => future - now);
@@ -119,7 +201,15 @@ class Node extends EventEmitter {
 		});
 	}
 
+	/**
+	 * Parse the message
+	 * @param {string} name The label name of the socket
+	 * @param {net.Socket} socket The Socket that sent this message
+	 * @param {Buffer} buffer The buffer received
+	 * @private
+	 */
 	_onDataMessage(name, socket, buffer) {
+		this.emit('raw', name, socket, buffer);
 		const [id, receptive, data] = Node.unPackMessage(buffer);
 		if (this._queue.has(id)) {
 			this._queue.get(id).resolve(data);
@@ -143,6 +233,12 @@ class Node extends EventEmitter {
 		this.emit('message', message);
 	}
 
+	/**
+	 * Unpack a buffer message for usage
+	 * @param {Buffer} buffer The buffer to unpack
+	 * @returns {Array<*>}
+	 * @private
+	 */
 	static unPackMessage(buffer) {
 		const kIndex = buffer.indexOf(kSeparatorHeader);
 		const [id, type, _receptive] = buffer.toString('utf8', 0, kIndex - 1).split(' ');
@@ -159,6 +255,14 @@ class Node extends EventEmitter {
 		throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 6.`);
 	}
 
+	/**
+	 * Pack a message into a buffer for usage in other sockets
+	 * @param {string} id The id of the message to pack
+	 * @param {*} message The message to send
+	 * @param {boolean} receptive Whether this message requires a response or not
+	 * @returns {Buffer}
+	 * @private
+	 */
 	static packMessage(id, message, receptive = true) {
 		receptive = Number(receptive);
 		if (message === kPing) return Buffer.from(`${id} 5 0 | ${Date.now()}`);
@@ -184,6 +288,11 @@ class Node extends EventEmitter {
 		return Buffer.from(`${id} 1 ${receptive} | ${type}`);
 	}
 
+	/**
+	 * Create an ID for a message
+	 * @returns {string}
+	 * @private
+	 */
 	static createID() {
 		return Date.now().toString(36) + String.fromCharCode(((i++ < 26 || (i = 0)) % 26) + 97);
 	}
@@ -193,3 +302,60 @@ class Node extends EventEmitter {
 let i = 0;
 
 module.exports = Node;
+
+/**
+ * @typedef {Object} NodeMessage
+ * @property {string} id The id of this message
+ * @property {*} data The received data from the socket
+ * @property {string} from The label name of the socket that sent this message
+ * @property {boolean} receptive Whether this message can accept responses or not
+ */
+
+/**
+ * Emitted on a successful connection to a Socket.
+ * @event Node#connect
+ * @param {string} name The label name of the socket
+ * @param {net.Socket} socket The connected socket
+ */
+/**
+ * Emitted on a disconnection with a Socket.
+ * @event Node#disconnect
+ * @param {string} name The label name of the socket
+ * @param {net.Socket} socket The disconnected socket
+ */
+/**
+ * Emitted when the connection to a Socket has been destroyed.
+ * @event Node#destroy
+ * @param {string} name The label name of the socket
+ * @param {net.Socket} socket The destroyed socket
+ */
+/**
+ * Emitted when the connection to a Socket has been destroyed.
+ * @event Node#destroy
+ * @param {string} name The label name of the socket
+ * @param {net.Socket} socket The destroyed socket
+ */
+/**
+ * Emitted when a socket connects to the Node's server.
+ * @event Node#connection
+ * @param {string} socket The label name of the socket
+ * @param {net.Socket} socket The socket that connected to the server
+ */
+/**
+ * Emitted when the Node's server closes.
+ * @event Node#close
+ */
+/**
+ * Emitted when the Node's server is ready.
+ * @event Node#listening
+ */
+/**
+ * Emitted when any of the connected sockets error.
+ * @event Node#error
+ * @param {Error} error The emitted error
+ */
+/**
+ * Emitted when a Socket has sent a message to this Node.
+ * @event Node#message
+ * @param {NodeMessage} message The received message
+ */

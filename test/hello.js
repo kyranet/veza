@@ -1,7 +1,7 @@
 const { Node } = require('../src/index');
 
 const node = new Node()
-	.on('connection', (socket, name) => {
+	.on('connection', (name, socket) => {
 		console.log(`Connected to ${name}`);
 		node.sendTo(socket, 'Hello')
 			.then(reply => console.log(`Hello ${reply}`));
