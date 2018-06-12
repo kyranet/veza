@@ -35,8 +35,8 @@ new Node()
 			message.reply('world!');
 	})
 	.on('error', console.error)
+	.on('connect', () => console.log('Connected!'))
 	.connectTo('hello', 8001)
-	.then(() => console.log('Connected!'))
 	.catch(() => console.log('Disconnected!'));
 ```
 
