@@ -6,6 +6,8 @@ In IPC-Link Core, you have "nodes", which can either create a server (and receiv
 
 ## Usage
 
+Check the examples [here](https://github.com/kyranet/ipc-link-core/tree/master/test) for working micro **IPC-Link Core** applications.
+
 `hello.js`
 
 ```javascript
@@ -30,7 +32,8 @@ const node = new Node('hello')
 
 ```javascript
 // This example depends on hello.js to be running in another process.
-// This Node is a socket that replies to hello.js with "world!" when it receives "Hello".
+// This Node is a socket that replies to hello.js with "world!" when it
+// receives "Hello".
 const { Node } = require('ipc-link-core');
 
 const node = new Node('world')
