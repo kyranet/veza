@@ -1,8 +1,12 @@
 const { Node } = require('../src/index');
 
-const node = new Node()
-	.on('message', console.log)
-	.on('error', console.error);
-node.connectTo('hello', 8001)
+new Node()
+	.on('message', (message) => {
+		console.log(`Received data from ${message.from}:`, message);
+		if (message.data === 'Hello')
+			message.reply('world!');
+	})
+	.on('error', console.error)
+	.connectTo('hello', 8001)
 	.then(() => console.log('Connected!'))
 	.catch(() => console.log('Disconnected!'));

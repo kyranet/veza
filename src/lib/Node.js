@@ -24,7 +24,7 @@ class Node extends EventEmitter {
 		if (this.server) throw new Error('There is already a server.');
 		this.server = new net.Server()
 			.on('connection', (socket) => {
-				socket.on('data', this._onDataMessage.bind(this, name, socket));
+				socket.on('data', (data) => this._onDataMessage(name, socket, data));
 				this.sendTo(socket, kIdentify)
 					.then(sName => {
 						this.sockets.set(sName, socket);
@@ -52,7 +52,7 @@ class Node extends EventEmitter {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const id = Node.createID();
-				const message = Node.packMessage(id, data);
+				const message = Node.packMessage(id, data, true);
 				console.log(id, message);
 				socket.write(message);
 
@@ -126,18 +126,19 @@ class Node extends EventEmitter {
 			return;
 		}
 		if (data === kPing) {
-			socket.write(Node.packMessage(id, Date.now()));
+			socket.write(Node.packMessage(id, Date.now(), false));
 			return;
 		}
 		if (data === kIdentify) {
-			socket.write(Node.packMessage(id, name));
+			socket.write(Node.packMessage(id, name, false));
 			return;
 		}
 		const message = Object.defineProperties({}, {
-			id: { value: id, enumerable: true },
+			id: { value: id },
 			data: { value: data, enumerable: true },
+			from: { value: name, enumerable: true },
 			receptive: { value: receptive !== '0', enumerable: true },
-			reply: { value: (content) => receptive ? socket.write(Node.packMessage(id, content)) : false }
+			reply: { value: (content) => receptive ? socket.write(Node.packMessage(id, content, false)) : false }
 		});
 		this.emit('message', message);
 	}
@@ -158,28 +159,29 @@ class Node extends EventEmitter {
 		throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 6.`);
 	}
 
-	static packMessage(id, message) {
+	static packMessage(id, message, receptive = true) {
+		receptive = Number(receptive);
 		if (message === kPing) return Buffer.from(`${id} 5 0 | ${Date.now()}`);
 		if (message === kIdentify) return Buffer.from(`${id} 6 0 | null`);
 		let type;
 		const tMessage = typeof message;
 		if (tMessage === 'string')
-			return Buffer.from(`${id} 1 0 | ${message}`);
+			return Buffer.from(`${id} 1 ${receptive} | ${message}`);
 
 		if (tMessage === 'number')
-			return Buffer.from(`${id} 2 0 | ${message}`);
+			return Buffer.from(`${id} 2 ${receptive} | ${message}`);
 
 		if (tMessage === 'object') {
 			if (message === null)
-				return Buffer.from(`${id} 0 0 | null`);
+				return Buffer.from(`${id} 0 ${receptive} | null`);
 
 			if (Buffer.isBuffer(message))
-				return Buffer.concat(Buffer.from(`${id} 3 0 | `), message);
+				return Buffer.concat(Buffer.from(`${id} 3 ${receptive} | `), message);
 
-			return Buffer.from(`${id} 4 0 | ${JSON.stringify(message)}`);
+			return Buffer.from(`${id} 4 ${receptive} | ${JSON.stringify(message)}`);
 		}
 
-		return Buffer.from(`${id} 1 0 | ${type}`);
+		return Buffer.from(`${id} 1 ${receptive} | ${type}`);
 	}
 
 	static createID() {
