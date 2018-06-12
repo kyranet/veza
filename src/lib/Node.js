@@ -22,16 +22,28 @@ class Node extends EventEmitter {
 
 	/**
 	 * @typedef {Object} QueueEntry
+	 * @property {string} name The name of the socket this was sent to
 	 * @property {Function} resolve The resolve function
 	 * @property {Function} reject The reject function
 	 * @private
 	 */
 
 	/**
+	 * @param {string} name The name for this Node
 	 * @param {NodeOptions} [options={}] The options for this Node instance
 	 */
-	constructor({ maxRetries = Infinity, retryTime = 200 } = {}) {
+	constructor(name, { maxRetries = Infinity, retryTime = 200 } = {}) {
 		super();
+
+		if (typeof name !== 'string') throw new Error('A Node name must be specified and must be a string.');
+
+		/**
+		 * The name for this Node
+		 * @name Node#name
+		 * @type {string}
+		 * @readonly
+		 */
+		Object.defineProperty(this, 'name', { value: name, enumerable: true });
 
 		/**
 		 * The amount of retries this Node will do when reconnecting
@@ -55,12 +67,14 @@ class Node extends EventEmitter {
 			/**
 			 * @name Node#sockets
 			 * @type {Map<string, NodeSocket>}
+			 * @readonly
 			 */
 			sockets: { value: new Map() },
 
 			/**
 			 * @name Node#_queue
 			 * @type {Map<string, QueueEntry>}
+			 * @readonly
 			 * @private
 			 */
 			_queue: { value: new Map() },
@@ -68,6 +82,7 @@ class Node extends EventEmitter {
 			/**
 			 * @name Node#_serverNodes
 			 * @type {Map<string, Socket>}
+			 * @readonly
 			 * @private
 			 */
 			_serverNodes: { value: new Map() }
@@ -78,28 +93,41 @@ class Node extends EventEmitter {
 	 * Create a server for this Node instance.
 	 * @param {string} name The label name for this server
 	 * @param {...*} options The options to pass to net.Server#listen
+	 * @returns {this}
 	 */
 	serve(name, ...options) {
 		if (this.server) throw new Error('There is already a server.');
 		this.server = new net.Server()
 			.on('connection', (socket) => {
-				socket.on('data', (data) => this._onDataMessage(name, socket, data));
+				let socketName = null;
+				socket
+					.on('data', (data) => this._onDataMessage(socketName, socket, data))
+					.on('close', () => {
+						// Cleanup
+						this._destroySocket(socketName, socket, true);
+					});
 				this.sendTo(socket, kIdentify).then(sName => {
-					this._serverNodes.set(sName, socket);
-					this.emit('connection', sName, socket);
+					socketName = sName;
+					this._serverNodes.set(socketName, socket);
+					this.emit('connection', socketName, socket);
 				});
 			})
 			.on('close', () => {
 				this.server.removeAllListeners();
 				this.server = null;
+
+				for (const socket of this._serverNodes.values()) socket.destroy();
 				this.emit('close');
 
-				const rejectError = new Error('Server has been disconnected.');
-				for (const element of this._queue.values()) element.reject(rejectError);
+				if (this._queue.size) {
+					const rejectError = new Error('Server has been disconnected.');
+					for (const element of this._queue.values()) element.reject(rejectError);
+				}
 			})
 			.on('error', this.emit.bind(this, 'error'))
 			.on('listening', this.emit.bind(this, 'listening'));
 		this.server.listen(...options);
+		return this;
 	}
 
 	/**
@@ -120,7 +148,7 @@ class Node extends EventEmitter {
 	 * @returns {Promise<*>}
 	 */
 	sendTo(name, data, receptive = true) {
-		const socket = name instanceof net.Socket ? name : this.sockets.get(name);
+		const socket = name instanceof net.Socket ? name : (sk => sk ? sk.socket : null)(this.sockets.get(name));
 		if (!socket) return Promise.reject(new Error('Failed to send to the socket.'));
 		if (!socket.writable) return Promise.reject(new Error('The Socket is not writable.'));
 
@@ -136,7 +164,7 @@ class Node extends EventEmitter {
 					this._queue.delete(id);
 					return fn(response);
 				};
-				return this._queue.set(id, { resolve: send.bind(null, resolve), reject: send.bind(null, reject) });
+				return this._queue.set(id, { to: name, resolve: send.bind(null, resolve), reject: send.bind(null, reject) });
 			} catch (error) {
 				return reject(error);
 			}
@@ -180,10 +208,7 @@ class Node extends EventEmitter {
 					this.emit('disconnect', name, node.socket);
 					node._reconnectionTimeout = setTimeout(() => {
 						if (--node.retriesRemaining <= 0) {
-							node.socket.destroy();
-							node.socket.removeAllListeners();
-							this.sockets.delete(name);
-							this.emit('destroy', name, node.socket);
+							this._destroySocket(name, node.socket, false);
 							reject(node.socket);
 						} else {
 							node.socket.connect(...options);
@@ -198,6 +223,37 @@ class Node extends EventEmitter {
 			// Set enconding and connect
 			node.socket.connect(...options);
 		});
+	}
+
+	disconnectFrom(name) {
+		const nodeSocket = this.sockets.get(name);
+		if (!nodeSocket) throw new Error(`The socket ${name} is not connected to this one.`);
+		this._destroySocket(name, nodeSocket.socket, false);
+	}
+
+	/**
+	 * Destroy a socket and perform all cleanup
+	 * @param {string} socketName The label name of the socket to destroy
+	 * @param {net.Socket} socket The Socket to destroy
+	 * @param {boolean} server Whether the destroy belongs to the Node's server or not
+	 * @private
+	 */
+	_destroySocket(socketName, socket, server) {
+		socket.destroy();
+		socket.removeAllListeners();
+
+		if (this._queue.size) {
+			const rejectError = new Error('Socket has been disconnected.');
+			for (const element of this._queue.values()) if (element.to === socketName) element.reject(rejectError);
+		}
+
+		if (server) {
+			this._serverNodes.delete(socketName);
+			this.emit('socketClose', socketName);
+		} else {
+			this.sockets.delete(socketName);
+			this.emit('destroy', socketName, socket);
+		}
 	}
 
 	/**
@@ -219,14 +275,14 @@ class Node extends EventEmitter {
 			return;
 		}
 		if (data === kIdentify) {
-			socket.write(Node.packMessage(id, name, false));
+			socket.write(Node.packMessage(id, this.name, false));
 			return;
 		}
 		const message = Object.defineProperties({}, {
 			id: { value: id },
 			data: { value: data, enumerable: true },
 			from: { value: name, enumerable: true },
-			receptive: { value: receptive !== '0', enumerable: true },
+			receptive: { value: receptive, enumerable: true },
 			reply: { value: (content) => receptive ? socket.write(Node.packMessage(id, content, false)) : false }
 		});
 		this.emit('message', message);
@@ -241,7 +297,7 @@ class Node extends EventEmitter {
 	static unPackMessage(buffer) {
 		const kIndex = buffer.indexOf(kSeparatorHeader);
 		const [id, type, _receptive] = buffer.toString('utf8', 0, kIndex - 1).split(' ');
-		const receptive = _receptive !== '0';
+		const receptive = _receptive === '1';
 		if (type === '5') return [id, receptive, kPing];
 		if (type === '6') return [id, receptive, kIdentify];
 		if (type === '3') return [id, receptive, buffer.slice(kIndex + 2)];
@@ -343,6 +399,11 @@ module.exports = Node;
 /**
  * Emitted when the Node's server closes.
  * @event Node#close
+ */
+/**
+ * Emitted when a socket connected to the server closes.
+ * @event Node#socketClose
+ * @param {string} name The label name of the socket that closed
  */
 /**
  * Emitted when the Node's server is ready.
