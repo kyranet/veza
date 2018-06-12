@@ -1,0 +1,19 @@
+{
+  "name": "ipc-link-core",
+  "version": "0.0.1",
+  "description": "IPC Utilities",
+  "main": "src/index",
+  "scripts": {
+    "test": "eslint src"
+  },
+  "keywords": [
+    "ipc",
+    "ipc-link"
+  ],
+  "devDependencies": {
+  	"eslint": "^4.19.1",
+  	"eslint-config-klasa": "github:dirigeants/klasa-lint"
+  },
+  "author": "kyranet",
+  "license": "MIT"
+}
