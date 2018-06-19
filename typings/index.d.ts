@@ -1,8 +1,8 @@
-import { EventEmitter } from 'events';
-import { Server, Socket, ListenOptions, SocketConnectOpts } from 'net';
-import { resolve } from 'dns';
-
 declare module 'ipc-link-core' {
+	
+	import { EventEmitter } from 'events';
+	import { Server, Socket, ListenOptions, SocketConnectOpts } from 'net';
+	import { resolve } from 'dns';
 
 	export class Node extends EventEmitter {
 		public constructor(name: string, options?: NodeOptions);
