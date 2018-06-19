@@ -349,7 +349,7 @@ class Node extends EventEmitter {
 	 * @private
 	 */
 	static createID() {
-		return Date.now().toString(36) + String.fromCharCode(((i++ < 26 || (i = 0)) % 26) + 97);
+		return Date.now().toString(36) + String.fromCharCode((++i < 26 ? i : i = 0) + 97);
 	}
 
 }
