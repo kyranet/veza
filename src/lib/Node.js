@@ -4,6 +4,7 @@ const net = require('net');
 const kSeparatorHeader = '|'.charCodeAt(0);
 const kPing = Symbol('IPC-Ping');
 const kIdentify = Symbol('IPC-Identify');
+const kNewLineBuffer = Buffer.from('\n');
 
 class Node extends EventEmitter {
 
@@ -320,27 +321,27 @@ class Node extends EventEmitter {
 	 */
 	static packMessage(id, message, receptive = true) {
 		receptive = Number(receptive);
-		if (message === kPing) return Buffer.from(`${id} 5 0 | ${Date.now()}`);
-		if (message === kIdentify) return Buffer.from(`${id} 6 0 | null`);
+		if (message === kPing) return Buffer.from(`${id} 5 0 | ${Date.now()}\n`);
+		if (message === kIdentify) return Buffer.from(`${id} 6 0 | null\n`);
 		let type;
 		const tMessage = typeof message;
 		if (tMessage === 'string')
-			return Buffer.from(`${id} 1 ${receptive} | ${message}`);
+			return Buffer.from(`${id} 1 ${receptive} | ${message}\n`);
 
 		if (tMessage === 'number')
-			return Buffer.from(`${id} 2 ${receptive} | ${message}`);
+			return Buffer.from(`${id} 2 ${receptive} | ${message}\n`);
 
 		if (tMessage === 'object') {
 			if (message === null)
-				return Buffer.from(`${id} 0 ${receptive} | null`);
+				return Buffer.from(`${id} 0 ${receptive} | null\n`);
 
 			if (Buffer.isBuffer(message))
-				return Buffer.concat(Buffer.from(`${id} 3 ${receptive} | `), message);
+				return Buffer.concat([Buffer.from(`${id} 3 ${receptive} | `), message, kNewLineBuffer]);
 
-			return Buffer.from(`${id} 4 ${receptive} | ${JSON.stringify(message)}`);
+			return Buffer.from(`${id} 4 ${receptive} | ${JSON.stringify(message)}\n`);
 		}
 
-		return Buffer.from(`${id} 1 ${receptive} | ${type}`);
+		return Buffer.from(`${id} 1 ${receptive} | ${type}\n`);
 	}
 
 	/**
@@ -349,7 +350,8 @@ class Node extends EventEmitter {
 	 * @private
 	 */
 	static createID() {
-		return Date.now().toString(36) + String.fromCharCode((++i < 26 ? i : i = 0) + 97);
+		i = i < 26 ? i + 1 : 0;
+		return Date.now().toString(36) + String.fromCharCode(i + 97);
 	}
 
 }
