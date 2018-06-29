@@ -4,7 +4,7 @@ const net = require('net');
 const kSeparatorHeader = '|'.charCodeAt(0);
 const kPing = Symbol('IPC-Ping');
 const kIdentify = Symbol('IPC-Identify');
-const kNewLineBuffer = Buffer.from('\n');
+const bufferNull = Buffer.from('null');
 
 class Node extends EventEmitter {
 
@@ -156,7 +156,7 @@ class Node extends EventEmitter {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const id = Node.createID();
-				const message = Node.packMessage(id, data, receptive);
+				const message = Node._packMessage(id, data, receptive);
 				socket.write(message);
 
 				if (!receptive) return resolve(undefined);
@@ -226,6 +226,10 @@ class Node extends EventEmitter {
 		});
 	}
 
+	/**
+	 * Disconnect from a socket, this will also reject all messages
+	 * @param {string} name The label name of the socket to disconnect
+	 */
 	disconnectFrom(name) {
 		const nodeSocket = this.sockets.get(name);
 		if (!nodeSocket) throw new Error(`The socket ${name} is not connected to this one.`);
@@ -266,17 +270,26 @@ class Node extends EventEmitter {
 	 */
 	_onDataMessage(name, socket, buffer) {
 		this.emit('raw', name, socket, buffer);
-		const [id, receptive, data] = Node.unPackMessage(buffer);
+		this._unPackMessage(name, socket, buffer);
+	}
+
+	/**
+	 * Handle a parsed message
+	 * @param {string} name The label name of the socket
+	 * @param {net.Socket} socket The Socket that sent this message
+	 * @param {Object<string, *>} parsedData The parsed message data
+	 */
+	_handleMessage(name, socket, { id, receptive, data }) {
 		if (this._queue.has(id)) {
 			this._queue.get(id).resolve(data);
 			return;
 		}
 		if (data === kPing) {
-			socket.write(Node.packMessage(id, Date.now(), false));
+			socket.write(Node._packMessage(id, Date.now(), false));
 			return;
 		}
 		if (data === kIdentify) {
-			socket.write(Node.packMessage(id, this.name, false));
+			socket.write(Node._packMessage(id, this.name, false));
 			return;
 		}
 		const message = Object.defineProperties({}, {
@@ -284,31 +297,56 @@ class Node extends EventEmitter {
 			data: { value: data, enumerable: true },
 			from: { value: name, enumerable: true },
 			receptive: { value: receptive, enumerable: true },
-			reply: { value: (content) => receptive ? socket.write(Node.packMessage(id, content, false)) : false }
+			reply: { value: (content) => receptive ? socket.write(Node._packMessage(id, content, false)) : false }
 		});
 		this.emit('message', message);
 	}
 
 	/**
 	 * Unpack a buffer message for usage
+	 * @param {string} name The label name of the socket
+	 * @param {net.Socket} socket The Socket that sent this message
 	 * @param {Buffer} buffer The buffer to unpack
-	 * @returns {Array<*>}
 	 * @private
 	 */
-	static unPackMessage(buffer) {
-		const kIndex = buffer.indexOf(kSeparatorHeader);
-		const [id, type, _receptive] = buffer.toString('utf8', 0, kIndex - 1).split(' ');
-		const receptive = _receptive === '1';
-		if (type === '5') return [id, receptive, kPing];
-		if (type === '6') return [id, receptive, kIdentify];
-		if (type === '3') return [id, receptive, buffer.slice(kIndex + 2)];
-		if (type === '0') return [id, receptive, null];
+	_unPackMessage(name, socket, buffer) {
+		while (buffer.length) {
+			const headerSeparatorIndex = buffer.indexOf(kSeparatorHeader);
+			if (headerSeparatorIndex === -1) break;
 
-		const kString = buffer.toString('utf8', kIndex + 2);
-		if (type === '1') return [id, receptive, kString];
-		if (type === '2') return [id, receptive, Number(kString)];
-		if (type === '4') return [id, receptive, JSON.parse(kString)];
-		throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 6.`);
+			const [id, type, _receptive, bodyLength] = buffer.toString('utf8', 0, headerSeparatorIndex - 1).split(' ');
+			if (!(type in R_MESSAGE_TYPES)) throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 7.`);
+
+			const startBodyIndex = headerSeparatorIndex + 2;
+			const endBodyIndex = startBodyIndex + parseInt(bodyLength, 36);
+			const body = buffer.slice(startBodyIndex, endBodyIndex);
+
+			const pType = R_MESSAGE_TYPES[type];
+			const receptive = _receptive === '1';
+			if (pType === 'PING') {
+				this._handleMessage(name, socket, { id, receptive, data: kPing });
+			} else if (pType === 'IDENTIFY') {
+				this._handleMessage(name, socket, { id, receptive, data: kIdentify });
+			} else if (pType === 'NULL') {
+				this._handleMessage(name, socket, { id, receptive, data: null });
+			} else if (pType === 'BUFFER') {
+				this._handleMessage(name, socket, { id, receptive, data: body });
+			} else {
+				const bodyString = body.toString('utf8');
+				if (pType === 'STRING')
+					this._handleMessage(name, socket, { id, receptive, data: bodyString });
+				else if (pType === 'NUMBER')
+					this._handleMessage(name, socket, { id, receptive, data: Number(bodyString) });
+				else if (pType === 'OBJECT')
+					this._handleMessage(name, socket, { id, receptive, data: JSON.parse(bodyString) });
+				else if (pType === 'SET')
+					this._handleMessage(name, socket, { id, receptive, data: new Set(JSON.parse(bodyString)) });
+				else if (pType === 'MAP')
+					this._handleMessage(name, socket, { id, receptive, data: new Map(JSON.parse(bodyString)) });
+			}
+
+			buffer = buffer.slice(endBodyIndex + 1);
+		}
 	}
 
 	/**
@@ -319,29 +357,34 @@ class Node extends EventEmitter {
 	 * @returns {Buffer}
 	 * @private
 	 */
-	static packMessage(id, message, receptive = true) {
-		receptive = Number(receptive);
-		if (message === kPing) return Buffer.from(`${id} 5 0 | ${Date.now()}\n`);
-		if (message === kIdentify) return Buffer.from(`${id} 6 0 | null\n`);
-		let type;
-		const tMessage = typeof message;
-		if (tMessage === 'string')
-			return Buffer.from(`${id} 1 ${receptive} | ${message}\n`);
+	static _packMessage(id, message, receptive = true) {
+		receptive = message === kPing || message === kIdentify ? 0 : Number(receptive);
+		const [type, buffer] = Node._getMessageDetails(message);
+		return Buffer.concat([Buffer.from(`${id} ${type} ${receptive} ${buffer.length.toString(36)} | `), buffer]);
+	}
 
-		if (tMessage === 'number')
-			return Buffer.from(`${id} 2 ${receptive} | ${message}\n`);
+	/**
+	 * Get the message details
+	 * @param {*} message The message to convert
+	 * @returns {Array<number | Buffer>}
+	 */
+	static _getMessageDetails(message) {
+		if (message === kPing) return [S_MESSAGE_TYPES.PING, Buffer.from(Date.now())];
+		if (message === kIdentify) return [S_MESSAGE_TYPES.IDENTIFY, bufferNull];
+		if (message === null) return [S_MESSAGE_TYPES.NULL, bufferNull];
 
-		if (tMessage === 'object') {
-			if (message === null)
-				return Buffer.from(`${id} 0 ${receptive} | null\n`);
-
-			if (Buffer.isBuffer(message))
-				return Buffer.concat([Buffer.from(`${id} 3 ${receptive} | `), message, kNewLineBuffer]);
-
-			return Buffer.from(`${id} 4 ${receptive} | ${JSON.stringify(message)}\n`);
+		switch (typeof message) {
+			case 'string': return [S_MESSAGE_TYPES.STRING, Buffer.from(message)];
+			case 'number': return [S_MESSAGE_TYPES.NUMBER, Buffer.from(message.toString())];
+			case 'object': {
+				if (message instanceof Set) return [S_MESSAGE_TYPES.SET, Buffer.from(JSON.stringify([...message]))];
+				if (message instanceof Map) return [S_MESSAGE_TYPES.MAP, Buffer.from(JSON.stringify([...message]))];
+				if (Buffer.isBuffer(message)) return [S_MESSAGE_TYPES.BUFFER, message];
+				return [S_MESSAGE_TYPES.OBJECT, Buffer.from(JSON.stringify(message))];
+			}
+			default:
+				return [S_MESSAGE_TYPES.STRING, Buffer.from(String(message))];
 		}
-
-		return Buffer.from(`${id} 1 ${receptive} | ${type}\n`);
 	}
 
 	/**
@@ -355,6 +398,30 @@ class Node extends EventEmitter {
 	}
 
 }
+
+const S_MESSAGE_TYPES = Object.freeze({
+	NULL: 0,
+	STRING: 1,
+	NUMBER: 2,
+	SET: 3,
+	MAP: 4,
+	BUFFER: 5,
+	OBJECT: 6,
+	PING: 7,
+	IDENTIFY: 8
+});
+
+const R_MESSAGE_TYPES = Object.freeze({
+	0: 'NULL',
+	1: 'STRING',
+	2: 'NUMBER',
+	3: 'SET',
+	4: 'MAP',
+	5: 'BUFFER',
+	6: 'OBJECT',
+	7: 'PING',
+	8: 'IDENTIFY'
+});
 
 let i = 0;
 
