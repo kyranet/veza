@@ -9,12 +9,16 @@ const node = new Node("hello")
 	.on("listening", console.log.bind(null, "Listening"))
 	.on("message", message => {
 		console.log(`Received data:`, message);
-		// if (message.data === "Hello") message.reply("world!");
-		// if (message.includes("Hello"))
-		setTimeout(
-			() => message.reply(`Reply!: ${message.data}`),
-			Math.floor(Math.random()) * 1000
-		);
+		// For World.js test
+		if (message.data === "Hello") message.reply("world!");
+		// For Concurrent.js test
+		else {
+			
+			setTimeout(
+				() => message.reply(`Reply!: ${message.data}`),
+				Math.floor(Math.random()) * 1000
+			);
+		}
 	})
 	.on("error", console.error.bind(null, "Error"))
 	.on("socketClose", console.log.bind(null, "Closed Socket:"))
