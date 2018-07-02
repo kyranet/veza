@@ -1,6 +1,6 @@
 {
   "name": "ipc-link-core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "IPC Utilities",
   "main": "src/index",
   "scripts": {
