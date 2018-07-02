@@ -298,7 +298,13 @@ class Node extends EventEmitter {
 			data: { value: data, enumerable: true },
 			from: { value: name, enumerable: true },
 			receptive: { value: receptive, enumerable: true },
-			reply: { value: (content) => receptive ? socket.write(Node._packMessage(id, content, false)) : false }
+			reply: {
+				value: (content) => {
+					if (!receptive) return;
+					socket.write(Node._packMessage(id, content, false));
+					socket.write('\n');
+				}
+			}
 		});
 		this.emit('message', message);
 	}
@@ -315,7 +321,7 @@ class Node extends EventEmitter {
 			const headerSeparatorIndex = buffer.indexOf(kSeparatorHeader);
 			if (headerSeparatorIndex === -1) break;
 
-			const [id, type, _receptive, bodyLength] = buffer.toString('utf8', 0, headerSeparatorIndex - 1).split(' ');
+			const [id, type, _receptive, bodyLength] = buffer.toString('utf8', 0, headerSeparatorIndex - 1).split(' ').map(value => value.trim());
 			if (!(type in R_MESSAGE_TYPES)) throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 7.`);
 
 			const startBodyIndex = headerSeparatorIndex + 2;
