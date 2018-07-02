@@ -1,5 +1,5 @@
-declare module 'ipc-link-core' {
-	
+declare module 'veza' {
+
 	import { EventEmitter } from 'events';
 	import { Server, Socket, ListenOptions, SocketConnectOpts } from 'net';
 	import { resolve } from 'dns';
@@ -68,8 +68,10 @@ declare module 'ipc-link-core' {
 
 		private _destroySocket(socketName: string, socket: Socket, server: boolean): void;
 		private _onDataMessage(name: string, socket: Socket, buffer: Buffer): void;
-		private static unPackMessage(buffer: Buffer): [string, boolean, any];
+		private _handleMessage(name: string, socket: Socket, parsedData: { id: string, receptive: boolean, data: any }): void;
+		private _unPackMessage(name: string, socket: Socket, buffer: Buffer): void;
 		private static packMessage(id: string, message: any, receptive?: boolean): Buffer;
+		private static _getMessageDetails(message: any): [number, Buffer];
 		private static createID(): string;
 	}
 
@@ -90,7 +92,7 @@ declare module 'ipc-link-core' {
 		public readonly data: any;
 		public readonly from: string;
 		public readonly receptive: boolean;
-		public reply(content: any): boolean;
+		public reply(content: any): void;
 	}
 
 	interface QueueEntry {

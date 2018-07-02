@@ -4,7 +4,9 @@ const net = require('net');
 const kSeparatorHeader = '|'.charCodeAt(0);
 const kPing = Symbol('IPC-Ping');
 const kIdentify = Symbol('IPC-Identify');
+
 const bufferNull = Buffer.from('null');
+const noop = () => { }; // eslint-disable-line no-empty-function
 
 class Node extends EventEmitter {
 
@@ -293,19 +295,15 @@ class Node extends EventEmitter {
 			socket.write(Node._packMessage(id, this.name, false));
 			return;
 		}
-		const message = Object.defineProperties({}, {
-			id: { value: id },
-			data: { value: data, enumerable: true },
-			from: { value: name, enumerable: true },
-			receptive: { value: receptive, enumerable: true },
-			reply: {
-				value: (content) => {
-					if (!receptive) return;
-					socket.write(Node._packMessage(id, content, false));
-					socket.write('\n');
-				}
-			}
-		});
+		const message = Object.freeze(Object.defineProperties({
+			data,
+			from: name,
+			receptive,
+			reply: receptive ? (content) => {
+				socket.write(Node._packMessage(id, content, false));
+				socket.write('\n');
+			} : noop
+		}, { id: { value: id } }));
 		this.emit('message', message);
 	}
 
@@ -400,8 +398,8 @@ class Node extends EventEmitter {
 	 * @private
 	 */
 	static createID() {
-		i = i < 26 ? i + 1 : 0;
-		return Date.now().toString(36) + String.fromCharCode(i + 97);
+		i = i < 46656 ? i + 1 : 0;
+		return Date.now().toString(36) + i.toString(36);
 	}
 
 }
