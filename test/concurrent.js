@@ -9,7 +9,7 @@ const node = new Node('concurrent')
 	.on('connect', () => console.log('Connected!'));
 
 node
-	.connectTo('hello', 8002)
+	.connectTo('hello', 8001)
 	.then(socket =>
 		Promise.all(
 			Array.from({ length: 100 }, (_, i) => {
