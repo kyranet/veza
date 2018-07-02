@@ -12,7 +12,7 @@ node
 	.connectTo('hello', 8002)
 	.then(socket =>
 		Promise.all(
-			Array.from({ length: 50 }, (_, i) => {
+			Array.from({ length: 100 }, (_, i) => {
 				// 10 seconds timeout
 				const timeout = setTimeout(
 					() => console.log(`Timeout reply from: ${i}`),

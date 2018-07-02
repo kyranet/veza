@@ -16,7 +16,7 @@ const node = new Node('hello')
 		} else {
 			setTimeout(
 				() => message.reply(`Reply!: ${message.data}`),
-				Math.floor(Math.random()) * 1000
+				Math.min(9000, Math.floor(Math.random() * 1000))
 			);
 		}
 	})
