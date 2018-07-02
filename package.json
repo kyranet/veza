@@ -4,8 +4,8 @@
   "description": "IPC Utilities",
   "main": "src/index",
   "scripts": {
-    "lint": "eslint --fix src",
-    "test": "eslint src"
+    "lint": "eslint --fix src test",
+    "test": "eslint src test"
   },
   "repository": {
     "type": "git",
