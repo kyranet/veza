@@ -2,18 +2,27 @@
 // This Node is a socket that replies to hello.js with "world!" when it receives "Hello".
 
 // This example tests concurrency with parallel messages in IPC.
-const { Node } = require('../src/index');
+const { Node } = require("../src/index");
 
-const node = new Node('concurrent')
-	.on('message', (message) => {
-		console.log(`Received data from ${message.from}:`, message);
-		if (message.data === 'Hello')
-			message.reply('world!');
-	})
-	.on('error', console.error)
-	.on('connect', () => console.log('Connected!'));
+const node = new Node("concurrent")
+	.on("error", console.error)
+	.on("connect", () => console.log("Connected!"))
 
-node.connectTo('hello', 8001)
-	.then(socket => Promise.all(Array.from({ length: 50 }, () => node.sendTo(socket, 'Test', 1))))
-	.then(console.log)
-	.catch(() => console.log('Disconnected!'));
+node
+	.connectTo("hello", 8002)
+	.then(socket =>
+		Promise.all(
+			Array.from({ length: 50 }, (_, i) => {
+				// 10 seconds timeout
+				let timeout = setTimeout(
+					() => console.log(`Timeout reply from: ${i}`),
+					10000
+				);
+				node.sendTo(socket, `Test ${i}`, 1).then(reply => {
+					console.log(`Received reply from ${i}:`, reply);
+					clearTimeout(timeout);
+				});
+			})
+		)
+	)
+	.catch(() => console.log("Disconnected!"));

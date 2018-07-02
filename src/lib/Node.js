@@ -155,7 +155,7 @@ class Node extends EventEmitter {
 
 		return new Promise(async (resolve, reject) => {
 			try {
-				const id = Node.createID();
+        const id = Node.createID();
 				const message = Node._packMessage(id, data, receptive);
 				socket.write(message);
 				socket.write('\n');
@@ -284,7 +284,7 @@ class Node extends EventEmitter {
 		if (this._queue.has(id)) {
 			this._queue.get(id).resolve(data);
 			return;
-		}
+    }
 		if (data === kPing) {
 			socket.write(Node._packMessage(id, Date.now(), false));
 			return;
@@ -298,7 +298,7 @@ class Node extends EventEmitter {
 			data: { value: data, enumerable: true },
 			from: { value: name, enumerable: true },
 			receptive: { value: receptive, enumerable: true },
-			reply: { value: (content) => receptive ? socket.write(Node._packMessage(id, content, false)) : false }
+			reply: { value: (content) => receptive ? socket.write(Node._packMessage(id, content, false)) && socket.write('\n') : false }
 		});
 		this.emit('message', message);
 	}
