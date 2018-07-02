@@ -298,7 +298,7 @@ class Node extends EventEmitter {
 			data: { value: data, enumerable: true },
 			from: { value: name, enumerable: true },
 			receptive: { value: receptive, enumerable: true },
-			reply: { value: (content) => receptive ? socket.write(Node._packMessage(id, content, false)) && socket.write('\n') : false }
+			reply: { value: (content) => receptive ? this.sendTo(socket, content, false) : false }
 		});
 		this.emit('message', message);
 	}
