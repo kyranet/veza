@@ -158,6 +158,7 @@ class Node extends EventEmitter {
 				const id = Node.createID();
 				const message = Node._packMessage(id, data, receptive);
 				socket.write(message);
+				socket.write('\n');
 
 				if (!receptive) return resolve(undefined);
 
