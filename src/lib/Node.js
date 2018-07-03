@@ -6,6 +6,7 @@ const kPing = Symbol('IPC-Ping');
 const kIdentify = Symbol('IPC-Identify');
 
 const bufferNull = Buffer.from('null');
+const bufferEOL = Buffer.from(require('os').EOL);
 const noop = () => { }; // eslint-disable-line no-empty-function
 
 class Node extends EventEmitter {
@@ -160,7 +161,6 @@ class Node extends EventEmitter {
 				const id = Node.createID();
 				const message = Node._packMessage(id, data, receptive);
 				socket.write(message);
-				socket.write('\n');
 
 				if (!receptive) return resolve(undefined);
 
@@ -301,7 +301,6 @@ class Node extends EventEmitter {
 			receptive,
 			reply: receptive ? (content) => {
 				socket.write(Node._packMessage(id, content, false));
-				socket.write('\n');
 			} : noop
 		}, { id: { value: id } }));
 		this.emit('message', message);
@@ -365,7 +364,7 @@ class Node extends EventEmitter {
 	static _packMessage(id, message, receptive = true) {
 		receptive = message === kPing || message === kIdentify ? 0 : Number(receptive);
 		const [type, buffer] = Node._getMessageDetails(message);
-		return Buffer.concat([Buffer.from(`${id} ${type} ${receptive} ${buffer.length.toString(36)} | `), buffer]);
+		return Buffer.concat([Buffer.from(`${id} ${type} ${receptive} ${buffer.length.toString(36)} | `), buffer, bufferEOL]);
 	}
 
 	/**
