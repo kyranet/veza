@@ -11,6 +11,7 @@ declare module 'veza' {
 		public server: Server | null;
 		public readonly name: string;
 		public readonly sockets: Map<string, NodeSocket>;
+		private _remainingBuffer: Buffer | null;
 		private readonly _queue: Map<string, QueueEntry>;
 		private readonly _serverNodes: Map<string, Socket>;
 

@@ -89,7 +89,14 @@ class Node extends EventEmitter {
 			 * @readonly
 			 * @private
 			 */
-			_serverNodes: { value: new Map() }
+			_serverNodes: { value: new Map() },
+
+			/**
+			 * @name Node#_remainingBuffer
+			 * @type {?Buffer}
+			 * @private
+			 */
+			_remainingBuffer: { value: null, writable: true }
 		});
 	}
 
@@ -105,6 +112,13 @@ class Node extends EventEmitter {
 			.on('connection', (socket) => {
 				let socketName = null;
 				socket
+					.on('error', (error) => {
+						// If the socket disconnected, the error is an ECONNRESET, perform cleanup
+						if (error.code === 'ECONNRESET')
+							this._destroySocket(socketName, socket, true);
+						else
+							this.emit('error', error);
+					})
 					.on('data', (data) => this._onDataMessage(socketName, socket, data))
 					.on('close', () => {
 						// Cleanup
@@ -314,15 +328,30 @@ class Node extends EventEmitter {
 	 * @private
 	 */
 	_unPackMessage(name, socket, buffer) {
+		if (this._remainingBuffer) {
+			buffer = Buffer.concat([this._remainingBuffer, buffer]);
+			this._remainingBuffer = null;
+		}
+
 		while (buffer.length) {
 			const headerSeparatorIndex = buffer.indexOf(kSeparatorHeader);
-			if (headerSeparatorIndex === -1) break;
+			// If the header separator was not found, it may be due to an impartial message
+			if (headerSeparatorIndex === -1) {
+				this._remainingBuffer = buffer;
+				break;
+			}
 
 			const [id, type, _receptive, bodyLength] = buffer.toString('utf8', 0, headerSeparatorIndex - 1).split(' ').map(value => value.trim());
-			if (!(type in R_MESSAGE_TYPES)) throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 7.`);
+			if (!(type in R_MESSAGE_TYPES))
+				throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 7.`);
 
 			const startBodyIndex = headerSeparatorIndex + 2;
 			const endBodyIndex = startBodyIndex + parseInt(bodyLength, 36);
+			// If the body's length is not enough long, the Socket may have cut the message in half
+			if (endBodyIndex > buffer.length) {
+				this._remainingBuffer = buffer;
+				break;
+			}
 			const body = buffer.slice(startBodyIndex, endBodyIndex);
 
 			const pType = R_MESSAGE_TYPES[type];
