@@ -458,12 +458,6 @@ module.exports = Node;
  * @param {net.Socket} socket The destroyed socket
  */
 /**
- * Emitted when the connection to a Socket has been destroyed.
- * @event Node#destroy
- * @param {string} name The label name of the socket
- * @param {net.Socket} socket The destroyed socket
- */
-/**
  * Emitted when a socket connects to the Node's server.
  * @event Node#connection
  * @param {string} socket The label name of the socket

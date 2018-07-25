@@ -76,28 +76,28 @@ declare module 'veza' {
 	}
 
 	export interface NodeOptions {
-		public maxRetries?: number;
-		public retryTime?: number;
+		maxRetries?: number;
+		retryTime?: number;
 	}
 
 	export interface NodeSocket {
-		public readonly name: string;
-		public socket: Socket | null;
-		public retriesRemaining: number;
-		private _reconnectionTimeout: NodeJS.Timer;
+		readonly name: string;
+		socket: Socket | null;
+		retriesRemaining: number;
+		_reconnectionTimeout: NodeJS.Timer;
 	}
 
-	export interface NodeMessage {
-		private readonly id: string;
-		public readonly data: any;
-		public readonly from: string;
-		public readonly receptive: boolean;
-		public reply(content: any): void;
-	}
+	export type NodeMessage = Readonly<{
+		id: string;
+		data: any;
+		from: string;
+		receptive: boolean;
+		reply(content: any): void;
+	}>;
 
 	interface QueueEntry {
-		public resolve(data: any): void;
-		public reject(data: any): void;
+		resolve(data: any): void;
+		reject(data: any): void;
 	}
 
 }

@@ -1,8 +1,9 @@
 {
   "name": "veza",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "IPC Utilities",
   "main": "src/index",
+  "types": "typings/index.d.ts",
   "scripts": {
     "lint": "eslint --fix src test",
     "test": "eslint src test"
@@ -25,8 +26,8 @@
   },
   "homepage": "https://github.com/kyranet/veza#readme",
   "devDependencies": {
-    "@types/node": "^10.5.1",
-    "eslint": "^5.0.1",
+    "@types/node": "^10.5.3",
+    "eslint": "^5.2.0",
     "eslint-config-klasa": "github:dirigeants/klasa-lint"
   }
 }
