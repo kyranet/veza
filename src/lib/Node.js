@@ -1,5 +1,5 @@
 const { EventEmitter } = require('events');
-const net = require('net');
+const { Socket, Server } = require('net');
 
 const kSeparatorHeader = '|'.charCodeAt(0);
 const kPing = Symbol('IPC-Ping');
@@ -20,13 +20,13 @@ class Node extends EventEmitter {
 	/**
 	 * @typedef {Object} NodeSocket
 	 * @property {string} name The label name for the socket
-	 * @property {net.Socket} [socket] The socket itself
+	 * @property {Socket} [socket] The socket itself
 	 * @property {number} retriesRemaining The remaining reconnection retries
 	 */
 
 	/**
 	 * @typedef {Object} QueueEntry
-	 * @property {string} name The name of the socket this was sent to
+	 * @property {Socket} socket The socket the message is being sent to
 	 * @property {Function} resolve The resolve function
 	 * @property {Function} reject The reject function
 	 * @private
@@ -43,11 +43,9 @@ class Node extends EventEmitter {
 
 		/**
 		 * The name for this Node
-		 * @name Node#name
 		 * @type {string}
-		 * @readonly
 		 */
-		Object.defineProperty(this, 'name', { value: name, enumerable: true });
+		this.name = name;
 
 		/**
 		 * The amount of retries this Node will do when reconnecting
@@ -62,42 +60,42 @@ class Node extends EventEmitter {
 		this.retryTime = retryTime;
 
 		Object.defineProperties(this, {
-			/**
-			 * @name Node#server
-			 * @type {?net.Socket}
-			 */
 			server: { value: null, writable: true },
-
-			/**
-			 * @name Node#sockets
-			 * @type {Map<string, NodeSocket>}
-			 * @readonly
-			 */
-			sockets: { value: new Map() },
-
-			/**
-			 * @name Node#_queue
-			 * @type {Map<string, QueueEntry>}
-			 * @readonly
-			 * @private
-			 */
-			_queue: { value: new Map() },
-
-			/**
-			 * @name Node#_serverNodes
-			 * @type {Map<string, Socket>}
-			 * @readonly
-			 * @private
-			 */
-			_serverNodes: { value: new Map() },
-
-			/**
-			 * @name Node#_remainingBuffer
-			 * @type {?Buffer}
-			 * @private
-			 */
+			sockets: { value: null, writable: true },
+			_queue: { value: null, writable: true },
+			_serverNodes: { value: null, writable: true },
 			_remainingBuffer: { value: null, writable: true }
 		});
+
+		/**
+		 * @type {?Server}
+		 * @private
+		 */
+		this.server = null;
+
+		/**
+		 * @type {Map<string, NodeSocket>}
+		 * @private
+		 */
+		this.sockets = new Map();
+
+		/**
+		 * @type {Map<string, QueueEntry>}
+		 * @private
+		 */
+		this._queue = new Map();
+
+		/**
+		 * @type {Map<string, Socket>}
+		 * @private
+		 */
+		this._serverNodes = new Map();
+
+		/**
+		 * @type {?Buffer}
+		 * @private
+		 */
+		this._remainingBuffer = null;
 	}
 
 	/**
@@ -108,12 +106,13 @@ class Node extends EventEmitter {
 	 */
 	serve(name, ...options) {
 		if (this.server) throw new Error('There is already a server.');
-		this.server = new net.Server()
+		this.server = new Server()
 			.on('connection', (socket) => {
 				let socketName = null;
 				socket
 					.on('error', (error) => {
 						// If the socket disconnected, the error is an ECONNRESET, perform cleanup
+						// @ts-ignore
 						if (error.code === 'ECONNRESET')
 							this._destroySocket(socketName, socket, true);
 						else
@@ -160,13 +159,13 @@ class Node extends EventEmitter {
 
 	/**
 	 * Send a message to a connected socket
-	 * @param {string} name The label name of the socket to send the message to
+	 * @param {string|Socket} name The label name of the socket to send the message to
 	 * @param {*} data The data to send to the socket
 	 * @param {boolean} receptive Whether this message should wait for a response or not
 	 * @returns {Promise<*>}
 	 */
 	sendTo(name, data, receptive = true) {
-		const socket = name instanceof net.Socket ? name : (sk => sk ? sk.socket : null)(this.sockets.get(name));
+		const socket = this._getSocket(name);
 		if (!socket) return Promise.reject(new Error('Failed to send to the socket.'));
 		if (!socket.writable) return Promise.reject(new Error('The Socket is not writable.'));
 
@@ -182,7 +181,7 @@ class Node extends EventEmitter {
 					this._queue.delete(id);
 					return fn(response);
 				};
-				return this._queue.set(id, { to: name, resolve: send.bind(null, resolve), reject: send.bind(null, reject) });
+				return this._queue.set(id, { socket, resolve: send.bind(null, resolve), reject: send.bind(null, reject) });
 			} catch (error) {
 				return reject(error);
 			}
@@ -203,7 +202,7 @@ class Node extends EventEmitter {
 	 * Connect to a socket
 	 * @param {string} name The label name for the socket
 	 * @param {...*} options The options to pass to connect
-	 * @returns {Promise<net.Socket>}
+	 * @returns {Promise<Socket>}
 	 */
 	connectTo(name, ...options) {
 		if (this.sockets.has(name)) return Promise.reject(new Error('There is already a socket.'));
@@ -215,7 +214,7 @@ class Node extends EventEmitter {
 		});
 
 		return new Promise((resolve, reject) => {
-			node.socket = new net.Socket()
+			node.socket = new Socket()
 				.on('connect', () => {
 					node.retriesRemaining = this.maxRetries;
 					if (node._reconnectionTimeout) clearTimeout(node._reconnectionTimeout);
@@ -254,9 +253,19 @@ class Node extends EventEmitter {
 	}
 
 	/**
+	 * Resolves a socket
+	 * @param {string|Socket} name Resolves a socket
+	 * @returns {Socket}
+	 */
+	_getSocket(name) {
+		if (name instanceof Socket) return name;
+		return (sk => sk ? sk.socket : null)(this.sockets.get(name)) || this._serverNodes.get(name) || null;
+	}
+
+	/**
 	 * Destroy a socket and perform all cleanup
 	 * @param {string} socketName The label name of the socket to destroy
-	 * @param {net.Socket} socket The Socket to destroy
+	 * @param {Socket} socket The Socket to destroy
 	 * @param {boolean} server Whether the destroy belongs to the Node's server or not
 	 * @private
 	 */
@@ -266,7 +275,7 @@ class Node extends EventEmitter {
 
 		if (this._queue.size) {
 			const rejectError = new Error('Socket has been disconnected.');
-			for (const element of this._queue.values()) if (element.to === socketName) element.reject(rejectError);
+			for (const element of this._queue.values()) if (element.socket === socket) element.reject(rejectError);
 		}
 
 		if (server) {
@@ -281,7 +290,7 @@ class Node extends EventEmitter {
 	/**
 	 * Parse the message
 	 * @param {string} name The label name of the socket
-	 * @param {net.Socket} socket The Socket that sent this message
+	 * @param {Socket} socket The Socket that sent this message
 	 * @param {Buffer} buffer The buffer received
 	 * @private
 	 */
@@ -293,7 +302,7 @@ class Node extends EventEmitter {
 	/**
 	 * Handle a parsed message
 	 * @param {string} name The label name of the socket
-	 * @param {net.Socket} socket The Socket that sent this message
+	 * @param {Socket} socket The Socket that sent this message
 	 * @param {Object<string, *>} parsedData The parsed message data
 	 */
 	_handleMessage(name, socket, { id, receptive, data }) {
@@ -323,7 +332,7 @@ class Node extends EventEmitter {
 	/**
 	 * Unpack a buffer message for usage
 	 * @param {string} name The label name of the socket
-	 * @param {net.Socket} socket The Socket that sent this message
+	 * @param {Socket} socket The Socket that sent this message
 	 * @param {Buffer} buffer The buffer to unpack
 	 * @private
 	 */
@@ -391,9 +400,9 @@ class Node extends EventEmitter {
 	 * @private
 	 */
 	static _packMessage(id, message, receptive = true) {
-		receptive = message === kPing || message === kIdentify ? 0 : Number(receptive);
+		const recflag = message === kPing || message === kIdentify ? 0 : Number(receptive);
 		const [type, buffer] = Node._getMessageDetails(message);
-		return Buffer.concat([Buffer.from(`${id} ${type} ${receptive} ${buffer.length.toString(36)} | `), buffer, bufferEOL]);
+		return Buffer.concat([Buffer.from(`${id} ${type} ${recflag} ${buffer.length.toString(36)} | `), buffer, bufferEOL]);
 	}
 
 	/**
@@ -402,7 +411,7 @@ class Node extends EventEmitter {
 	 * @returns {Array<number | Buffer>}
 	 */
 	static _getMessageDetails(message) {
-		if (message === kPing) return [S_MESSAGE_TYPES.PING, Buffer.from(Date.now())];
+		if (message === kPing) return [S_MESSAGE_TYPES.PING, Buffer.from(Date.now().toString())];
 		if (message === kIdentify) return [S_MESSAGE_TYPES.IDENTIFY, bufferNull];
 		if (message === null) return [S_MESSAGE_TYPES.NULL, bufferNull];
 

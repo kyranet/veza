@@ -59,14 +59,15 @@ declare module 'veza' {
 		public serve(name: string, handle: any, backlog?: number, listeningListener?: Function): this;
 		public serve(name: string, handle: any, listeningListener?: Function): this;
 		public broadcast<T = any>(data: any): Promise<Array<T>>;
-		public sendTo<T = any>(name: string, data: any, receptive?: boolean): Promise<T>;
-		public pingTo(name: string): Promise<number>;
+		public sendTo<T = any>(name: string | Socket, data: any, receptive?: boolean): Promise<T>;
+		public pingTo(name: string | Socket): Promise<number>;
 		public connectTo(name: string, options: SocketConnectOpts, connectionListener?: Function): Promise<Socket>;
 		public connectTo(name: string, port: number, host: string, connectionListener?: Function): Promise<Socket>;
 		public connectTo(name: string, port: number, connectionListener?: Function): Promise<Socket>;
 		public connectTo(name: string, path: string, connectionListener?: Function): Promise<Socket>;
 		public disconnectFrom(name: string): void;
 
+		private _getSocket(name: string | Socket): Socket | null;
 		private _destroySocket(socketName: string, socket: Socket, server: boolean): void;
 		private _onDataMessage(name: string, socket: Socket, buffer: Buffer): void;
 		private _handleMessage(name: string, socket: Socket, parsedData: { id: string, receptive: boolean, data: any }): void;
@@ -97,8 +98,9 @@ declare module 'veza' {
 	}>;
 
 	interface QueueEntry {
-		resolve(data: any): void;
-		reject(data: any): void;
+		socket: Socket;
+		resolve: (data: any) => void;
+		reject: (data: any) => void;
 	}
 
 }
