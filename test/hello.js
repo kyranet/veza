@@ -22,4 +22,4 @@ const node = new Node('hello')
 	})
 	.on('error', console.error.bind(null, 'Error'))
 	.on('socketClose', console.log.bind(null, 'Closed Socket:'))
-	.serve('hello', 8001);
+	.serve(8001);

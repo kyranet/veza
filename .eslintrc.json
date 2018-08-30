@@ -6,5 +6,8 @@
 		"id-length": "off",
 		"no-bitwise": ["error", { "int32Hint": true }],
 		"no-cond-assign": "off"
+	},
+	"globals": {
+		"BigInt": true
 	}
 }

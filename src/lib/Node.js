@@ -5,7 +5,7 @@ const kSeparatorHeader = '|'.charCodeAt(0);
 const kPing = Symbol('IPC-Ping');
 const kIdentify = Symbol('IPC-Identify');
 
-const bufferNull = Buffer.from('null');
+const bufferNull = Buffer.from('\0');
 const bufferEOL = Buffer.from(require('os').EOL);
 const noop = () => { }; // eslint-disable-line no-empty-function
 
@@ -60,36 +60,40 @@ class Node extends EventEmitter {
 		this.retryTime = retryTime;
 
 		Object.defineProperties(this, {
-			server: { value: null, writable: true },
-			sockets: { value: null, writable: true },
 			_queue: { value: null, writable: true },
-			_serverNodes: { value: null, writable: true },
-			_remainingBuffer: { value: null, writable: true }
+			_remainingBuffer: { value: null, writable: true },
+			clients: { value: null, writable: true },
+			server: { value: null, writable: true },
+			servers: { value: null, writable: true }
 		});
 
 		/**
+		 * The server for this Node, if serving
 		 * @type {?Server}
 		 * @private
 		 */
 		this.server = null;
 
 		/**
+		 * The sockets connected to this Node
 		 * @type {Map<string, NodeSocket>}
 		 * @private
 		 */
-		this.sockets = new Map();
+		this.clients = new Map();
 
 		/**
+		 * The servers this Node is connected to
+		 * @type {Map<string, Socket>}
+		 * @private
+		 */
+		this.servers = new Map();
+
+		/**
+		 * The queue for this Node
 		 * @type {Map<string, QueueEntry>}
 		 * @private
 		 */
 		this._queue = new Map();
-
-		/**
-		 * @type {Map<string, Socket>}
-		 * @private
-		 */
-		this._serverNodes = new Map();
 
 		/**
 		 * @type {?Buffer}
@@ -100,11 +104,10 @@ class Node extends EventEmitter {
 
 	/**
 	 * Create a server for this Node instance.
-	 * @param {string} name The label name for this server
 	 * @param {...*} options The options to pass to net.Server#listen
 	 * @returns {this}
 	 */
-	serve(name, ...options) {
+	serve(...options) {
 		if (this.server) throw new Error('There is already a server.');
 		this.server = new Server()
 			.on('connection', (socket) => {
@@ -125,7 +128,7 @@ class Node extends EventEmitter {
 					});
 				this.sendTo(socket, kIdentify).then(sName => {
 					socketName = sName;
-					this._serverNodes.set(socketName, socket);
+					this.servers.set(socketName, socket);
 					this.emit('connection', socketName, socket);
 				});
 			})
@@ -133,7 +136,7 @@ class Node extends EventEmitter {
 				this.server.removeAllListeners();
 				this.server = null;
 
-				for (const socket of this._serverNodes.values()) socket.destroy();
+				for (const socket of this.servers.values()) socket.destroy();
 				this.emit('close');
 
 				if (this._queue.size) {
@@ -154,7 +157,7 @@ class Node extends EventEmitter {
 	 * @returns {Promise<Array<*>>}
 	 */
 	broadcast(data, receptive) {
-		return Promise.all([...this._serverNodes.values()].map(socket => this.sendTo(socket, data, receptive)));
+		return Promise.all([...this.servers.values()].map(socket => this.sendTo(socket, data, receptive)));
 	}
 
 	/**
@@ -169,7 +172,7 @@ class Node extends EventEmitter {
 		if (!socket) return Promise.reject(new Error('Failed to send to the socket.'));
 		if (!socket.writable) return Promise.reject(new Error('The Socket is not writable.'));
 
-		return new Promise(async (resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			try {
 				const id = Node.createID();
 				const message = Node._packMessage(id, data, receptive);
@@ -205,7 +208,7 @@ class Node extends EventEmitter {
 	 * @returns {Promise<Socket>}
 	 */
 	connectTo(name, ...options) {
-		if (this.sockets.has(name)) return Promise.reject(new Error('There is already a socket.'));
+		if (this.clients.has(name)) return Promise.reject(new Error('There is already a socket.'));
 		const node = Object.defineProperties({}, {
 			name: { value: name, enumerable: true },
 			socket: { value: null, writable: true, enumerable: true },
@@ -235,7 +238,7 @@ class Node extends EventEmitter {
 				.on('error', this.emit.bind(this, 'error'))
 				.on('data', data => this._onDataMessage(name, node.socket, data));
 
-			this.sockets.set(name, node);
+			this.clients.set(name, node);
 
 			// Set enconding and connect
 			node.socket.connect(...options);
@@ -247,7 +250,7 @@ class Node extends EventEmitter {
 	 * @param {string} name The label name of the socket to disconnect
 	 */
 	disconnectFrom(name) {
-		const nodeSocket = this.sockets.get(name);
+		const nodeSocket = this.clients.get(name);
 		if (!nodeSocket) throw new Error(`The socket ${name} is not connected to this one.`);
 		this._destroySocket(name, nodeSocket.socket, false);
 	}
@@ -259,7 +262,7 @@ class Node extends EventEmitter {
 	 */
 	_getSocket(name) {
 		if (name instanceof Socket) return name;
-		return (sk => sk ? sk.socket : null)(this.sockets.get(name)) || this._serverNodes.get(name) || null;
+		return (sk => sk ? sk.socket : null)(this.clients.get(name)) || this.servers.get(name) || null;
 	}
 
 	/**
@@ -279,10 +282,10 @@ class Node extends EventEmitter {
 		}
 
 		if (server) {
-			this._serverNodes.delete(socketName);
+			this.servers.delete(socketName);
 			this.emit('socketClose', socketName);
 		} else {
-			this.sockets.delete(socketName);
+			this.clients.delete(socketName);
 			this.emit('destroy', socketName, socket);
 		}
 	}
@@ -365,30 +368,31 @@ class Node extends EventEmitter {
 
 			const pType = R_MESSAGE_TYPES[type];
 			const receptive = _receptive === '1';
-			if (pType === 'PING') {
-				this._handleMessage(name, socket, { id, receptive, data: kPing });
-			} else if (pType === 'IDENTIFY') {
-				this._handleMessage(name, socket, { id, receptive, data: kIdentify });
-			} else if (pType === 'NULL') {
-				this._handleMessage(name, socket, { id, receptive, data: null });
-			} else if (pType === 'BUFFER') {
-				this._handleMessage(name, socket, { id, receptive, data: body });
-			} else {
-				const bodyString = body.toString('utf8');
-				if (pType === 'STRING')
-					this._handleMessage(name, socket, { id, receptive, data: bodyString });
-				else if (pType === 'NUMBER')
-					this._handleMessage(name, socket, { id, receptive, data: Number(bodyString) });
-				else if (pType === 'OBJECT')
-					this._handleMessage(name, socket, { id, receptive, data: JSON.parse(bodyString) });
-				else if (pType === 'SET')
-					this._handleMessage(name, socket, { id, receptive, data: new Set(JSON.parse(bodyString)) });
-				else if (pType === 'MAP')
-					this._handleMessage(name, socket, { id, receptive, data: new Map(JSON.parse(bodyString)) });
-			}
+			const data = this._readMessage(body, pType);
 
+			this._handleMessage(name, socket, { id, receptive, data });
 			buffer = buffer.slice(endBodyIndex + 1);
 		}
+	}
+
+	_readMessage(body, type) {
+		if (type === 'PING') return kPing;
+		if (type === 'IDENTIFY') return kIdentify;
+		if (type === 'NULL') return null;
+		if (type === 'UNDEFINED') return undefined;
+		if (type === 'BUFFER') return body;
+
+		const bodyString = body.toString('utf8');
+		if (type === 'STRING') return bodyString;
+		if (type === 'BOOLEAN') return bodyString === '1';
+		if (type === 'SYMBOL') return Symbol.for(bodyString);
+		if (type === 'NUMBER') return Number(bodyString);
+		if (type === 'OBJECT') return JSON.parse(bodyString);
+		if (type === 'SET') return new Set(JSON.parse(bodyString));
+		if (type === 'MAP') return new Map(JSON.parse(bodyString));
+		if (type === 'BIGINT') return toBigInt(bodyString);
+
+		return body;
 	}
 
 	/**
@@ -402,6 +406,7 @@ class Node extends EventEmitter {
 	static _packMessage(id, message, receptive = true) {
 		const recflag = message === kPing || message === kIdentify ? 0 : Number(receptive);
 		const [type, buffer] = Node._getMessageDetails(message);
+		// @ts-ignore
 		return Buffer.concat([Buffer.from(`${id} ${type} ${recflag} ${buffer.length.toString(36)} | `), buffer, bufferEOL]);
 	}
 
@@ -413,12 +418,17 @@ class Node extends EventEmitter {
 	static _getMessageDetails(message) {
 		if (message === kPing) return [S_MESSAGE_TYPES.PING, Buffer.from(Date.now().toString())];
 		if (message === kIdentify) return [S_MESSAGE_TYPES.IDENTIFY, bufferNull];
-		if (message === null) return [S_MESSAGE_TYPES.NULL, bufferNull];
 
 		switch (typeof message) {
+			// @ts-ignore
+			case 'bigint': return [S_MESSAGE_TYPES.BIGINT, Buffer.from(message.toString())];
+			case 'undefined': return [S_MESSAGE_TYPES.UNDEFINED, bufferNull];
 			case 'string': return [S_MESSAGE_TYPES.STRING, Buffer.from(message)];
 			case 'number': return [S_MESSAGE_TYPES.NUMBER, Buffer.from(message.toString())];
+			case 'boolean': return [S_MESSAGE_TYPES.BOOLEAN, Buffer.from(message ? '1' : '0')];
+			case 'symbol': return [S_MESSAGE_TYPES.SYMBOL, Buffer.from(message.toString().slice(7, -1))];
 			case 'object': {
+				if (message === null) return [S_MESSAGE_TYPES.NULL, bufferNull];
 				if (message instanceof Set) return [S_MESSAGE_TYPES.SET, Buffer.from(JSON.stringify([...message]))];
 				if (message instanceof Map) return [S_MESSAGE_TYPES.MAP, Buffer.from(JSON.stringify([...message]))];
 				if (Buffer.isBuffer(message)) return [S_MESSAGE_TYPES.BUFFER, message];
@@ -441,6 +451,9 @@ class Node extends EventEmitter {
 
 }
 
+// @ts-ignore
+const toBigInt = typeof BigInt === 'function' ? BigInt : Number;
+
 const S_MESSAGE_TYPES = Object.freeze({
 	NULL: 0,
 	STRING: 1,
@@ -450,20 +463,17 @@ const S_MESSAGE_TYPES = Object.freeze({
 	BUFFER: 5,
 	OBJECT: 6,
 	PING: 7,
-	IDENTIFY: 8
+	IDENTIFY: 8,
+	BOOLEAN: 9,
+	UNDEFINED: 10,
+	SYMBOL: 11,
+	BIGINT: 12
 });
 
-const R_MESSAGE_TYPES = Object.freeze({
-	0: 'NULL',
-	1: 'STRING',
-	2: 'NUMBER',
-	3: 'SET',
-	4: 'MAP',
-	5: 'BUFFER',
-	6: 'OBJECT',
-	7: 'PING',
-	8: 'IDENTIFY'
-});
+// @ts-ignore
+const R_MESSAGE_TYPES = Object.assign({}, ...Object.entries(S_MESSAGE_TYPES)
+	.map(([key, value]) => ({ [value]: key }))
+);
 
 let i = 0;
 
