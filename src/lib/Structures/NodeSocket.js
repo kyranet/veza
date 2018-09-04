@@ -13,51 +13,68 @@ const noop = () => { }; // eslint-disable-line no-empty-function
 
 class NodeSocket {
 
-	constructor(node, name) {
+	constructor(node, name, isServer) {
 		this.node = node;
 		this.name = name;
 		this.socket = null;
 		this.retriesRemaining = node.maxRetries;
 		this.queue = new Queue(this);
 
+		Object.defineProperty(this, '_prefix', { writable: true });
+		this._prefix = isServer ? 'server' : 'client';
+
 		Object.defineProperty(this, '_reconnectionTimeout', { writable: true });
 		this._reconnectionTimeout = null;
 	}
 
-	connect(...options) {
+	async connect(...options) {
 		if (!this.socket) this.socket = new Socket();
 
-		return new Promise((resolve, reject) => {
+		await new Promise((resolve, reject) => {
+			const onConnect = () => resolve(cleanup(this));
+			const onClose = () => reject(cleanup(this));
+			const onError = (error) => reject(cleanup(error));
+			const cleanup = (value) => {
+				this.socket.off('connect', onConnect);
+				this.socket.off('close', onClose);
+				this.socket.off('error', onError);
+				this.socket.destroy();
+				return value;
+			};
 			this.socket
-				.on('connect', () => {
-					this.retriesRemaining = this.node.maxRetries;
-					if (this._reconnectionTimeout) {
-						clearTimeout(this._reconnectionTimeout);
-						this._reconnectionTimeout = null;
-					}
-					this.node.emit('client.connect', this);
-					resolve(this);
-				})
-				.on('close', () => {
-					this.node.emit('client.disconnect', this);
-					this._reconnectionTimeout = setTimeout(() => {
-						if (this.retriesRemaining === 0) {
-							this.disconnect();
-							reject(this.socket);
-						} else {
-							this.retriesRemaining--;
-							// @ts-ignore
-							this.socket.connect(...options);
-						}
-					}, this.node.retryTime);
-				})
-				.on('error', (error) => this.node.emit('error', error))
-				.on('data', (data) => {
-					this.node.emit('raw', this, data);
-					for (const processed of this.queue.process(data))
-						this._handleMessage(processed);
-				});
+				.on('connect', onConnect)
+				.on('close', onClose)
+				.on('error', onError);
+
+			// @ts-ignore
+			this.socket.connect(...options);
 		});
+
+		this.node.emit(`${this._prefix}.ready`, this);
+		this.socket
+			.on('connect', () => {
+				this.retriesRemaining = this.node.maxRetries;
+				if (this._reconnectionTimeout) {
+					clearTimeout(this._reconnectionTimeout);
+					this._reconnectionTimeout = null;
+				}
+				this.node.emit(`${this._prefix}.connect`, this);
+			})
+			.on('close', () => {
+				this.node.emit(`${this._prefix}.disconnect`, this);
+				this._reconnectionTimeout = setTimeout(() => {
+					if (this.retriesRemaining === 0) {
+						this.disconnect();
+					} else {
+						this.retriesRemaining--;
+						// @ts-ignore
+						this.socket.connect(...options);
+					}
+				}, this.node.retryTime);
+			})
+			.on('error', (error) => this.node.emit('error', error, this));
+
+		return this;
 	}
 
 	send(data, receptive = true) {
@@ -107,8 +124,8 @@ class NodeSocket {
 			for (const element of this.queue.values()) element.reject(rejectError);
 		}
 
-		this.node.clients.delete(this.name);
-		this.node.emit('client.destroy', this);
+		this.node[`${this._prefix}s`].delete(this.name);
+		this.node.emit(`${this._prefix}.destroy`, this);
 
 		return true;
 	}

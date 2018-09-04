@@ -139,16 +139,23 @@ class Node extends EventEmitter {
 	/**
 	 * Broadcast a message to all connected sockets from this server
 	 * @param {*} data The data to send to other sockets
-	 * @param {boolean} [receptive] Whether this broadcast should wait for responses or not
+	 * @param {Object} [options={}] The options for this broadcast
+	 * @param {boolean} [options.receptive] Whether this broadcast should wait for responses or not
+	 * @param {RegExp} [options.filter] The filter for the broadcast
 	 * @returns {Promise<Array<*>>}
 	 */
-	broadcast(data, receptive) {
-		return Promise.all([...this.servers.values()].map(socket => this.sendTo(socket, data, receptive)));
+	broadcast(data, { receptive, filter } = {}) {
+		if (!filter) return Promise.all([...this.servers.values()].map(socket => this.sendTo(socket, data, receptive)));
+		if (!(filter instanceof RegExp)) throw new TypeError(`filter must be a RegExp instance.`);
+
+		const promises = [];
+		for (const [name, server] of this.servers) if (filter.test(name)) promises.push(this.sendTo(server, data, receptive));
+		return Promise.all(promises);
 	}
 
 	/**
 	 * Send a message to a connected socket
-	 * @param {string|Socket} name The label name of the socket to send the message to
+	 * @param {string|Socket|NodeSocket} name The label name of the socket to send the message to
 	 * @param {*} data The data to send to the socket
 	 * @param {boolean} receptive Whether this message should wait for a response or not
 	 * @returns {Promise<*>}
@@ -182,31 +189,6 @@ class Node extends EventEmitter {
 		const client = this.clients.get(name);
 		if (!client) return Promise.reject(new Error(`The socket ${name} is not connected to this one.`));
 		return Promise.resolve(client.disconnect());
-	}
-
-	/**
-	 * Destroy a socket and perform all cleanup
-	 * @param {string} socketName The label name of the socket to destroy
-	 * @param {Socket} socket The Socket to destroy
-	 * @param {boolean} server Whether the destroy belongs to the Node's server or not
-	 * @private
-	 */
-	_destroySocket(socketName, socket, server) {
-		socket.destroy();
-		socket.removeAllListeners();
-
-		if (this._queue.size) {
-			const rejectError = new Error('Socket has been disconnected.');
-			for (const element of this._queue.values()) if (element.socket === socket) element.reject(rejectError);
-		}
-
-		if (server) {
-			this.servers.delete(socketName);
-			this.emit('socketClose', socketName);
-		} else {
-			this.clients.delete(socketName);
-			this.emit('destroy', socketName, socket);
-		}
 	}
 
 }
