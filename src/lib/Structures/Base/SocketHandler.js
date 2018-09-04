@@ -9,6 +9,7 @@ class SocketHandler extends Base {
 	constructor(node, name, socket = null) {
 		super(node, name);
 		Object.defineProperty(this, 'socket', { value: null, writable: true });
+		Object.defineProperty(this, 'queue', { value: null, writable: true });
 		this.socket = socket;
 		this.queue = new Queue(this);
 	}
@@ -64,6 +65,11 @@ class SocketHandler extends Base {
 
 	on(event, cb) {
 		if (this.socket) this.socket.on(event, cb);
+		return this;
+	}
+
+	once(event, cb) {
+		if (this.socket) this.socket.once(event, cb);
 		return this;
 	}
 

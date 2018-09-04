@@ -43,7 +43,7 @@ class NodeServerClient extends SocketHandler {
 
 	_onError(error) {
 		const { code } = error;
-		if (code === 'ECONNRESET') {
+		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
 			if (this.status !== STATUS.DISCONNECTED) return;
 			this.status = STATUS.DISCONNECTED;
 			this.node.emit('client.disconnect', this);

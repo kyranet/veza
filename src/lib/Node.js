@@ -88,7 +88,13 @@ class Node extends EventEmitter {
 		return Promise.resolve(client.disconnect());
 	}
 
+	broadcast(data, options) {
+		return this.server ? this.server.broadcast(data, options) : Promise.resolve([]);
+	}
+
 	serve(...options) {
+		if (this.server) throw new Error('There is already a server running.');
+
 		this.server = new NodeServer(this);
 		return this.server.connect(...options)
 			.then(() => this);

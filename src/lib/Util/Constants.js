@@ -22,7 +22,7 @@ module.exports = {
 	}),
 	R_MESSAGE_TYPES: null,
 	BUFFER_NULL: Buffer.from('\0'),
-	BUFFER_EOL: Buffer.from(require('os').EOL),
+	BUFFER_NL: Buffer.from('\n'),
 
 	// Helpers
 	// @ts-ignore

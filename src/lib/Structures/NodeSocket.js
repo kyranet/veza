@@ -11,13 +11,6 @@ class NodeSocket extends SocketHandler {
 		this._reconnectionTimeout = null;
 	}
 
-	setSocket(socket) {
-		if (this.socket) throw new Error('There is already a connected socket.');
-		if (!(socket instanceof Socket)) throw new TypeError('Expected socket to be an instance of net.Socket.');
-		this.socket = socket;
-		return this;
-	}
-
 	async connect(...options) {
 		if (!this.socket) this.socket = new Socket();
 
@@ -52,24 +45,15 @@ class NodeSocket extends SocketHandler {
 	}
 
 	disconnect() {
-		if (!this.socket) return false;
+		if (!super.disconnect()) return false;
 
 		if (this._reconnectionTimeout) {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
 		}
 
-		this.socket.destroy();
-		this.socket.removeAllListeners();
-
-		if (this.queue.size) {
-			const rejectError = new Error('Socket has been disconnected.');
-			for (const element of this.queue.values()) element.reject(rejectError);
-		}
-
 		this.node.clients.delete(this.name);
 		this.node.emit('client.destroy', this);
-
 		return true;
 	}
 

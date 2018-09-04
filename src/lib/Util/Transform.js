@@ -3,7 +3,7 @@ const {
 	kPing, kIdentify,
 
 	// Constants
-	S_MESSAGE_TYPES, BUFFER_NULL, BUFFER_EOL
+	S_MESSAGE_TYPES, BUFFER_NULL, BUFFER_NL
 } = require('./Constants');
 
 /**
@@ -18,7 +18,7 @@ function _packMessage(id, message, receptive = true) {
 	const recflag = message === kPing || message === kIdentify || !receptive ? '0' : '1';
 	const [type, buffer] = _getMessageDetails(message);
 	// @ts-ignore
-	return Buffer.concat([Buffer.from(`${id} ${type} ${recflag} ${buffer.length.toString(36)} | `), buffer, BUFFER_EOL]);
+	return Buffer.concat([Buffer.from(`${id} ${type} ${recflag} ${buffer.length.toString(36)} | `), buffer, BUFFER_NL]);
 }
 
 /**

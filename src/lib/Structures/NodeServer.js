@@ -6,6 +6,8 @@ class NodeServer {
 
 	constructor(node) {
 		this.node = node;
+		Object.defineProperty(this, 'server', { value: null, writable: true });
+		Object.defineProperty(this, 'clients', { value: null, writable: true });
 		this.server = null;
 		this.clients = new Map();
 	}
