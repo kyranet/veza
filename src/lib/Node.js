@@ -1,6 +1,6 @@
 const { EventEmitter } = require('events');
-const { Socket, Server } = require('net');
 const NodeSocket = require('./Structures/NodeSocket');
+const NodeServer = require('./Structures/NodeServer');
 
 class Node extends EventEmitter {
 
@@ -38,24 +38,16 @@ class Node extends EventEmitter {
 		this.retryTime = retryTime;
 
 		Object.defineProperties(this, {
-			clients: { value: null, writable: true },
 			server: { value: null, writable: true },
 			servers: { value: null, writable: true }
 		});
 
 		/**
 		 * The server for this Node, if serving
-		 * @type {?Server}
+		 * @type {?NodeServer}
 		 * @private
 		 */
 		this.server = null;
-
-		/**
-		 * The sockets connected to this Node
-		 * @type {Map<string, NodeSocket>}
-		 * @private
-		 */
-		this.clients = new Map();
 
 		/**
 		 * The servers this Node is connected to
@@ -66,116 +58,15 @@ class Node extends EventEmitter {
 	}
 
 	/**
-	 * Get a NodeSocket by its name or Socket
-	 * @param {string|Socket|NodeSocket} name The NodeSocket to get
-	 * @returns {NodeSocket}
-	 */
-	get(name) {
-		if (typeof name === 'string') return this.clients.get(name) || this.servers.get(name) || null;
-		if (name instanceof NodeSocket) return name;
-		if (name instanceof Socket) {
-			for (const client of this.clients.values())
-				if (client.socket === name) return client;
-			for (const server of this.servers.values())
-				if (server.socket === name) return server;
-			return null;
-		}
-
-		throw new TypeError(`Expected a string or an instance of Socket`);
-	}
-
-	has(name) {
-		return Boolean(this.get(name));
-	}
-
-	/**
-	 * Create a server for this Node instance.
-	 * @param {...*} options The options to pass to net.Server#listen
-	 * @returns {this}
-	 */
-	serve(...options) {
-		if (this.server) throw new Error('There is already a server.');
-		this.server = new Server()
-			.on('connection', (socket) => {
-				let socketName = null;
-				socket
-					.on('error', (error) => {
-						// If the socket disconnected, the error is an ECONNRESET, perform cleanup
-						// @ts-ignore
-						if (error.code === 'ECONNRESET')
-							this._destroySocket(socketName, socket, true);
-						else
-							this.emit('error', error);
-					})
-					.on('data', (data) => this._onDataMessage(socketName, socket, data))
-					.on('close', () => {
-						// Cleanup
-						this._destroySocket(socketName, socket, true);
-					});
-				this.sendTo(socket, kIdentify).then(sName => {
-					socketName = sName;
-					this.servers.set(socketName, socket);
-					this.emit('connection', socketName, socket);
-				});
-			})
-			.on('close', () => {
-				this.server.removeAllListeners();
-				this.server = null;
-
-				for (const socket of this.servers.values()) socket.destroy();
-				this.emit('close');
-
-				if (this._queue.size) {
-					const rejectError = new Error('Server has been disconnected.');
-					for (const element of this._queue.values()) element.reject(rejectError);
-				}
-			})
-			.on('error', this.emit.bind(this, 'error'))
-			.on('listening', this.emit.bind(this, 'listening'));
-		this.server.listen(...options);
-		return this;
-	}
-
-	/**
-	 * Broadcast a message to all connected sockets from this server
-	 * @param {*} data The data to send to other sockets
-	 * @param {Object} [options={}] The options for this broadcast
-	 * @param {boolean} [options.receptive] Whether this broadcast should wait for responses or not
-	 * @param {RegExp} [options.filter] The filter for the broadcast
-	 * @returns {Promise<Array<*>>}
-	 */
-	broadcast(data, { receptive, filter } = {}) {
-		if (!filter) return Promise.all([...this.servers.values()].map(socket => this.sendTo(socket, data, receptive)));
-		if (!(filter instanceof RegExp)) throw new TypeError(`filter must be a RegExp instance.`);
-
-		const promises = [];
-		for (const [name, server] of this.servers) if (filter.test(name)) promises.push(this.sendTo(server, data, receptive));
-		return Promise.all(promises);
-	}
-
-	/**
-	 * Send a message to a connected socket
-	 * @param {string|Socket|NodeSocket} name The label name of the socket to send the message to
-	 * @param {*} data The data to send to the socket
-	 * @param {boolean} receptive Whether this message should wait for a response or not
-	 * @returns {Promise<*>}
-	 */
-	sendTo(name, data, receptive = true) {
-		const nodeSocket = this.get(name);
-		if (!nodeSocket) return Promise.reject(new Error('Failed to send to the socket: It is not connected to this Node.'));
-		return nodeSocket.send(data, receptive);
-	}
-
-	/**
 	 * Connect to a socket
 	 * @param {string} name The label name for the socket
 	 * @param {...*} options The options to pass to connect
 	 * @returns {Promise<NodeSocket>}
 	 */
 	connectTo(name, ...options) {
-		if (this.clients.has(name)) return Promise.reject(new Error('There is already a socket.'));
+		if (this.servers.has(name)) return Promise.reject(new Error('There is already a socket.'));
 		const client = new NodeSocket(this, name);
-		this.clients.set(name, client);
+		this.servers.set(name, client);
 
 		return client.connect(...options);
 	}
@@ -186,9 +77,15 @@ class Node extends EventEmitter {
 	 * @returns {Promise<boolean>}
 	 */
 	disconnectFrom(name) {
-		const client = this.clients.get(name);
+		const client = this.servers.get(name);
 		if (!client) return Promise.reject(new Error(`The socket ${name} is not connected to this one.`));
 		return Promise.resolve(client.disconnect());
+	}
+
+	serve(...options) {
+		this.server = new NodeServer(this);
+		return this.server.connect(...options)
+			.then(() => this);
 	}
 
 }
