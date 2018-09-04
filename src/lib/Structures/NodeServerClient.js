@@ -25,8 +25,10 @@ class NodeServerClient extends SocketHandler {
 
 	disconnect() {
 		if (!super.disconnect()) return false;
-		this.server.clients.delete(this.name);
-		this.node.emit('client.destroy', this);
+		if (this.name) {
+			this.server.clients.delete(this.name);
+			this.node.emit('client.destroy', this);
+		}
 		this.status = STATUS.DISCONNECTED;
 
 		return true;

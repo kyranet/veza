@@ -12,6 +12,10 @@ class NodeServer {
 		this.clients = new Map();
 	}
 
+	get name() {
+		return this.node.name;
+	}
+
 	/**
 	 * Get a NodeSocket by its name or Socket
 	 * @param {string|Socket|NodeServerClient|NodeSocket} name The NodeSocket to get
