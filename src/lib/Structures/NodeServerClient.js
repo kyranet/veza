@@ -18,14 +18,14 @@ class NodeServerClient extends SocketHandler {
 		this.send(kIdentify).then((sName) => {
 			this.status = STATUS.READY;
 			this.name = sName;
-			this.server.sockets.set(this.name, this);
+			this.server.clients.set(this.name, this);
 			this.node.emit('client.identify', this);
 		}).catch(this.disconnect.bind(this));
 	}
 
 	disconnect() {
 		if (!super.disconnect()) return false;
-		this.server.sockets.delete(this.name);
+		this.server.clients.delete(this.name);
 		this.node.emit('client.destroy', this);
 		this.status = STATUS.DISCONNECTED;
 
@@ -37,7 +37,7 @@ class NodeServerClient extends SocketHandler {
 		for (const processed of this.queue.process(data)) {
 			const message = this._handleMessage(processed);
 			if (message === null) continue;
-			this.server.emit('message', message);
+			this.node.emit('message', message);
 		}
 	}
 

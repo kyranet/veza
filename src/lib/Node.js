@@ -57,6 +57,12 @@ class Node extends EventEmitter {
 		this.servers = new Map();
 	}
 
+	sendTo(name, data, receptive) {
+		const socket = this.servers.get(name);
+		if (!socket) throw new Error(`The socket ${name} is not available or not connected to this Node.`);
+		return socket.send(data, receptive);
+	}
+
 	/**
 	 * Connect to a socket
 	 * @param {string} name The label name for the socket

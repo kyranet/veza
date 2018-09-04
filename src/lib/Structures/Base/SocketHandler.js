@@ -8,13 +8,13 @@ class SocketHandler extends Base {
 
 	constructor(node, name, socket = null) {
 		super(node, name);
+		Object.defineProperty(this, 'socket', { value: null, writable: true });
 		this.socket = socket;
 		this.queue = new Queue(this);
 	}
 
 	send(data, receptive = true) {
 		if (!this.socket) return Promise.reject(new Error('This NodeSocket is not connected to a socket.'));
-		if (!this.socket.writable) return Promise.reject(new Error('The Socket is not writable.'));
 
 		return new Promise((resolve, reject) => {
 			const id = createID();

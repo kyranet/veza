@@ -18,7 +18,7 @@ node
 					() => console.log(`Timeout reply from: ${i}`),
 					10000
 				);
-				node.sendTo(socket, `Test ${i}`, 1).then(reply => {
+				socket.send(`Test ${i}`).then(reply => {
 					console.log(`Received reply from ${i}:`, reply);
 					clearTimeout(timeout);
 				});
