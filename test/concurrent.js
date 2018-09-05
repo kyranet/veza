@@ -5,25 +5,19 @@
 const { Node } = require('../src/index');
 
 const node = new Node('concurrent')
-	.on('error', console.error)
-	.on('connect', () => console.log('Connected!'));
+	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
+	.on('client.disconnect', (client) => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('client.ready', (client) => {
+		console.log(`[IPC] Connected to: ${client.name}`);
 
-node
-	.connectTo('hello', 8001)
-	.then(socket =>
-		Promise.all(
-			Array.from({ length: 100 }, (_, i) => {
-				// 10 seconds timeout
-				const timeout = setTimeout(
-					() => console.log(`Timeout reply from: ${i}`),
-					10000
-				);
-				socket.send(`Test ${i}`).then(reply => {
-					console.log(`Received reply from ${i}:`, reply);
-					clearTimeout(timeout);
-				});
-				return i;
-			})
-		)
-	)
-	.catch(() => console.log('Disconnected!'));
+		for (let i = 0; i < 100; i++) {
+			const timeout = setTimeout(() => console.log(`Timeout reply from: ${i}`), 10000);
+			node.sendTo(client.name, `Test ${i}`)
+				.then((reply) => { clearTimeout(timeout); console.log(`[TEST] Success: ${i} | ${reply}`); })
+				.catch((error) => { clearTimeout(timeout); console.error(`[TEST] Failed: ${i} | ${error}`); });
+		}
+	});
+
+// Connect to hello
+node.connectTo('hello', 8001)
+	.catch((error) => console.log('Disconnected!', error));

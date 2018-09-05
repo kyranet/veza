@@ -59,7 +59,7 @@ class Node extends EventEmitter {
 
 	sendTo(name, data, receptive) {
 		const socket = this.servers.get(name);
-		if (!socket) throw new Error(`The socket ${name} is not available or not connected to this Node.`);
+		if (!socket) return Promise.reject(new Error(`The socket ${name} is not available or not connected to this Node.`));
 		return socket.send(data, receptive);
 	}
 
@@ -71,7 +71,7 @@ class Node extends EventEmitter {
 	 */
 	connectTo(name, ...options) {
 		if (this.servers.has(name)) return Promise.reject(new Error('There is already a socket.'));
-		const client = new NodeSocket(this, this.name);
+		const client = new NodeSocket(this, name);
 		this.servers.set(name, client);
 
 		return client.connect(...options);

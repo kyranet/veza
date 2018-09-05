@@ -22,7 +22,6 @@ class NodeSocket extends SocketHandler {
 				this.socket.off('connect', onConnect);
 				this.socket.off('close', onClose);
 				this.socket.off('error', onError);
-				this.socket.destroy();
 				return value;
 			};
 			this.socket
