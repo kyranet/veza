@@ -17,8 +17,8 @@ declare module 'veza' {
 		public on(event: 'client.identify', listener: (client: NodeServerClient) => void): this;
 		public on(event: 'client.ready', listener: (client: NodeSocket) => void): this;
 		public on(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
-		public on(event: 'message', listener: (node: NodeServerClient | NodeSocket) => void): this;
-		public on(event: 'raw', listener: (node: NodeServerClient | NodeSocket) => void): this;
+		public on(event: 'message', listener: (message: NodeMessage) => void): this;
+		public on(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
 		public on(event: 'server.destroy', listener: (server: ServerNode) => void): this;
 		public on(event: 'server.ready', listener: (server: ServerNode) => void): this;
 		public on(event: string, listener: Function): this;
@@ -29,8 +29,8 @@ declare module 'veza' {
 		public once(event: 'client.identify', listener: (client: NodeServerClient) => void): this;
 		public once(event: 'client.ready', listener: (client: NodeSocket) => void): this;
 		public once(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
-		public once(event: 'message', listener: (node: NodeServerClient | NodeSocket) => void): this;
-		public once(event: 'raw', listener: (node: NodeServerClient | NodeSocket) => void): this;
+		public once(event: 'message', listener: (message: NodeMessage) => void): this;
+		public once(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
 		public once(event: 'server.destroy', listener: (server: ServerNode) => void): this;
 		public once(event: 'server.ready', listener: (server: ServerNode) => void): this;
 		public once(event: string, listener: Function): this;
@@ -41,8 +41,8 @@ declare module 'veza' {
 		public off(event: 'client.identify', listener: (client: NodeServerClient) => void): this;
 		public off(event: 'client.ready', listener: (client: NodeSocket) => void): this;
 		public off(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
-		public off(event: 'message', listener: (node: NodeServerClient | NodeSocket) => void): this;
-		public off(event: 'raw', listener: (node: NodeServerClient | NodeSocket) => void): this;
+		public off(event: 'message', listener: (message: NodeMessage) => void): this;
+		public off(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
 		public off(event: 'server.destroy', listener: (server: ServerNode) => void): this;
 		public off(event: 'server.ready', listener: (server: ServerNode) => void): this;
 		public off(event: string, listener: Function): this;
