@@ -53,7 +53,7 @@ class Queue extends Map {
 				break;
 			}
 
-			const [id, type, _receptive, bodyLength] = buffer.toString('utf8', 0, headerSeparatorIndex - 1).split(' ').map(value => value.trim());
+			const [id, type, _receptive, bodyLength] = buffer.toString('utf8', 0, headerSeparatorIndex - 1).split(' ').map((value) => value.trim());
 			if (!(type in R_MESSAGE_TYPES))
 				throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 7.`);
 

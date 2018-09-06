@@ -60,7 +60,7 @@ class SocketHandler extends Base {
 
 	ping() {
 		const now = Date.now();
-		return this.send(kPing).then(future => future - now);
+		return this.send(kPing).then((future) => future - now);
 	}
 
 	on(event, cb) {

@@ -1,11 +1,12 @@
 {
 	"extends": "klasa",
 	"rules": {
-		"operator-linebreak": ["error", "before", { "overrides": { "+": "after" } }],
+		"arrow-parens": ["error", "always"],
 		"curly": ["error", "multi-or-nest", "consistent"],
 		"id-length": "off",
 		"no-bitwise": ["error", { "int32Hint": true }],
-		"no-cond-assign": "off"
+		"no-cond-assign": "off",
+		"operator-linebreak": ["error", "before", { "overrides": { "+": "after" } }]
 	},
 	"globals": {
 		"BigInt": true

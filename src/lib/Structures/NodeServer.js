@@ -45,7 +45,7 @@ class NodeServer {
 	 * @returns {Promise<Array<*>>}
 	 */
 	broadcast(data, { receptive, filter } = {}) {
-		if (!filter) return Promise.all([...this.clients.values()].map(socket => this.sendTo(socket, data, receptive)));
+		if (!filter) return Promise.all([...this.clients.values()].map((socket) => this.sendTo(socket, data, receptive)));
 		if (!(filter instanceof RegExp)) throw new TypeError(`filter must be a RegExp instance.`);
 
 		const promises = [];
