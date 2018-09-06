@@ -20,7 +20,7 @@ function _packMessage(id, message, receptive = true) {
 	if (message === kPing || message === kIdentify) receptive = false;
 	const [type, buffer] = _getMessageDetails(message);
 	// @ts-ignore
-	return Buffer.concat([createHeader(id, type, receptive, buffer.length), buffer, BUFFER_NL]);
+	return Buffer.concat([createHeader(id, type, receptive, buffer.byteLength), buffer, BUFFER_NL]);
 }
 
 /**

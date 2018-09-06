@@ -47,20 +47,21 @@ class Queue extends Map {
 			this._rest = null;
 		}
 
-		while (buffer.length) {
+		let bLength = buffer.byteLength;
+		while (bLength) {
 			// If the header separator was not found, it may be due to an impartial message
-			if (buffer.length <= 13) {
+			if (bLength <= 13) {
 				this._rest = buffer;
 				break;
 			}
 
 			const { id, type, receptive, length: bodyLength } = readHeader(buffer);
-			if (!(type in R_MESSAGE_TYPES))
+			if (type > R_MESSAGE_TYPES.length)
 				throw new Error(`Failed to parse type, received ${type} from ${inspect(buffer)}`);
 
 			const endBodyIndex = 13 + bodyLength;
 			// If the body's length is not enough long, the Socket may have cut the message in half
-			if (endBodyIndex > buffer.length) {
+			if (endBodyIndex > bLength) {
 				this._rest = buffer;
 				break;
 			}
@@ -70,6 +71,7 @@ class Queue extends Map {
 			const data = this._readMessage(body, pType);
 
 			buffer = buffer.slice(endBodyIndex + 1);
+			bLength = buffer.byteLength;
 			yield { id, receptive, data };
 		}
 	}

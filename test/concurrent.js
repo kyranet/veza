@@ -4,7 +4,7 @@
 // This example tests concurrency with parallel messages in IPC.
 const { Node } = require('../src/index');
 const sleep = require('util').promisify(setTimeout);
-const TIMES = 10000000;
+const TIMES = 10000;
 
 const node = new Node('concurrent')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
@@ -17,9 +17,9 @@ const node = new Node('concurrent')
 		const before = Date.now();
 		for (let i = 0; i < TIMES; i++) {
 			// Let Node.js "breathe"
-			if (i % 100000 === 0) await sleep(1);
+			if (i % 1000 === 0) await sleep(1);
 
-			client.send(`Test 1`)
+			client.send(`Test ${i}`)
 				.then(() => { resolved++; })
 				.catch(() => { failed++; })
 				.finally(() => {
