@@ -37,7 +37,7 @@ const node = new Node('hello')
 const { Node } = require('veza');
 
 const node = new Node('world')
-	.on('message', (message) => {
+	.on('message', message => {
 		console.log(`Received data from ${message.from}:`, message);
 		if (message.data === 'Hello')
 			message.reply('world!');

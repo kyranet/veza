@@ -17,8 +17,8 @@ class NodeSocket extends SocketHandler {
 		await new Promise((resolve, reject) => {
 			const onConnect = () => resolve(cleanup(this));
 			const onClose = () => reject(cleanup(this));
-			const onError = (error) => reject(cleanup(error));
-			const cleanup = (value) => {
+			const onError = error => reject(cleanup(error));
+			const cleanup = value => {
 				this.socket.off('connect', onConnect);
 				this.socket.off('close', onClose);
 				this.socket.off('error', onError);

@@ -3,10 +3,9 @@
 const { Node } = require('../src/index');
 
 const node = new Node('world')
-	.on('message', (message) => {
+	.on('message', message => {
 		console.log(`Received data from ${message.from}:`, message);
-		if (message.data === 'Hello')
-			message.reply('world!');
+		if (message.data === 'Hello') message.reply('world!');
 	})
 	.on('error', console.error)
 	.on('connect', () => console.log('Connected!'));

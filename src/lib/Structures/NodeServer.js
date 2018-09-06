@@ -73,8 +73,8 @@ class NodeServer {
 		await new Promise((resolve, reject) => {
 			const onListening = () => resolve(cleanup(this));
 			const onClose = () => reject(cleanup(this));
-			const onError = (error) => reject(cleanup(error));
-			const cleanup = (value) => {
+			const onError = error => reject(cleanup(error));
+			const cleanup = value => {
 				this.server.off('listening', onListening);
 				this.server.off('close', onClose);
 				this.server.off('error', onError);
