@@ -4,7 +4,6 @@ module.exports = {
 	kIdentify: Symbol('IPC-Identify'),
 
 	// Constants
-	HEADER_SEPARATOR: '|'.charCodeAt(0),
 	S_MESSAGE_TYPES: Object.freeze({
 		NULL: 0,
 		STRING: 1,
@@ -26,22 +25,10 @@ module.exports = {
 
 	// Helpers
 	// @ts-ignore
-	toBigInt: typeof BigInt === 'function' ? BigInt : Number,
-
-	/**
-	 * Create an ID for a message
-	 * @returns {string}
-	 * @private
-	 */
-	createID() {
-		i = i < 46656 ? i + 1 : 0;
-		return Date.now().toString(36) + i.toString(36);
-	}
+	toBigInt: typeof BigInt === 'function' ? BigInt : Number
 };
 
 // @ts-ignore
 module.exports.R_MESSAGE_TYPES = Object.assign({}, ...Object.entries(module.exports.S_MESSAGE_TYPES)
 	.map(([key, value]) => ({ [value]: key }))
 );
-
-let i = 0;

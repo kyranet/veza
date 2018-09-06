@@ -6,6 +6,8 @@ const {
 	S_MESSAGE_TYPES, BUFFER_NULL, BUFFER_NL
 } = require('./Constants');
 
+const { createHeader } = require('./Header');
+
 /**
  * Pack a message into a buffer for usage in other sockets
  * @param {string} id The id of the message to pack
@@ -15,10 +17,10 @@ const {
  * @private
  */
 function _packMessage(id, message, receptive = true) {
-	const recflag = message === kPing || message === kIdentify || !receptive ? '0' : '1';
+	if (message === kPing || message === kIdentify) receptive = false;
 	const [type, buffer] = _getMessageDetails(message);
 	// @ts-ignore
-	return Buffer.concat([Buffer.from(`${id} ${type} ${recflag} ${buffer.length.toString(36)} | `), buffer, BUFFER_NL]);
+	return Buffer.concat([createHeader(id, type, receptive, buffer.length), buffer, BUFFER_NL]);
 }
 
 /**

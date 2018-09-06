@@ -1,5 +1,6 @@
-const { kPing, kIdentify, createID } = require('../../Util/Constants');
+const { kPing, kIdentify } = require('../../Util/Constants');
 const { _packMessage } = require('../../Util/Transform');
+const { createID } = require('../../Util/Header');
 const Queue = require('../Queue');
 const Base = require('./Base');
 const noop = () => { }; // eslint-disable-line no-empty-function

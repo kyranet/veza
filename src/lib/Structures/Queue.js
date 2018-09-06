@@ -3,11 +3,13 @@ const {
 	kPing, kIdentify,
 
 	// Constants
-	HEADER_SEPARATOR, R_MESSAGE_TYPES,
+	R_MESSAGE_TYPES,
 
 	// Helpers
 	toBigInt
 } = require('../Util/Constants');
+const { readHeader } = require('../Util/Header');
+const { inspect } = require('util');
 
 /**
  * @typedef {Object} QueueEntry
@@ -46,28 +48,25 @@ class Queue extends Map {
 		}
 
 		while (buffer.length) {
-			const headerSeparatorIndex = buffer.indexOf(HEADER_SEPARATOR);
 			// If the header separator was not found, it may be due to an impartial message
-			if (headerSeparatorIndex === -1) {
+			if (buffer.length <= 13) {
 				this._rest = buffer;
 				break;
 			}
 
-			const [id, type, _receptive, bodyLength] = buffer.toString('utf8', 0, headerSeparatorIndex - 1).split(' ').map((value) => value.trim());
+			const { id, type, receptive, length: bodyLength } = readHeader(buffer);
 			if (!(type in R_MESSAGE_TYPES))
-				throw new Error(`Failed to unpack message. Got type ${type}, expected an integer between 0 and 7.`);
+				throw new Error(`Failed to parse type, received ${type} from ${inspect(buffer)}`);
 
-			const startBodyIndex = headerSeparatorIndex + 2;
-			const endBodyIndex = startBodyIndex + parseInt(bodyLength, 36);
+			const endBodyIndex = 13 + bodyLength;
 			// If the body's length is not enough long, the Socket may have cut the message in half
 			if (endBodyIndex > buffer.length) {
 				this._rest = buffer;
 				break;
 			}
-			const body = buffer.slice(startBodyIndex, endBodyIndex);
+			const body = buffer.slice(13, endBodyIndex);
 
 			const pType = R_MESSAGE_TYPES[type];
-			const receptive = _receptive === '1';
 			const data = this._readMessage(body, pType);
 
 			buffer = buffer.slice(endBodyIndex + 1);
