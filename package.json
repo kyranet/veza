@@ -26,8 +26,8 @@
   },
   "homepage": "https://github.com/kyranet/veza#readme",
   "devDependencies": {
-    "@types/node": "^10.5.3",
-    "eslint": "^5.2.0",
+    "@types/node": "^10.9.4",
+    "eslint": "^5.5.0",
     "eslint-config-klasa": "github:dirigeants/klasa-lint"
   }
 }
