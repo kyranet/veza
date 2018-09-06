@@ -95,7 +95,7 @@ class SocketHandler extends Base {
 			data,
 			from: this.name,
 			receptive,
-			reply: receptive ? (content) => {
+			reply: receptive ? content => {
 				this.socket.write(_packMessage(id, content, false));
 			} : noop
 		}, { id: { value: id } }));
