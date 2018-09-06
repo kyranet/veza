@@ -49,7 +49,7 @@ class Queue extends Map {
 			const headerSeparatorIndex = buffer.indexOf(HEADER_SEPARATOR);
 			// If the header separator was not found, it may be due to an impartial message
 			if (headerSeparatorIndex === -1) {
-				this._remainingBuffer = buffer;
+				this._rest = buffer;
 				break;
 			}
 
@@ -61,7 +61,7 @@ class Queue extends Map {
 			const endBodyIndex = startBodyIndex + parseInt(bodyLength, 36);
 			// If the body's length is not enough long, the Socket may have cut the message in half
 			if (endBodyIndex > buffer.length) {
-				this._remainingBuffer = buffer;
+				this._rest = buffer;
 				break;
 			}
 			const body = buffer.slice(startBodyIndex, endBodyIndex);

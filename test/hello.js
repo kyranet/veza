@@ -7,7 +7,7 @@ const node = new Node('hello')
 	.on('client.connect', (client) => console.log(`[IPC] Client Connected: ${client.name}`))
 	.on('server.ready', (server) => console.log(`[IPC] Client Ready: Named ${server.name}`))
 	.on('message', message => {
-		console.log(`Received data:`, message);
+		// console.log(`Received data:`, message.data);
 		// For World.js test
 		if (message.data === 'Hello') {
 			message.reply('world!');
