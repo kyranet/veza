@@ -5,19 +5,29 @@ module.exports = {
 
 	// Constants
 	S_MESSAGE_TYPES: Object.freeze({
-		NULL: 0,
-		STRING: 1,
-		NUMBER: 2,
-		SET: 3,
-		MAP: 4,
-		BUFFER: 5,
-		OBJECT: 6,
-		PING: 7,
-		IDENTIFY: 8,
-		BOOLEAN: 9,
-		UNDEFINED: 10,
-		SYMBOL: 11,
-		BIGINT: 12
+		BIGINT: 0,
+		BOOLEAN: 1,
+		BUFFER: 2,
+		BYTE: 3,
+		FLOAT32_ARRAY: 4,
+		FLOAT64_ARRAY: 5,
+		INT16_ARRAY: 6,
+		INT32_ARRAY: 7,
+		INT8_ARRAY: 8,
+		MAP: 9,
+		NULL: 10,
+		NUMBER: 11,
+		OBJECT: 12,
+		SET: 13,
+		STRING: 14,
+		SYMBOL: 15,
+		UINT16_ARRAY: 16,
+		UINT32_ARRAY: 17,
+		UINT8_ARRAY: 18,
+		UINT8_CLAMPEDARRAY: 19,
+		UNDEFINED: 20,
+		PING: 21,
+		IDENTIFY: 22
 	}),
 	R_MESSAGE_TYPES: null,
 	BUFFER_NULL: Buffer.from('\0'),
@@ -29,6 +39,4 @@ module.exports = {
 };
 
 // @ts-ignore
-module.exports.R_MESSAGE_TYPES = Object.assign({}, ...Object.entries(module.exports.S_MESSAGE_TYPES)
-	.map(([key, value]) => ({ [value]: key }))
-);
+module.exports.R_MESSAGE_TYPES = Object.keys(module.exports.S_MESSAGE_TYPES);

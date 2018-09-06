@@ -78,22 +78,33 @@ class Queue extends Map {
 		this._rest = null;
 	}
 
-	_readMessage(body, type) {
+	_readMessage(body, type) { // eslint-disable-line complexity
 		if (type === 'PING') return kPing;
 		if (type === 'IDENTIFY') return kIdentify;
 		if (type === 'NULL') return null;
 		if (type === 'UNDEFINED') return undefined;
 		if (type === 'BUFFER') return body;
+		if (type === 'BYTE') return body[0];
 
 		const bodyString = body.toString('utf8');
-		if (type === 'STRING') return bodyString;
 		if (type === 'BOOLEAN') return bodyString === '1';
-		if (type === 'SYMBOL') return Symbol.for(bodyString);
+		if (type === 'STRING') return bodyString;
 		if (type === 'NUMBER') return Number(bodyString);
-		if (type === 'OBJECT') return JSON.parse(bodyString);
-		if (type === 'SET') return new Set(JSON.parse(bodyString));
-		if (type === 'MAP') return new Map(JSON.parse(bodyString));
 		if (type === 'BIGINT') return toBigInt(bodyString);
+		if (type === 'OBJECT') return JSON.parse(bodyString);
+		if (type === 'SYMBOL') return Symbol.for(bodyString);
+		if (type === 'MAP') return new Map(JSON.parse(bodyString));
+		if (type === 'SET') return new Set(JSON.parse(bodyString));
+		if (type === 'ARRAY_BUFFER') return new ArrayBuffer(JSON.parse(bodyString));
+		if (type === 'FLOAT32_ARRAY') return new Float32Array(JSON.parse(bodyString));
+		if (type === 'FLOAT64_ARRAY') return new Float64Array(JSON.parse(bodyString));
+		if (type === 'INT8_ARRAY') return new Int8Array(JSON.parse(bodyString));
+		if (type === 'INT16_ARRAY') return new Int16Array(JSON.parse(bodyString));
+		if (type === 'INT32_ARRAY') return new Int32Array(JSON.parse(bodyString));
+		if (type === 'UINT8_ARRAY') return new Uint8Array(JSON.parse(bodyString));
+		if (type === 'UINT8_CLAMPEDARRAY') return new Uint8ClampedArray(JSON.parse(bodyString));
+		if (type === 'UINT16_ARRAY') return new Uint16Array(JSON.parse(bodyString));
+		if (type === 'UINT32_ARRAY') return new Uint32Array(JSON.parse(bodyString));
 
 		return body;
 	}
