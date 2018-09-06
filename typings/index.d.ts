@@ -65,13 +65,13 @@ declare module 'veza' {
 		public serve(port?: number, listeningListener?: Function): this;
 	}
 
-	class Base {
+	export class Base {
 		constructor(node: Node, name?: string);
 		public node: Node;
 		public name: string | null;
 	}
 
-	class SocketHandler extends Base {
+	export class SocketHandler extends Base {
 		private socket: Socket;
 		private queue: Queue;
 		public send<T = any>(data: any, receptive?: boolean): Promise<T>;
@@ -111,7 +111,7 @@ declare module 'veza' {
 		private _handleMessage(data: { id: string, receptive: boolean, data: any }): NodeMessage | null;
 	}
 
-	class NodeServer {
+	export class NodeServer {
 		constructor(node: Node);
 		public node: Node;
 		public readonly name: string;
@@ -139,7 +139,7 @@ declare module 'veza' {
 		private _onClose(): void;
 	}
 
-	class NodeServerClient extends SocketHandler {
+	export class NodeServerClient extends SocketHandler {
 		constructor(node: Node, server: NodeServer, socket: Socket);
 		public server: NodeServer;
 		public status: number;
@@ -151,7 +151,7 @@ declare module 'veza' {
 		private _onClose(): void;
 	}
 
-	class NodeSocket extends SocketHandler {
+	export class NodeSocket extends SocketHandler {
 		constructor(node: Node, name: string, socket: Socket);
 		public retriesRemaining: number;
 		private _reconnectionTimeout: NodeJS.Timer | null;
@@ -168,7 +168,7 @@ declare module 'veza' {
 		private _onError(error: Error): void;
 	}
 
-	class Queue extends Map<string, QueueEntry> {
+	export class Queue extends Map<string, QueueEntry> {
 		constructor(nodeSocket: NodeSocket | NodeServerClient);
 		public nodeSocket: NodeSocket | NodeServerClient;
 		private _rest: Buffer | null;
