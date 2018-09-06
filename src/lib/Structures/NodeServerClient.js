@@ -15,7 +15,7 @@ class NodeServerClient extends SocketHandler {
 			.on('error', this._onError.bind(this))
 			.on('close', this._onClose.bind(this));
 
-		this.send(kIdentify).then((sName) => {
+		this.send(kIdentify).then(sName => {
 			this.status = STATUS.READY;
 			this.name = sName;
 			this.server.clients.set(this.name, this);
