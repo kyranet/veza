@@ -5,13 +5,25 @@ const NodeSocket = require('./NodeSocket');
 class NodeServer {
 
 	constructor(node) {
+		Object.defineProperties(this, {
+			node: { value: null, writable: true },
+			server: { value: null, writable: true },
+			clients: { value: null, writable: true }
+		});
+
+		/**
+		 * The Node instance that manages this
+		 * @type {Node}
+		 */
 		this.node = node;
-		Object.defineProperty(this, 'server', { value: null, writable: true });
-		Object.defineProperty(this, 'clients', { value: null, writable: true });
 		this.server = null;
 		this.clients = new Map();
 	}
 
+	/**
+	 * The name of this node
+	 * @type {string}
+	 */
 	get name() {
 		return this.node.name;
 	}
@@ -32,6 +44,11 @@ class NodeServer {
 		throw new TypeError(`Expected a string or an instance of Socket`);
 	}
 
+	/**
+	 * Check if a NodeSocket exists by its name of Socket
+	 * @param {string|Socket|NodeServerClient|NodeSocket} name The NodeSocket to get
+	 * @returns {boolean}
+	 */
 	has(name) {
 		return Boolean(this.get(name));
 	}
@@ -66,6 +83,11 @@ class NodeServer {
 		return nodeSocket.send(data, receptive);
 	}
 
+	/**
+	 * Create a server for this Node instance.
+	 * @param {...*} options The options to pass to net.Server#listen
+	 * @returns {Promise<void>}
+	 */
 	async connect(...options) {
 		if (this.server) throw new Error('There is already a server.');
 
@@ -95,6 +117,10 @@ class NodeServer {
 			.on('close', this._onClose.bind(this));
 	}
 
+	/**
+	 * Disconnect the server and rejects all current messages
+	 * @returns {boolean}
+	 */
 	disconnect() {
 		if (!this.server) return false;
 

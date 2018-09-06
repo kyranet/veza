@@ -29,17 +29,47 @@ class Queue extends Map {
 		this._rest = null;
 	}
 
+	/**
+	 * The Node that manages this instance
+	 * @type {Node}
+	 */
 	get node() {
 		return this.nodeSocket.node;
 	}
 
+	/**
+	 * The name of the client that manages this instance
+	 * @type {string}
+	 */
 	get name() {
 		return this.nodeSocket.name;
 	}
 
+	/**
+	 * The socket contained in the client that manages this instance
+	 * @type {Socket}
+	 */
 	get socket() {
 		return this.nodeSocket.socket;
 	}
+
+	/**
+	 * @typedef {Object} QueueObject
+	 * @property {string} id The id of the message
+	 * @property {boolean} receptive Whether this message is receptive or not
+	 * @property {Buffer} data The data received from the socket
+	 * @private
+	 */
+
+	/**
+	 * Returns a new Iterator object that parses each value for this queue.
+	 * @name @@iterator
+	 * @method
+	 * @instance
+	 * @generator
+	 * @returns {Iterator<QueueObject>}
+	 * @memberof Queue
+	 */
 
 	*process(buffer) {
 		if (this._rest) {
@@ -76,6 +106,9 @@ class Queue extends Map {
 		}
 	}
 
+	/**
+	 * Flushes the queue
+	 */
 	flush() {
 		this._rest = null;
 	}

@@ -57,6 +57,13 @@ class Node extends EventEmitter {
 		this.servers = new Map();
 	}
 
+	/**
+	 * Send a message to a connected socket
+	 * @param {string} name The label name of the socket to send the message to
+	 * @param {*} data The data to send to the socket
+	 * @param {boolean} [receptive = true] Whether this message should wait for a response or not
+	 * @returns {Promise<*>}
+	 */
 	sendTo(name, data, receptive) {
 		const socket = this.servers.get(name);
 		if (!socket) return Promise.reject(new Error(`The socket ${name} is not available or not connected to this Node.`));
@@ -88,10 +95,23 @@ class Node extends EventEmitter {
 		return Promise.resolve(client.disconnect());
 	}
 
+	/**
+	 * Broadcast a message to all connected sockets from this server
+	 * @param {*} data The data to send to other sockets
+	 * @param {Object} [options={}] The options for this broadcast
+	 * @param {boolean} [options.receptive] Whether this broadcast should wait for responses or not
+	 * @param {RegExp} [options.filter] The filter for the broadcast
+	 * @returns {Promise<Array<*>>}
+	 */
 	broadcast(data, options) {
 		return this.server ? this.server.broadcast(data, options) : Promise.resolve([]);
 	}
 
+	/**
+	 * Create a server for this Node instance.
+	 * @param {...*} options The options to pass to net.Server#listen
+	 * @returns {Promise<this>}
+	 */
 	serve(...options) {
 		if (this.server) throw new Error('There is already a server running.');
 
@@ -113,49 +133,54 @@ module.exports = Node;
  */
 
 /**
- * Emitted on a successful connection to a Socket.
- * @event Node#connect
- * @param {string} name The label name of the socket
- * @param {net.Socket} socket The connected socket
+ * Emitted on a successful connection to a Socket
+ * @event Node#client.connect
+ * @param {NodeSocket | NodeServerClient} client The client that manages the socket
  */
 /**
- * Emitted on a disconnection with a Socket.
- * @event Node#disconnect
- * @param {string} name The label name of the socket
- * @param {net.Socket} socket The disconnected socket
+ * Emitted on a a Socket destroy
+ * @event Node#client.destroy
+ * @param {NodeSocket | NodeServerClient} client The client that manages the socket
  */
 /**
- * Emitted when the connection to a Socket has been destroyed.
- * @event Node#destroy
- * @param {string} name The label name of the socket
- * @param {net.Socket} socket The destroyed socket
+ * Emitted on a successful disconnection from a Socket
+ * @event Node#client.disconnect
+ * @param {NodeSocket | NodeServerClient} client The client that manages the socket
  */
 /**
- * Emitted when a socket connects to the Node's server.
- * @event Node#connection
- * @param {string} socket The label name of the socket
- * @param {net.Socket} socket The socket that connected to the server
+ * Emitted on a successful identification from a Socket
+ * @event Node#client.identify
+ * @param {NodeServerClient} client The client that manages the socket
  */
 /**
- * Emitted when the Node's server closes.
- * @event Node#close
+ * Emitted when a Socket is ready for usage
+ * @event Node#client.ready
+ * @param {NodeSocket | NodeServerClient} client The client that manages the socket
  */
 /**
- * Emitted when a socket connected to the server closes.
- * @event Node#socketClose
- * @param {string} name The label name of the socket that closed
- */
-/**
- * Emitted when the Node's server is ready.
- * @event Node#listening
- */
-/**
- * Emitted when any of the connected sockets error.
+ * Emitted when a node emits an error
  * @event Node#error
- * @param {Error} error The emitted error
+ * @param {Error} error The omitted error
+ * @param {NodeServer | NodeServerClient | NodeSocket} node The client that manages the socket
  */
 /**
- * Emitted when a Socket has sent a message to this Node.
+ * Emitted when a node receives a message
  * @event Node#message
- * @param {NodeMessage} message The received message
+ * @param {NodeMessage} message The message received
+ */
+/**
+ * Emitted when a node receives a message
+ * @event Node#raw
+ * @param {NodeSocket | NodeServerClient} client The client that manages the socket
+ * @param {Buffer} buffer The raw data received from the socket
+ */
+/**
+ * Emitted when a server destroys
+ * @event Node#server.destroy
+ * @param {ServerNode} server The client that manages the socket
+ */
+/**
+ * Emitted when a server is ready
+ * @event Node#server.ready
+ * @param {ServerNode} server The client that manages the socket
  */

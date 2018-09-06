@@ -1,12 +1,11 @@
 const SocketHandler = require('./Base/SocketHandler');
-const { kIdentify } = require('../Util/Constants');
+const { kIdentify, STATUS } = require('../Util/Constants');
 
 class NodeServerClient extends SocketHandler {
 
 	constructor(node, server, socket) {
 		super(node, null, socket);
 		this.server = server;
-		this.status = STATUS.CONNECTING;
 	}
 
 	setup() {
@@ -23,13 +22,16 @@ class NodeServerClient extends SocketHandler {
 		}).catch(this.disconnect.bind(this));
 	}
 
+	/**
+	 * Disconnect from the socket, this will also reject all messages
+	 * @returns {boolean}
+	 */
 	disconnect() {
 		if (!super.disconnect()) return false;
 		if (this.name) {
 			this.server.clients.delete(this.name);
 			this.node.emit('client.destroy', this);
 		}
-		this.status = STATUS.DISCONNECTED;
 
 		return true;
 	}
@@ -59,11 +61,5 @@ class NodeServerClient extends SocketHandler {
 	}
 
 }
-
-const STATUS = Object.freeze({
-	READY: 0,
-	CONNECTING: 1,
-	DISCONNECTED: 2
-});
 
 module.exports = NodeServerClient;

@@ -1,4 +1,4 @@
-const { kPing, kIdentify } = require('../../Util/Constants');
+const { kPing, kIdentify, STATUS } = require('../../Util/Constants');
 const { _packMessage } = require('../../Util/Transform');
 const { createID } = require('../../Util/Header');
 const Queue = require('../Queue');
@@ -9,12 +9,27 @@ class SocketHandler extends Base {
 
 	constructor(node, name, socket = null) {
 		super(node, name);
-		Object.defineProperty(this, 'socket', { value: null, writable: true });
-		Object.defineProperty(this, 'queue', { value: null, writable: true });
+		Object.defineProperties(this, {
+			socket: { value: null, writable: true },
+			queue: { value: null, writable: true }
+		});
+
 		this.socket = socket;
 		this.queue = new Queue(this);
+
+		/**
+		 * The status of this client
+		 * @type {number}
+		 */
+		this.status = STATUS.CONNECTING;
 	}
 
+	/**
+	 * Send a message to a connected socket
+	 * @param {*} data The data to send to the socket
+	 * @param {boolean} [receptive = true] Whether this message should wait for a response or not
+	 * @returns {Promise<*>}
+	 */
 	send(data, receptive = true) {
 		if (!this.socket) return Promise.reject(new Error('This NodeSocket is not connected to a socket.'));
 
@@ -45,6 +60,10 @@ class SocketHandler extends Base {
 		});
 	}
 
+	/**
+	 * Disconnect from the socket, this will also reject all messages
+	 * @returns {boolean}
+	 */
 	disconnect() {
 		if (!this.socket) return false;
 
@@ -56,24 +75,51 @@ class SocketHandler extends Base {
 			for (const element of this.queue.values()) element.reject(rejectError);
 		}
 
+		this.status = STATUS.DISCONNECTED;
+
 		return true;
 	}
 
+	/**
+	 * Measure the latency between the server and this client
+	 * @returns {Promise<number>}
+	 */
 	ping() {
 		const now = Date.now();
 		return this.send(kPing).then((future) => future - now);
 	}
 
+	/**
+	 * Add a new event listener on this client's socket
+	 * @param {string} event The event name
+	 * @param {Function} cb The callback to register
+	 * @returns {this}
+	 * @chainable
+	 */
 	on(event, cb) {
 		if (this.socket) this.socket.on(event, cb);
 		return this;
 	}
 
+	/**
+	 * Add a new event listener on this client's socket
+	 * @param {string} event The event name
+	 * @param {Function} cb The callback to register
+	 * @returns {this}
+	 * @chainable
+	 */
 	once(event, cb) {
 		if (this.socket) this.socket.once(event, cb);
 		return this;
 	}
 
+	/**
+	 * Remove an event listener on this client's socket
+	 * @param {string} event The event name
+	 * @param {Function} cb The callback to unregister
+	 * @returns {this}
+	 * @chainable
+	 */
 	off(event, cb) {
 		if (this.socket) this.socket.off(event, cb);
 		return this;

@@ -32,6 +32,11 @@ module.exports = {
 	R_MESSAGE_TYPES: null,
 	BUFFER_NULL: Buffer.from('\0'),
 	BUFFER_NL: Buffer.from('\n'),
+	STATUS: Object.freeze({
+		READY: 0,
+		CONNECTING: 1,
+		DISCONNECTED: 2
+	}),
 
 	// Helpers
 	// @ts-ignore

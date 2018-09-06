@@ -1,4 +1,5 @@
 const SocketHandler = require('./Base/SocketHandler');
+const { STATUS } = require('../Util/Constants');
 const { Socket } = require('net');
 
 class NodeSocket extends SocketHandler {
@@ -11,6 +12,11 @@ class NodeSocket extends SocketHandler {
 		this._reconnectionTimeout = null;
 	}
 
+	/**
+	 * Connect to the socket
+	 * @param {...*} options The options to pass to connect
+	 * @returns {Promise<NodeSocket>}
+	 */
 	async connect(...options) {
 		if (!this.socket) this.socket = new Socket();
 
@@ -33,6 +39,7 @@ class NodeSocket extends SocketHandler {
 			this.socket.connect(...options);
 		});
 
+		this.status = STATUS.READY;
 		this.node.emit('client.ready', this);
 		this.socket
 			.on('data', this._onData.bind(this))
@@ -43,6 +50,10 @@ class NodeSocket extends SocketHandler {
 		return this;
 	}
 
+	/**
+	 * Disconnect from the socket, this will also reject all messages
+	 * @returns {boolean}
+	 */
 	disconnect() {
 		if (!super.disconnect()) return false;
 
@@ -88,7 +99,14 @@ class NodeSocket extends SocketHandler {
 	}
 
 	_onError(error) {
-		this.node.emit('error', error, this);
+		const { code } = error;
+		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
+			if (this.status !== STATUS.DISCONNECTED) return;
+			this.status = STATUS.DISCONNECTED;
+			this.node.emit('client.disconnect', this);
+		} else {
+			this.node.emit('error', error, this);
+		}
 	}
 
 }
