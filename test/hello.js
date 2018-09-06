@@ -12,8 +12,8 @@ const node = new Node('hello')
 		if (message.data === 'Hello') {
 			message.reply('world!');
 		} else {
-			setTimeout(() => message.reply(`Reply!: ${message.data}`), 
-				   Math.min(9000, Math.floor(Math.random() * 1000)));
+			setTimeout(() => message.reply(`Reply!: ${message.data}`),
+				Math.min(9000, Math.floor(Math.random() * 1000)));
 		}
 	})
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}`, error))
