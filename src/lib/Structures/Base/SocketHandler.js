@@ -47,9 +47,9 @@ class SocketHandler extends Base {
 				}
 
 				const timer = timeout !== Infinity && timeout !== -1
-					? setTimeout(() => send(reject, new Error('TIMEOUT_ERROR'), true), timeout)
+					? setTimeout(() => send(reject, true, new Error('TIMEOUT_ERROR')), timeout)
 					: null;
-				const send = (fn, response, fromTimer) => {
+				const send = (fn, fromTimer, response) => {
 					if (timer && !fromTimer) clearTimeout(timer);
 					this.queue.delete(id);
 					return fn(response);
