@@ -19,8 +19,8 @@ declare module 'veza' {
 		public on(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
 		public on(event: 'message', listener: (message: NodeMessage) => void): this;
 		public on(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
-		public on(event: 'server.destroy', listener: (server: ServerNode) => void): this;
-		public on(event: 'server.ready', listener: (server: ServerNode) => void): this;
+		public on(event: 'server.destroy', listener: (server: NodeServer) => void): this;
+		public on(event: 'server.ready', listener: (server: NodeServer) => void): this;
 		public on(event: string, listener: Function): this;
 
 		public once(event: 'client.connect', listener: (client: NodeSocket | NodeServerClient) => void): this;
@@ -31,8 +31,8 @@ declare module 'veza' {
 		public once(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
 		public once(event: 'message', listener: (message: NodeMessage) => void): this;
 		public once(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
-		public once(event: 'server.destroy', listener: (server: ServerNode) => void): this;
-		public once(event: 'server.ready', listener: (server: ServerNode) => void): this;
+		public once(event: 'server.destroy', listener: (server: NodeServer) => void): this;
+		public once(event: 'server.ready', listener: (server: NodeServer) => void): this;
 		public once(event: string, listener: Function): this;
 
 		public off(event: 'client.connect', listener: (client: NodeSocket | NodeServerClient) => void): this;
@@ -43,8 +43,8 @@ declare module 'veza' {
 		public off(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
 		public off(event: 'message', listener: (message: NodeMessage) => void): this;
 		public off(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
-		public off(event: 'server.destroy', listener: (server: ServerNode) => void): this;
-		public off(event: 'server.ready', listener: (server: ServerNode) => void): this;
+		public off(event: 'server.destroy', listener: (server: NodeServer) => void): this;
+		public off(event: 'server.ready', listener: (server: NodeServer) => void): this;
 		public off(event: string, listener: Function): this;
 
 		public broadcast<T = any>(data: any, options: BroadcastOptions): Promise<Array<T>>;
