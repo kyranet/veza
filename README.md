@@ -1,5 +1,18 @@
 # Veza
 
+<div align="center">
+  <p>
+    <a href="https://www.npmjs.com/kyranet/veza"><img src="https://img.shields.io/npm/v/veza.svg?maxAge=3600" alt="NPM version" /></a>
+    <a href="https://www.npmjs.com/kyranet/veza"><img src="https://img.shields.io/npm/dt/veza.svg?maxAge=3600" alt="NPM downloads" /></a>
+    <a href="https://travis-ci.org/kyranet/veza"><img src="https://travis-ci.org/kyranet/veza.svg" alt="Build status" /></a>
+    <a href="https://david-dm.org/kyranet/veza"><img src="https://img.shields.io/david/kyranet/veza.svg?maxAge=3600" alt="Dependencies" /></a>
+    <a href="https://www.patreon.com/kyranet"><img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" /></a>
+  </p>
+  <p>
+    <a href="https://nodei.co/npm/veza/"><img src="https://nodei.co/npm/veza.png?downloads=true&stars=true" alt="npm installnfo" /></a>
+  </p>
+</div>
+
 **Veza** is a lower level version of [IPC-Link](https://github.com/kyranet/ipc-link)
 that is lightning fast and operates with raw buffers as opposed to sending buffered
 stringified JSON objects. This library has no dependencies and uses built-in modules
