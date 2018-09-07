@@ -15,7 +15,8 @@ docs/
 .eslintignore
 .eslintrc.json
 .gitattributes
+.github/
 .gitignore
 .travis.yml
-tslint.json
 test/
+tslint.json
