@@ -8,7 +8,7 @@ const node = new Node('interactive')
 	.on('client.disconnect', (client) => console.error(`[IPC] Disconnected from ${client.name}`))
 	.on('client.ready', (client) => console.log(`[IPC] Connected to: ${client.name}`))
 	.on('message', (message) => {
-		console.log(`Received data from ${message.from}:`, message);
+		console.log(`Received data from ${message.client.name}:`, message);
 		if (message.data === 'Hello') {
 			message.reply('Interactive World Working!');
 			process.stdout.write('> ');

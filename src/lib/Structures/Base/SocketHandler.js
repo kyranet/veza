@@ -1,9 +1,9 @@
 const { kPing, kIdentify, STATUS } = require('../../Util/Constants');
 const { _packMessage } = require('../../Util/Transform');
 const { createID } = require('../../Util/Header');
+const NodeMessage = require('../NodeMessage');
 const Queue = require('../Queue');
 const Base = require('./Base');
-const noop = () => { }; // eslint-disable-line no-empty-function
 
 class SocketHandler extends Base {
 
@@ -144,14 +144,7 @@ class SocketHandler extends Base {
 			this.socket.write(_packMessage(id, this.name, false));
 			return null;
 		}
-		return Object.freeze(Object.defineProperties({
-			data,
-			from: this.name,
-			receptive,
-			reply: receptive ? (content) => {
-				this.socket.write(_packMessage(id, content, false));
-			} : noop
-		}, { id: { value: id } }));
+		return new NodeMessage(this, id, receptive, data).freeze();
 	}
 
 }

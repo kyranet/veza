@@ -168,6 +168,17 @@ declare module 'veza' {
 		private _onError(error: Error): void;
 	}
 
+	export class NodeMessage {
+		public readonly client: NodeSocket | NodeServerClient;
+		public readonly id: string;
+		public data: any;
+		public receptive: boolean;
+		public reply(content: any): void;
+		public toJSON(): { id: string, data: any, receptive: boolean };
+		public toString(): string;
+		private freeze(): Readonly<this>;
+	}
+
 	export class Queue extends Map<string, QueueEntry> {
 		constructor(nodeSocket: NodeSocket | NodeServerClient);
 		public nodeSocket: NodeSocket | NodeServerClient;
@@ -192,14 +203,6 @@ declare module 'veza' {
 		maxRetries?: number;
 		retryTime?: number;
 	}
-
-	type NodeMessage = Readonly<{
-		id: string;
-		data: any;
-		from: string;
-		receptive: boolean;
-		reply(content: any): void;
-	}>;
 
 	interface QueueEntry {
 		socket: Socket;

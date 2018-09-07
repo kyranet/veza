@@ -61,13 +61,15 @@ class Node extends EventEmitter {
 	 * Send a message to a connected socket
 	 * @param {string} name The label name of the socket to send the message to
 	 * @param {*} data The data to send to the socket
-	 * @param {boolean} [receptive = true] Whether this message should wait for a response or not
+	 * @param {Object} [options={}] The options for this broadcast
+	 * @param {boolean} [options.receptive] Whether this message should wait for a response or not
+	 * @param {number} [options.timeout] The timeout, Infinity or -1 for no timeout
 	 * @returns {Promise<*>}
 	 */
-	sendTo(name, data, receptive) {
+	sendTo(name, data, options) {
 		const socket = this.servers.get(name);
 		if (!socket) return Promise.reject(new Error(`The socket ${name} is not available or not connected to this Node.`));
-		return socket.send(data, receptive);
+		return socket.send(data, options);
 	}
 
 	/**
@@ -123,14 +125,6 @@ class Node extends EventEmitter {
 }
 
 module.exports = Node;
-
-/**
- * @typedef {Object} NodeMessage
- * @property {string} id The id of this message
- * @property {*} data The received data from the socket
- * @property {string} from The label name of the socket that sent this message
- * @property {boolean} receptive Whether this message can accept responses or not
- */
 
 /**
  * Emitted on a successful connection to a Socket

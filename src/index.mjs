@@ -2,6 +2,7 @@ import veza from './index.js';
 
 export const { Base } = veza;
 export const { Node } = veza;
+export const { NodeMessage } = veza;
 export const { NodeServer } = veza;
 export const { NodeServerClient } = veza;
 export const { NodeSocket } = veza;
