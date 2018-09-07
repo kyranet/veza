@@ -27,10 +27,12 @@ class SocketHandler extends Base {
 	/**
 	 * Send a message to a connected socket
 	 * @param {*} data The data to send to the socket
-	 * @param {boolean} [receptive = true] Whether this message should wait for a response or not
+	 * @param {Object} [options={}] The options for this broadcast
+	 * @param {boolean} [options.receptive] Whether this message should wait for a response or not
+	 * @param {number} [options.timeout] The timeout, Infinity or -1 for no timeout
 	 * @returns {Promise<*>}
 	 */
-	send(data, receptive = true) {
+	send(data, { receptive = true, timeout = Infinity } = {}) {
 		if (!this.socket) return Promise.reject(new Error('This NodeSocket is not connected to a socket.'));
 
 		return new Promise((resolve, reject) => {
@@ -44,13 +46,17 @@ class SocketHandler extends Base {
 					return;
 				}
 
-				const send = (fn, response) => {
+				const timer = timeout !== Infinity && timeout !== -1
+					? setTimeout(() => send(reject, new Error('TIMEOUT_ERROR'), true), timeout)
+					: null;
+				const send = (fn, response, fromTimer) => {
+					if (timer && !fromTimer) clearTimeout(timer);
 					this.queue.delete(id);
 					return fn(response);
 				};
 				this.queue.set(id, {
-					resolve: send.bind(null, resolve),
-					reject: send.bind(null, reject)
+					resolve: send.bind(null, resolve, false),
+					reject: send.bind(null, reject, false)
 				});
 			} catch (error) {
 				const entry = this.queue.get(id);

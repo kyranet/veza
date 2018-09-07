@@ -74,7 +74,7 @@ declare module 'veza' {
 	export class SocketHandler extends Base {
 		private socket: Socket;
 		private queue: Queue;
-		public send<T = any>(data: any, receptive?: boolean): Promise<T>;
+		public send<T = any>(data: any, options?: { receptive?: boolean, timeout: number }): Promise<T>;
 		public disconnect(): boolean;
 		public ping(): Promise<number>;
 
