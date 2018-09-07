@@ -26,6 +26,6 @@ const rl = readline.createInterface({
 });
 
 rl.on('line', (line) => {
-	if (line) node.sendTo('hello', line, false);
+	if (line) node.sendTo('hello', line, { receptive: false });
 	process.stdout.write('> ');
 });
