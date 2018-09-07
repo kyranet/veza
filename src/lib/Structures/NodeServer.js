@@ -58,15 +58,16 @@ class NodeServer {
 	 * @param {*} data The data to send to other sockets
 	 * @param {Object} [options={}] The options for this broadcast
 	 * @param {boolean} [options.receptive] Whether this broadcast should wait for responses or not
+	 * @param {number} [options.timeout] The timeout, Infinity or -1 for no timeout
 	 * @param {RegExp} [options.filter] The filter for the broadcast
 	 * @returns {Promise<Array<*>>}
 	 */
-	broadcast(data, { receptive, filter } = {}) {
-		if (!filter) return Promise.all([...this.clients.values()].map((socket) => this.sendTo(socket, data, receptive)));
+	broadcast(data, { receptive, timeout, filter } = {}) {
+		if (!filter) return Promise.all([...this.clients.values()].map((socket) => this.sendTo(socket, data, { receptive, timeout })));
 		if (!(filter instanceof RegExp)) throw new TypeError(`filter must be a RegExp instance.`);
 
 		const promises = [];
-		for (const [name, client] of this.clients) if (filter.test(name)) promises.push(client.send(data, receptive));
+		for (const [name, client] of this.clients) if (filter.test(name)) promises.push(client.send(data, { receptive, timeout }));
 		return Promise.all(promises);
 	}
 
@@ -74,13 +75,15 @@ class NodeServer {
 	 * Send a message to a connected socket
 	 * @param {string|Socket|NodeSocket} name The label name of the socket to send the message to
 	 * @param {*} data The data to send to the socket
-	 * @param {boolean} receptive Whether this message should wait for a response or not
+	 * @param {Object} [options={}] The options for this broadcast
+	 * @param {boolean} [options.receptive] Whether this message should wait for a response or not
+	 * @param {number} [options.timeout] The timeout, Infinity or -1 for no timeout
 	 * @returns {Promise<*>}
 	 */
-	sendTo(name, data, receptive = true) {
+	sendTo(name, data, options) {
 		const nodeSocket = this.get(name);
 		if (!nodeSocket) return Promise.reject(new Error('Failed to send to the socket: It is not connected to this Node.'));
-		return nodeSocket.send(data, receptive);
+		return nodeSocket.send(data, options);
 	}
 
 	/**
