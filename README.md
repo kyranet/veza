@@ -1,14 +1,24 @@
 # Veza
 
-**Veza** is a lower level version of [IPC-Link](https://github.com/kyranet/ipc-link) that is lightning fast and operates with raw buffers as opposed to sending buffered stringified JSON objects. This library has no dependencies and uses built-in modules (`net`, `events`...) to operate.
+**Veza** is a lower level version of [IPC-Link](https://github.com/kyranet/ipc-link)
+that is lightning fast and operates with raw buffers as opposed to sending buffered
+stringified JSON objects. This library has no dependencies and uses built-in modules
+(`net`, `events`...) to operate.
 
-In Veza, you have "nodes", which can either create a server (and receive messages) or connect to other servers, even both at the same time. Additionally, you have `client.send(data);` which will wait for the socket to reply back.
+In Veza, you have "nodes", which can either create a server (and receive messages)
+or connect to other servers, even both at the same time. Additionally, you have
+`client.send(data);` which will wait for the socket to reply back.
 
-> One of Veza's special features is the ability to glue split messages and split concatenated messages, for which it uses a 13-bit "header" (encoded in base-256 to take avantage of the byte range `0x00`-`0xFF`) at the start of every message containing the id, the datatype, the receptive flag, and the length of the message (4.2gb maximum size).
+> One of Veza's special features is the ability to glue truncated messages and split
+concatenated messages, for which it uses a 13-bit "header" (encoded in base-256 to
+take avantage of the byte range `0x00`-`0xFF`) at the start of every message containing
+the id, the datatype, the receptive flag, and the length of the message (4.2gb
+maximum size).
 
 ## Usage
 
-Check the examples [here](https://github.com/kyranet/veza/tree/master/test) for working micro **Veza** applications.
+Check the examples [here](https://github.com/kyranet/veza/tree/master/test) for
+working micro **Veza** applications.
 
 `hello.js`
 
@@ -47,16 +57,22 @@ node.connectTo('hello', 8001)
 	.catch((error) => console.error('[IPC] Disconnected!', error));
 ```
 
-> If you run `hello.js` (aka server), and in another window, `world.js`, world will connect to hello, once ready, it will send hello "Hello", for which the server will reply with "world!", logging from the latter "Hello world!" in the terminal.
+> If you run `hello.js` (aka server), and in another window, `world.js`, world will
+connect to hello, once ready, it will send hello "Hello", for which the server will
+ reply with "world!", logging from the latter "Hello world!" in the terminal.
 
 ---
 
 The differences with IPC-Link are:
 
-- **Veza** does not rely on **node-ipc**, but rather uses `net.Socket`, `net.Server` and `events.EventEmitter`.
+- **Veza** does not rely on **node-ipc**, but rather uses `net.Socket`, `net.Server`
+and `events.EventEmitter`.
 - **Veza** does not use JSON objects: it uses buffers with headers.
-- **Veza** does not abstract `net.Socket#connect` nor `net.Server#listen`, as opposed to what **node-ipc** does.
-- **Veza** does not send a message to a socket if it's not connected, you must connect first (in node-ipc, it attempts to connect using the name, which breaks in many cases and leads to unexpected behaviour).
+- **Veza** does not abstract `net.Socket#connect` nor `net.Server#listen`, as opposed
+to what **node-ipc** does.
+- **Veza** does not send a message to a socket if it's not connected, you must connect
+first (in node-ipc, it attempts to connect using the name, which breaks in many
+cases and leads to unexpected behaviour).
 - **Veza** supports recurrency as opposed to blocking message queues.
 
 > Originally, **Veza** was called **ipc-link-core**.
