@@ -27,9 +27,7 @@ class SocketHandler extends Base {
 	/**
 	 * Send a message to a connected socket
 	 * @param {*} data The data to send to the socket
-	 * @param {Object} [options={}] The options for this broadcast
-	 * @param {boolean} [options.receptive] Whether this message should wait for a response or not
-	 * @param {number} [options.timeout] The timeout, Infinity or -1 for no timeout
+	 * @param {SendOptions} [options={}] The options for this message
 	 * @returns {Promise<*>}
 	 */
 	send(data, { receptive = true, timeout = Infinity } = {}) {

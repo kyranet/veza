@@ -4,6 +4,17 @@ const NodeSocket = require('./NodeSocket');
 
 class NodeServer {
 
+	/**
+	 * @typedef {Object} SendOptions
+	 * @property {boolean} [receptive = false] Whether this broadcast should wait for responses or not
+	 * @property {number} [timeout = Infinity] The timeout, Infinity or -1 for no timeout
+	 */
+
+	/**
+	 * @typedef {SendOptions} BroadcastOptions
+	 * @property {RegExp} [filter] The filter for the broadcast
+	 */
+
 	constructor(node) {
 		Object.defineProperties(this, {
 			node: { value: null, writable: true },
@@ -56,10 +67,7 @@ class NodeServer {
 	/**
 	 * Broadcast a message to all connected sockets from this server
 	 * @param {*} data The data to send to other sockets
-	 * @param {Object} [options={}] The options for this broadcast
-	 * @param {boolean} [options.receptive] Whether this broadcast should wait for responses or not
-	 * @param {number} [options.timeout] The timeout, Infinity or -1 for no timeout
-	 * @param {RegExp} [options.filter] The filter for the broadcast
+	 * @param {BroadcastOptions} [options={}] The options for this broadcast
 	 * @returns {Promise<Array<*>>}
 	 */
 	broadcast(data, { receptive, timeout, filter } = {}) {
@@ -75,9 +83,7 @@ class NodeServer {
 	 * Send a message to a connected socket
 	 * @param {string|Socket|NodeSocket} name The label name of the socket to send the message to
 	 * @param {*} data The data to send to the socket
-	 * @param {Object} [options={}] The options for this broadcast
-	 * @param {boolean} [options.receptive] Whether this message should wait for a response or not
-	 * @param {number} [options.timeout] The timeout, Infinity or -1 for no timeout
+	 * @param {SendOptions} [options={}] The options for this message
 	 * @returns {Promise<*>}
 	 */
 	sendTo(name, data, options) {

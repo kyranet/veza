@@ -47,13 +47,15 @@ declare module 'veza' {
 		public off(event: 'server.ready', listener: (server: NodeServer) => void): this;
 		public off(event: string, listener: Function): this;
 
-		public broadcast<T = any>(data: any, options: BroadcastOptions): Promise<Array<T>>;
+		public broadcast(data: any, options: { receptive: false } & BroadcastOptions): Promise<Array<void>>;
+		public broadcast<T = any>(data: any, options?: BroadcastOptions): Promise<Array<T>>;
 		public connectTo(name: string, options: SocketConnectOpts, connectionListener?: Function): Promise<NodeSocket>;
 		public connectTo(name: string, path: string, connectionListener?: Function): Promise<NodeSocket>;
 		public connectTo(name: string, port: number, connectionListener?: Function): Promise<NodeSocket>;
 		public connectTo(name: string, port: number, host: string, connectionListener?: Function): Promise<NodeSocket>;
 		public disconnectFrom(name: string): Promise<boolean>;
-		public sendTo<T = any>(name: string | Socket, data: any, receptive?: boolean): Promise<T>;
+		public sendTo(name: string | Socket, data: any, options: { receptive: false } & SendOptions): Promise<void>;
+		public sendTo<T = any>(name: string | Socket, data: any, options?: SendOptions): Promise<T>;
 		public serve(handle: any, backlog?: number, listeningListener?: Function): this;
 		public serve(handle: any, listeningListener?: Function): this;
 		public serve(options: ListenOptions, listeningListener?: Function): this;
@@ -74,7 +76,8 @@ declare module 'veza' {
 	export class SocketHandler extends Base {
 		private socket: Socket;
 		private queue: Queue;
-		public send<T = any>(data: any, options?: { receptive?: boolean, timeout: number }): Promise<T>;
+		public send(data: any, options: SendOptions & { receptive: false }): Promise<void>;
+		public send<T = any>(data: any, options?: SendOptions): Promise<T>;
 		public disconnect(): boolean;
 		public ping(): Promise<number>;
 
@@ -119,10 +122,10 @@ declare module 'veza' {
 		private clients: Map<string, NodeServerClient>;
 		public get(name: NodeResolvable): NodeServer | NodeServerClient;
 		public has(name: NodeResolvable): boolean;
-		public broadcast(data: any, options: { receptive: false, filter?: RegExp }): Promise<Array<void>>;
+		public broadcast(data: any, options: BroadcastOptions & { receptive: false }): Promise<Array<void>>;
 		public broadcast<T = any>(data: any, options?: BroadcastOptions): Promise<Array<T>>;
-		public sendTo(name: NodeResolvable, data: any, receptive: false): Promise<void>;
-		public sendTo<T = any>(name: NodeResolvable, data: any, receptive?: boolean): Promise<T>;
+		public sendTo(name: NodeResolvable, data: any, options: SendOptions & { receptive: false }): Promise<void>;
+		public sendTo<T = any>(name: NodeResolvable, data: any, options?: SendOptions): Promise<T>;
 		public connect(handle: any, backlog?: number, listeningListener?: Function): Promise<void>;
 		public connect(handle: any, listeningListener?: Function): Promise<void>;
 		public connect(options: ListenOptions, listeningListener?: Function): Promise<void>;
@@ -193,8 +196,12 @@ declare module 'veza' {
 	}
 
 	type BroadcastOptions = {
-		receptive?: boolean;
 		filter?: RegExp;
+	} & SendOptions;
+
+	type SendOptions = {
+		receptive?: boolean;
+		timeout?: number;
 	};
 
 	type NodeResolvable = string | NodeSocket | NodeServerClient | Socket;
