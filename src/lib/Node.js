@@ -78,7 +78,7 @@ class Node extends EventEmitter {
 	 */
 	connectTo(name, ...options) {
 		if (this.servers.has(name)) return Promise.reject(new Error('There is already a socket.'));
-		const client = new NodeSocket(this, name);
+		const client = new NodeSocket(this, this.name);
 		this.servers.set(name, client);
 
 		return client.connect(...options);
