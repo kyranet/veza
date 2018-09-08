@@ -174,6 +174,7 @@ declare module 'veza' {
 	export class NodeMessage {
 		public readonly client: NodeSocket | NodeServerClient;
 		public readonly id: string;
+		public readonly node: Node;
 		public data: any;
 		public receptive: boolean;
 		public reply(content: any): void;

@@ -36,6 +36,14 @@ class NodeMessage {
 	}
 
 	/**
+	 * The Node instance that manages this process' veza node
+	 * @type {Node}
+	 */
+	get node() {
+		return this.client.node;
+	}
+
+	/**
 	 * Reply to the socket
 	 * @param {*} content The content to send
 	 */
