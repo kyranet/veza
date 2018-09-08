@@ -4,15 +4,18 @@
 const { Node } = require('../src/index');
 
 const node = new Node('interactive')
+	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
+	.on('client.disconnect', (client) => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('client.ready', (client) => console.log(`[IPC] Connected to: ${client.name}`))
 	.on('message', (message) => {
-		console.log(`Received data from ${message.from}:`, message);
+		console.log(`Received data from ${message.client.name}:`, message);
 		if (message.data === 'Hello') {
 			message.reply('Interactive World Working!');
 			process.stdout.write('> ');
 		}
-	})
-	.on('error', console.error)
-	.on('connect', () => console.log('Connected!'));
+	});
+
+// Connect to hello
 node.connectTo('hello', 8001)
 	.catch(() => console.log('Disconnected!'));
 
@@ -23,6 +26,6 @@ const rl = readline.createInterface({
 });
 
 rl.on('line', (line) => {
-	if (line) node.sendTo('hello', line, false);
+	if (line) node.sendTo('hello', line, { receptive: false });
 	process.stdout.write('> ');
 });

@@ -3,27 +3,36 @@
 
 // This example tests concurrency with parallel messages in IPC.
 const { Node } = require('../src/index');
+const sleep = require('util').promisify(setTimeout);
+const TIMES = 10000;
 
 const node = new Node('concurrent')
-	.on('error', console.error)
-	.on('connect', () => console.log('Connected!'));
+	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
+	.on('client.disconnect', (client) => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('client.ready', async (client) => {
+		console.log(`[IPC] Connected to: ${client.name}`);
+		console.log(`[IPC] Attempting to send and receive ${TIMES} messages...`);
+		let failed = 0, resolved = 0;
+		let logged = false;
+		const before = Date.now();
+		for (let i = 0; i < TIMES; i++) {
+			// Let Node.js "breathe"
+			if (i % 1000 === 0) await sleep(1);
 
-node
-	.connectTo('hello', 8001)
-	.then(socket =>
-		Promise.all(
-			Array.from({ length: 100 }, (_, i) => {
-				// 10 seconds timeout
-				const timeout = setTimeout(
-					() => console.log(`Timeout reply from: ${i}`),
-					10000
-				);
-				node.sendTo(socket, `Test ${i}`, 1).then(reply => {
-					console.log(`Received reply from ${i}:`, reply);
-					clearTimeout(timeout);
+			client.send(`Test ${i}`)
+				.then(() => { resolved++; })
+				.catch(() => { failed++; })
+				.finally(() => {
+					if (logged || failed + resolved !== TIMES) return;
+					// Show how long it took
+					console.log('[TEST]', Date.now() - before, 'milliseconds');
+					console.log('[TEST] Resolved:', resolved, 'Failed:', failed);
+
+					logged = true;
 				});
-				return i;
-			})
-		)
-	)
-	.catch(() => console.log('Disconnected!'));
+		}
+	});
+
+// Connect to hello
+node.connectTo('hello', 8001)
+	.catch((error) => console.error('[IPC] Disconnected!', error));
