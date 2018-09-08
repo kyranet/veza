@@ -48,8 +48,10 @@ const node = new Node('hello')
 		console.log(`Received data:`, message.data);
 		message.reply(message.data);
 	})
-	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}`, error))
-	.serve(8001);
+	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}`, error));
+
+node.serve(8001)
+	.catch((error) => console.error('[IPC] Disconnected!', error));
 ```
 
 `world.js`

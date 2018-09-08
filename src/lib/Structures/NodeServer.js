@@ -71,11 +71,11 @@ class NodeServer {
 	 * @returns {Promise<Array<*>>}
 	 */
 	broadcast(data, { receptive, timeout, filter } = {}) {
-		if (!filter) return Promise.all([...this.clients.values()].map((socket) => this.sendTo(socket, data, { receptive, timeout })));
-		if (!(filter instanceof RegExp)) throw new TypeError(`filter must be a RegExp instance.`);
+		if (filter && !(filter instanceof RegExp)) throw new TypeError(`filter must be a RegExp instance.`);
 
+		const test = filter ? (name) => filter.test(name) : () => true;
 		const promises = [];
-		for (const [name, client] of this.clients) if (filter.test(name)) promises.push(client.send(data, { receptive, timeout }));
+		for (const [name, client] of this.clients.entries()) if (test(name)) promises.push(client.send(data, { receptive, timeout }));
 		return Promise.all(promises);
 	}
 
