@@ -40,7 +40,7 @@ working micro **Veza** applications.
 const { Node } = require('veza');
 
 const node = new Node('hello')
-	.on('client.connect', (client) => console.log(`[IPC] Client Connected: ${client.name}`))
+	.on('client.identify', (client) => console.log(`[IPC] Client Connected: ${client.name}`))
 	.on('client.disconnect', (client) => console.log(`[IPC] Client Disconnected: ${client.name}`))
 	.on('client.destroy', (client) => console.log(`[IPC] Client Destroyed: ${client.name}`))
 	.on('server.ready', (server) => console.log(`[IPC] Client Ready: Named ${server.name}`))
