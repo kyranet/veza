@@ -56,15 +56,15 @@ declare module 'veza' {
 		public disconnectFrom(name: string): Promise<boolean>;
 		public sendTo(name: string | Socket, data: any, options: { receptive: false } & SendOptions): Promise<void>;
 		public sendTo<T = any>(name: string | Socket, data: any, options?: SendOptions): Promise<T>;
-		public serve(handle: any, backlog?: number, listeningListener?: Function): this;
-		public serve(handle: any, listeningListener?: Function): this;
-		public serve(options: ListenOptions, listeningListener?: Function): this;
-		public serve(path: string, backlog?: number, listeningListener?: Function): this;
-		public serve(path: string, listeningListener?: Function): this;
-		public serve(port?: number, backlog?: number, listeningListener?: Function): this;
-		public serve(port?: number, hostname?: string, backlog?: number, listeningListener?: Function): this;
-		public serve(port?: number, hostname?: string, listeningListener?: Function): this;
-		public serve(port?: number, listeningListener?: Function): this;
+		public serve(handle: any, backlog?: number, listeningListener?: Function): Promise<this>;
+		public serve(handle: any, listeningListener?: Function): Promise<this>;
+		public serve(options: ListenOptions, listeningListener?: Function): Promise<this>;
+		public serve(path: string, backlog?: number, listeningListener?: Function): Promise<this>;
+		public serve(path: string, listeningListener?: Function): Promise<this>;
+		public serve(port?: number, backlog?: number, listeningListener?: Function): Promise<this>;
+		public serve(port?: number, hostname?: string, backlog?: number, listeningListener?: Function): Promise<this>;
+		public serve(port?: number, hostname?: string, listeningListener?: Function): Promise<this>;
+		public serve(port?: number, listeningListener?: Function): Promise<this>;
 	}
 
 	export class Base {
