@@ -9,7 +9,7 @@ const node = new Node('hello')
 	.on('client.destroy', (client) => console.log(`[IPC] Client Destroyed: ${client.name}`))
 	.on('server.ready', (server) => console.log(`[IPC] Client Ready: Named ${server.name}`))
 	.on('message', (message) => {
-		// console.log(`Received data:`, message.data);
+		// console.log(`Received data:`, message.data, typeof message.data);
 		// For World.js test
 		if (message.data === 'Hello') {
 			message.reply('world!');

@@ -23,12 +23,33 @@ function _packMessage(id, message, receptive = true) {
 	return Buffer.concat([createHeader(id, type, receptive, buffer.byteLength), buffer, BUFFER_NL]);
 }
 
+// eslint-disable-next-line no-bitwise
+const MIN_32 = -~(2 ** 31), MAX_32 = 2 ** 31;
+function _isSmallInteger(integer) {
+	return integer >= MIN_32 && integer <= MAX_32;
+}
+function _isByteInteger(integer) {
+	return integer >= 0 && integer <= 0xFF;
+}
+function _extractByteInteger(integer) {
+	const output = [];
+	while (integer) {
+		// eslint-disable-next-line no-bitwise
+		output.unshift(integer & 0xFF);
+		// eslint-disable-next-line no-bitwise
+		integer >>= 8;
+	}
+
+	output.unshift(integer < 0 ? 1 : 0);
+	return output;
+}
+
 /**
  * Get the message details
  * @param {*} message The message to convert
  * @returns {Array<number | Buffer>}
  */
-function _getMessageDetails(message) {
+function _getMessageDetails(message) { // eslint-disable-line complexity
 	if (message === kPing) return [S_MESSAGE_TYPES.PING, Buffer.from(Date.now().toString())];
 	if (message === kIdentify) return [S_MESSAGE_TYPES.IDENTIFY, BUFFER_NULL];
 
@@ -37,9 +58,12 @@ function _getMessageDetails(message) {
 		case 'bigint': return [S_MESSAGE_TYPES.BIGINT, Buffer.from(message.toString())];
 		case 'undefined': return [S_MESSAGE_TYPES.UNDEFINED, BUFFER_NULL];
 		case 'string': return [S_MESSAGE_TYPES.STRING, Buffer.from(message)];
-		case 'number': return message <= 0xFF
-			? [S_MESSAGE_TYPES.BYTE, Buffer.from(message)]
-			: [S_MESSAGE_TYPES.NUMBER, Buffer.from(message.toString())];
+		case 'number':
+			if (Number.isInteger(message)) {
+				if (_isByteInteger(message)) return [S_MESSAGE_TYPES.BYTE, Buffer.from(message)];
+				if (_isSmallInteger(message)) return [S_MESSAGE_TYPES.SMALL_INTEGER, Buffer.from(_extractByteInteger(message))];
+			}
+			return [S_MESSAGE_TYPES.NUMBER, Buffer.from(message.toString())];
 		case 'boolean': return [S_MESSAGE_TYPES.BOOLEAN, Buffer.from(message ? '1' : '0')];
 		case 'symbol': return [S_MESSAGE_TYPES.SYMBOL, Buffer.from(message.toString().slice(7, -1))];
 		case 'object': {

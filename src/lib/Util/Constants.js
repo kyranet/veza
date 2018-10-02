@@ -19,15 +19,16 @@ module.exports = {
 		NUMBER: 11,
 		OBJECT: 12,
 		SET: 13,
-		STRING: 14,
-		SYMBOL: 15,
-		UINT16_ARRAY: 16,
-		UINT32_ARRAY: 17,
-		UINT8_ARRAY: 18,
-		UINT8_CLAMPEDARRAY: 19,
-		UNDEFINED: 20,
-		PING: 21,
-		IDENTIFY: 22
+		SMALL_INTEGER: 14,
+		STRING: 15,
+		SYMBOL: 16,
+		UINT16_ARRAY: 17,
+		UINT32_ARRAY: 18,
+		UINT8_ARRAY: 19,
+		UINT8_CLAMPEDARRAY: 20,
+		UNDEFINED: 21,
+		PING: 22,
+		IDENTIFY: 23
 	}),
 	R_MESSAGE_TYPES: null,
 	BUFFER_NULL: Buffer.from('\0'),
@@ -40,7 +41,18 @@ module.exports = {
 
 	// Helpers
 	// @ts-ignore
-	toBigInt: typeof BigInt === 'function' ? BigInt : Number
+	toBigInt: typeof BigInt === 'function' ? BigInt : Number,
+
+	decompressSmallInteger(integers) {
+		let number = 0;
+		let position = 0;
+		const byte = integers[0];
+		for (let i = integers.length - 1; i >= 1; i--)
+			// eslint-disable-next-line no-bitwise
+			number += integers[i] << position++ * 8;
+
+		return byte ? -number : number;
+	}
 };
 
 // @ts-ignore

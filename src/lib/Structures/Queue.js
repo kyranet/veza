@@ -6,7 +6,7 @@ const {
 	R_MESSAGE_TYPES,
 
 	// Helpers
-	toBigInt
+	toBigInt, decompressSmallInteger
 } = require('../Util/Constants');
 const { readHeader } = require('../Util/Header');
 const { inspect } = require('util');
@@ -120,6 +120,7 @@ class Queue extends Map {
 		if (type === 'UNDEFINED') return undefined;
 		if (type === 'BUFFER') return body;
 		if (type === 'BYTE') return body[0];
+		if (type === 'SMALL_INTEGER') return decompressSmallInteger(body);
 
 		const bodyString = body.toString('utf8');
 		if (type === 'BOOLEAN') return bodyString === '1';
