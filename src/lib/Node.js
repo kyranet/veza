@@ -45,14 +45,12 @@ class Node extends EventEmitter {
 		/**
 		 * The server for this Node, if serving
 		 * @type {?NodeServer}
-		 * @private
 		 */
 		this.server = null;
 
 		/**
 		 * The servers this Node is connected to
 		 * @type {Map<string, NodeSocket>}
-		 * @private
 		 */
 		this.servers = new Map();
 	}

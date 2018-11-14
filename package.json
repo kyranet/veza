@@ -1,6 +1,6 @@
 {
   "name": "veza",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "IPC Utilities",
   "main": "src/index",
   "types": "typings/index.d.ts",
@@ -14,7 +14,9 @@
   },
   "keywords": [
     "ipc",
-    "ipc-link"
+    "ipc-link",
+    "tcp",
+    "tcp-link"
   ],
   "contributors": [
     "kyranet"
@@ -26,8 +28,8 @@
   },
   "homepage": "https://github.com/kyranet/veza#readme",
   "devDependencies": {
-    "@types/node": "^10.11.3",
-    "eslint": "^5.6.1",
+    "@types/node": "^10.12.7",
+    "eslint": "^5.9.0",
     "eslint-config-klasa": "github:dirigeants/klasa-lint"
   }
 }

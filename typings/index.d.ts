@@ -8,8 +8,8 @@ declare module 'veza' {
 		public name: string;
 		public maxRetries: number;
 		public retryTime: number;
-		private server: NodeServer | null;
-		private servers: Map<string, NodeSocket>;
+		public server: NodeServer | null;
+		public servers: Map<string, NodeSocket>;
 
 		public on(event: 'client.connect', listener: (client: NodeSocket | NodeServerClient) => void): this;
 		public on(event: 'client.destroy', listener: (client: NodeSocket | NodeServerClient) => void): this;
@@ -68,7 +68,7 @@ declare module 'veza' {
 	}
 
 	export class Base {
-		constructor(node: Node, name?: string);
+		public constructor(node: Node, name?: string);
 		public node: Node;
 		public name: string | null;
 	}
@@ -115,7 +115,7 @@ declare module 'veza' {
 	}
 
 	export class NodeServer {
-		constructor(node: Node);
+		public constructor(node: Node);
 		public node: Node;
 		public readonly name: string;
 		private server: Server;
@@ -143,7 +143,7 @@ declare module 'veza' {
 	}
 
 	export class NodeServerClient extends SocketHandler {
-		constructor(node: Node, server: NodeServer, socket: Socket);
+		public constructor(node: Node, server: NodeServer, socket: Socket);
 		public server: NodeServer;
 		public status: number;
 		public setup(): void;
@@ -155,7 +155,7 @@ declare module 'veza' {
 	}
 
 	export class NodeSocket extends SocketHandler {
-		constructor(node: Node, name: string, socket: Socket);
+		public constructor(node: Node, name: string, socket: Socket);
 		public retriesRemaining: number;
 		private _reconnectionTimeout: NodeJS.Timer | null;
 
@@ -184,7 +184,7 @@ declare module 'veza' {
 	}
 
 	export class Queue extends Map<string, QueueEntry> {
-		constructor(nodeSocket: NodeSocket | NodeServerClient);
+		public constructor(nodeSocket: NodeSocket | NodeServerClient);
 		public nodeSocket: NodeSocket | NodeServerClient;
 		private _rest: Buffer | null;
 		public readonly node: Node;
