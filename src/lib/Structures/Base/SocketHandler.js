@@ -139,7 +139,7 @@ class SocketHandler extends Base {
 			return null;
 		}
 		if (data === kIdentify) {
-			this.socket.write(_packMessage(id, this.name, false));
+			this.socket.write(_packMessage(id, this.node.name, false));
 			return null;
 		}
 		return new NodeMessage(this, id, receptive, data).freeze();
