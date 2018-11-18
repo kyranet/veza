@@ -56,6 +56,7 @@ declare module 'veza' {
 		public disconnectFrom(name: string): Promise<boolean>;
 		public sendTo(name: string | Socket, data: any, options: { receptive: false } & SendOptions): Promise<void>;
 		public sendTo<T = any>(name: string | Socket, data: any, options?: SendOptions): Promise<T>;
+		public get(name: Socket | string): Socket | NodeServer | NodeServerClient | NodeSocket;
 		public serve(handle: any, backlog?: number, listeningListener?: Function): Promise<this>;
 		public serve(handle: any, listeningListener?: Function): Promise<this>;
 		public serve(options: ListenOptions, listeningListener?: Function): Promise<this>;

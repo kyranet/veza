@@ -1,6 +1,7 @@
 const { EventEmitter } = require('events');
 const NodeSocket = require('./Structures/NodeSocket');
 const NodeServer = require('./Structures/NodeServer');
+const { Socket } = require('net');
 
 class Node extends EventEmitter {
 
@@ -63,7 +64,7 @@ class Node extends EventEmitter {
 	 * @returns {Promise<*>}
 	 */
 	sendTo(name, data, options) {
-		const socket = this.servers.get(name);
+		const socket = this.get(name);
 		if (!socket) return Promise.reject(new Error(`The socket ${name} is not available or not connected to this Node.`));
 		return socket.send(data, options);
 	}
@@ -75,7 +76,7 @@ class Node extends EventEmitter {
 	 * @returns {Promise<NodeSocket>}
 	 */
 	connectTo(name, ...options) {
-		if (this.servers.has(name)) return Promise.reject(new Error('There is already a socket.'));
+		if (this.servers.has(name)) return Promise.reject(new Error(`There is already a socket called ${name}`));
 		const client = new NodeSocket(this, this.name);
 		this.servers.set(name, client);
 
@@ -88,7 +89,7 @@ class Node extends EventEmitter {
 	 * @returns {Promise<boolean>}
 	 */
 	disconnectFrom(name) {
-		const client = this.servers.get(name);
+		const client = this.get(name);
 		if (!client) return Promise.reject(new Error(`The socket ${name} is not connected to this one.`));
 		return Promise.resolve(client.disconnect());
 	}
@@ -114,6 +115,16 @@ class Node extends EventEmitter {
 		this.server = new NodeServer(this);
 		return this.server.connect(...options)
 			.then(() => this);
+	}
+
+	/**
+	 * Get a socket by its name
+	 * @param {string|Socket} name The name of the socket
+	 * @returns {NodeServer|NodeServerClient|NodeSocket}
+	 */
+	get(name) {
+		if (name instanceof Socket) return name;
+		return (this.server && this.server.clients.get(name)) || this.servers.get(name);
 	}
 
 }
