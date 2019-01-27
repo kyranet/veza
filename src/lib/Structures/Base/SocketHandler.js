@@ -1,4 +1,4 @@
-const { kPing, kIdentify, STATUS } = require('../../Util/Constants');
+const { kPing, kIdentify, kInvalidMessage, STATUS } = require('../../Util/Constants');
 const { _packMessage } = require('../../Util/Transform');
 const { createID } = require('../../Util/Header');
 const NodeMessage = require('../NodeMessage');
@@ -127,6 +127,20 @@ class SocketHandler extends Base {
 	off(event, cb) {
 		if (this.socket) this.socket.off(event, cb);
 		return this;
+	}
+
+	_onData(data) {
+		this.node.emit('raw', this, data);
+		for (const processed of this.queue.process(data)) {
+			if (processed === kInvalidMessage) {
+				this.node.emit('error', new Error('Failed to process message, destroying Socket.'));
+				this.disconnect();
+				break;
+			}
+			const message = this._handleMessage(processed);
+			if (message === null) continue;
+			this.node.emit('message', message);
+		}
 	}
 
 	_handleMessage({ id, receptive, data }) {

@@ -2,6 +2,7 @@ module.exports = {
 	// Symbols
 	kPing: Symbol('IPC-Ping'),
 	kIdentify: Symbol('IPC-Identify'),
+	kInvalidMessage: Symbol('QUEUE-Invalid'),
 
 	// Constants
 	S_MESSAGE_TYPES: Object.freeze({

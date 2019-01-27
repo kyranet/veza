@@ -67,15 +67,6 @@ class NodeSocket extends SocketHandler {
 		return true;
 	}
 
-	_onData(data) {
-		this.node.emit('raw', this, data);
-		for (const processed of this.queue.process(data)) {
-			const message = this._handleMessage(processed);
-			if (message === null) continue;
-			this.node.emit('message', message);
-		}
-	}
-
 	_onConnect() {
 		this.retriesRemaining = this.node.maxRetries;
 		if (this._reconnectionTimeout) {

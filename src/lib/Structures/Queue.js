@@ -1,6 +1,6 @@
 const {
 	// Symbols
-	kPing, kIdentify,
+	kPing, kIdentify, kInvalidMessage,
 
 	// Constants
 	R_MESSAGE_TYPES,
@@ -9,7 +9,6 @@ const {
 	toBigInt, decompressSmallInteger
 } = require('../Util/Constants');
 const { readHeader } = require('../Util/Header');
-const { inspect } = require('util');
 
 /**
  * @typedef {Object} QueueEntry
@@ -67,7 +66,7 @@ class Queue extends Map {
 	 * @method
 	 * @instance
 	 * @generator
-	 * @returns {Iterator<QueueObject>}
+	 * @returns {Iterator<QueueObject|symbol>}
 	 * @memberof Queue
 	 */
 
@@ -86,8 +85,10 @@ class Queue extends Map {
 			}
 
 			const { id, type, receptive, length: bodyLength } = readHeader(buffer);
-			if (type > R_MESSAGE_TYPES.length)
-				throw new Error(`Failed to parse type, received ${type} from ${inspect(buffer)}`);
+			if (type > R_MESSAGE_TYPES.length) {
+				yield kInvalidMessage;
+				break;
+			}
 
 			const endBodyIndex = 13 + bodyLength;
 			// If the body's length is not enough long, the Socket may have cut the message in half

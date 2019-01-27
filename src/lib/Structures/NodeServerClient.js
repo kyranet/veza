@@ -36,15 +36,6 @@ class NodeServerClient extends SocketHandler {
 		return true;
 	}
 
-	_onData(data) {
-		this.node.emit('raw', this, data);
-		for (const processed of this.queue.process(data)) {
-			const message = this._handleMessage(processed);
-			if (message === null) continue;
-			this.node.emit('message', message);
-		}
-	}
-
 	_onError(error) {
 		const { code } = error;
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
