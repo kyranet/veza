@@ -133,7 +133,7 @@ class SocketHandler extends Base {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
 			if (processed === kInvalidMessage) {
-				this.node.emit('error', new Error('Failed to process message, destroying Socket.'));
+				this.node.emit('error', new Error('Failed to process message, destroying Socket.'), this);
 				this.disconnect();
 				break;
 			}
