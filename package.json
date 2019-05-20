@@ -5,8 +5,8 @@
   "main": "src/index",
   "types": "typings/index.d.ts",
   "scripts": {
-    "lint": "eslint --fix src test",
-    "test": "eslint src test"
+    "lint": "eslint --ext ts src/ --fix",
+    "test": "eslint --ext ts src/ "
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,10 @@
   "homepage": "https://github.com/kyranet/veza#readme",
   "devDependencies": {
     "@types/node": "^12.0.0",
-    "eslint": "^5.9.0",
-    "eslint-config-klasa": "github:dirigeants/klasa-lint"
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "eslint": "^5.16.0",
+    "eslint-config-klasa": "github:dirigeants/klasa-lint",
+    "eslint-config-marine": "^2.2.0",
+    "typescript": "^3.4.5"
   }
 }

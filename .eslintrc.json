@@ -1,14 +1,20 @@
 {
-	"extends": "klasa",
-	"rules": {
-		"arrow-parens": ["error", "always"],
-		"curly": ["error", "multi-or-nest", "consistent"],
-		"id-length": "off",
-		"no-bitwise": ["error", { "int32Hint": true }],
-		"no-cond-assign": "off",
-		"operator-linebreak": ["error", "before", { "overrides": { "+": "after" } }]
-	},
-	"globals": {
-		"BigInt": true
-	}
+  "extends": "marine/node",
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      { "typedefs": false, "functions": false }
+    ],
+    "@typescript-eslint/promise-function-async": 0,
+    "no-dupe-class-members": 0,
+    "no-use-before-define": ["error", { "functions": false }],
+    "padded-blocks": ["error", { "classes": "always" }],
+    "operator-linebreak": ["error", "before"],
+    "max-statements-per-line": "off",
+    "@typescript-eslint/explicit-member-accessibility": "off"
+  },
+  "globals": {
+    "BigInt": true
+  }
 }
