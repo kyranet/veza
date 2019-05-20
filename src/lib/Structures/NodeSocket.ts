@@ -21,8 +21,11 @@ class NodeSocket extends SocketHandler {
 		if (!this.socket) this.socket = new Socket();
 
 		await new Promise((resolve, reject) => {
+			// eslint-disable-next-line no-use-before-define
 			const onConnect = () => resolve(cleanup(this));
+			// eslint-disable-next-line no-use-before-define
 			const onClose = () => reject(cleanup(this));
+			// eslint-disable-next-line no-use-before-define
 			const onError = (error: any) => reject(cleanup(error));
 			const cleanup = (value: any) => {
 				this.socket.off('connect', onConnect);

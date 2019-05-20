@@ -51,9 +51,13 @@ class NodeServer {
    */
 	get(name: string | Socket | NodeServerClient | NodeSocket) {
 		if (typeof name === 'string') return this.clients.get(name) || null;
-		if (name instanceof NodeServerClient || name instanceof NodeSocket) { return name; }
+		if (name instanceof NodeServerClient || name instanceof NodeSocket) {
+			return name;
+		}
 		if (name instanceof Socket) {
-			for (const client of this.clients.values()) { if (client.socket === name) return client; }
+			for (const client of this.clients.values()) {
+				if (client.socket === name) return client;
+			}
 			return null;
 		}
 
@@ -79,11 +83,15 @@ class NodeServer {
 		data: any,
 		{ receptive, timeout, filter }: BroadcastOptions = {}
 	): Promise<Array<any>> {
-		if (filter && !(filter instanceof RegExp)) { throw new TypeError(`filter must be a RegExp instance.`); }
+		if (filter && !(filter instanceof RegExp)) {
+			throw new TypeError(`filter must be a RegExp instance.`);
+		}
 
 		const test = filter ? (name: string) => filter.test(name) : () => true;
 		const promises = [];
-		for (const [name, client] of this.clients.entries()) { if (test(name)) promises.push(client.send(data, { receptive, timeout })); }
+		for (const [name, client] of this.clients.entries()) {
+			if (test(name)) promises.push(client.send(data, { receptive, timeout }));
+		}
 		return Promise.all(promises);
 	}
 
@@ -120,8 +128,11 @@ class NodeServer {
 
 		this.server = new Server();
 		await new Promise((resolve, reject) => {
+			// eslint-disable-next-line no-use-before-define
 			const onListening = () => resolve(cleanup(this));
+			// eslint-disable-next-line no-use-before-define
 			const onClose = () => reject(cleanup(this));
+			// eslint-disable-next-line no-use-before-define
 			const onError = (error: any) => reject(cleanup(error));
 			const cleanup = (value: any) => {
 				this.server.off('listening', onListening);
@@ -157,7 +168,9 @@ class NodeServer {
 		this.node.emit('server.destroy', this);
 
 		const rejectError = new Error('Server has been disconnected.');
-		for (const socket of this.clients.values()) { for (const element of socket.queue.values()) element.reject(rejectError); }
+		for (const socket of this.clients.values()) {
+			for (const element of socket.queue.values()) element.reject(rejectError);
+		}
 
 		return true;
 	}

@@ -3,16 +3,23 @@
   "rules": {
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/no-use-before-define": [
-      "error",
+      "off",
       { "typedefs": false, "functions": false }
     ],
     "@typescript-eslint/promise-function-async": 0,
+    "@typescript-eslint/explicit-member-accessibility": "warn",
+    "@typescript-eslint/no-var-requires": "warn",
+    "@typescript-eslint/restrict-plus-operands": "warn",
+    "promise/prefer-await-to-then": "warn",
+    "promise/prefer-await-to-callbacks": "warn",
+    "promise/always-return": "warn",
+    "max-statements-per-line": "off",
     "no-dupe-class-members": 0,
     "no-use-before-define": ["error", { "functions": false }],
-    "padded-blocks": ["error", { "classes": "always" }],
     "operator-linebreak": ["error", "before"],
-    "max-statements-per-line": "off",
-    "@typescript-eslint/explicit-member-accessibility": "off"
+    "padded-blocks": ["error", { "classes": "always" }],
+    "no-mixed-spaces-and-tabs": "warn",
+    "brace-style": "warn"
   },
   "globals": {
     "BigInt": true

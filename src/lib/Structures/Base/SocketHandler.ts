@@ -66,6 +66,7 @@ class SocketHandler extends Base {
 				const timer
           = timeout !== Infinity && timeout !== -1
           	? setTimeout(
+          		// eslint-disable-next-line no-use-before-define
           		() => send(reject, true, new Error('TIMEOUT_ERROR')),
           		timeout
           	)
