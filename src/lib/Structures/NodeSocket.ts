@@ -13,10 +13,10 @@ class NodeSocket extends SocketHandler {
 	}
 
 	/**
-   * Connect to the socket
-   * @param {...*} options The options to pass to connect
-   * @returns {Promise<NodeSocket>}
-   */
+     * Connect to the socket
+     * @param {...*} options The options to pass to connect
+     * @returns {Promise<NodeSocket>}
+     */
 	async connect(...options: any[]) {
 		if (!this.socket) this.socket = new Socket();
 
@@ -55,9 +55,9 @@ class NodeSocket extends SocketHandler {
 	}
 
 	/**
-   * Disconnect from the socket, this will also reject all messages
-   * @returns {boolean}
-   */
+   	 * Disconnect from the socket, this will also reject all messages
+   	 * @returns {boolean}
+   	 */
 	disconnect(): boolean {
 		if (!super.disconnect()) return false;
 

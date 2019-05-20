@@ -6,10 +6,10 @@ import { NodeOptions, SendOptions, BroadcastOptions } from 'veza';
 class Node extends EventEmitter {
 
 	/**
-   * @typedef {Object} NodeOptions
-   * @property {number} [maxRetries = Infinity]
-   * @property {number} [retryTime = 200]
-   */
+   	 * @typedef {Object} NodeOptions
+   	 * @property {number} [maxRetries = Infinity]
+   	 * @property {number} [retryTime = 200]
+   	 */
 
 	public name: string;
 	private maxRetries: number;
@@ -18,9 +18,9 @@ class Node extends EventEmitter {
 	private servers: Map<string, NodeSocket>;
 
 	/**
-   * @param {string} name The name for this Node
-   * @param {NodeOptions} [options={}] The options for this Node instance
-   */
+   	 * @param {string} name The name for this Node
+   	 * @param {NodeOptions} [options={}] The options for this Node instance
+   	 */
 	constructor(
 		name: string,
 		{ maxRetries = Infinity, retryTime = 200 }: NodeOptions = {}
@@ -32,21 +32,21 @@ class Node extends EventEmitter {
 		}
 
 		/**
-     * The name for this Node
-     * @type {string}
-     */
+     	 * The name for this Node
+     	 * @type {string}
+     	 */
 		this.name = name;
 
 		/**
-     * The amount of retries this Node will do when reconnecting
-     * @type {number}
-     */
+     	 * The amount of retries this Node will do when reconnecting
+     	 * @type {number}
+     	 */
 		this.maxRetries = maxRetries;
 
 		/**
-     * The time between connection retries
-     * @type {number}
-     */
+     	 * The time between connection retries
+     	 * @type {number}
+     	 */
 		this.retryTime = retryTime;
 
 		Object.defineProperties(this, {
@@ -55,25 +55,25 @@ class Node extends EventEmitter {
 		});
 
 		/**
-     * The server for this Node, if serving
-     * @type {?NodeServer}
-     */
+     	 * The server for this Node, if serving
+     	 * @type {?NodeServer}
+     	 */
 		this.server = null;
 
 		/**
-     * The servers this Node is connected to
-     * @type {Map<string, NodeSocket>}
-     */
+     	 * The servers this Node is connected to
+     	 * @type {Map<string, NodeSocket>}
+     	 */
 		this.servers = new Map();
 	}
 
 	/**
-   * Send a message to a connected socket
-   * @param {string} name The label name of the socket to send the message to
-   * @param {*} data The data to send to the socket
-   * @param {SendOptions} [options={}] The options for this message
-   * @returns {Promise<*>}
-   */
+   	 * Send a message to a connected socket
+   	 * @param {string} name The label name of the socket to send the message to
+   	 * @param {*} data The data to send to the socket
+   	 * @param {SendOptions} [options={}] The options for this message
+   	 * @returns {Promise<*>}
+   	 */
 	sendTo(name: string, data: any, options: SendOptions): Promise<any> {
 		const socket = this.get(name);
 		if (!socket) {
@@ -87,11 +87,11 @@ class Node extends EventEmitter {
 	}
 
 	/**
-   * Connect to a socket
-   * @param {string} name The label name for the socket
-   * @param {...*} options The options to pass to connect
-   * @returns {Promise<NodeSocket>}
-   */
+   	 * Connect to a socket
+   	 * @param {string} name The label name for the socket
+   	 * @param {...*} options The options to pass to connect
+   	 * @returns {Promise<NodeSocket>}
+   	 */
 	connectTo(name: string, ...options: any[]): Promise<NodeSocket> {
 		if (this.servers.has(name)) {
 			return Promise.reject(
@@ -105,10 +105,10 @@ class Node extends EventEmitter {
 	}
 
 	/**
-   * Disconnect from a socket, this will also reject all messages
-   * @param {string} name The label name of the socket to disconnect
-   * @returns {Promise<boolean>}
-   */
+   	 * Disconnect from a socket, this will also reject all messages
+   	 * @param {string} name The label name of the socket to disconnect
+   	 * @returns {Promise<boolean>}
+   	 */
 	disconnectFrom(name: string): Promise<boolean> {
 		const client = this.get(name);
 		if (!client) {
@@ -120,11 +120,11 @@ class Node extends EventEmitter {
 	}
 
 	/**
-   * Broadcast a message to all connected sockets from this server
-   * @param {*} data The data to send to other sockets
-   * @param {BroadcastOptions} [options={}] The options for this broadcast
-   * @returns {Promise<Array<*>>}
-   */
+   	 * Broadcast a message to all connected sockets from this server
+   	 * @param {*} data The data to send to other sockets
+   	 * @param {BroadcastOptions} [options={}] The options for this broadcast
+   	 * @returns {Promise<Array<*>>}
+   	 */
 	broadcast(data: any, options: BroadcastOptions): Promise<Array<any>> {
 		return this.server
 			? this.server.broadcast(data, options)
@@ -132,10 +132,10 @@ class Node extends EventEmitter {
 	}
 
 	/**
-   * Create a server for this Node instance.
-   * @param {...*} options The options to pass to net.Server#listen
-   * @returns {Promise<this>}
-   */
+   	 * Create a server for this Node instance.
+   	 * @param {...*} options The options to pass to net.Server#listen
+   	 * @returns {Promise<this>}
+   	 */
 	serve(...options: any[]): Promise<this> {
 		if (this.server) throw new Error('There is already a server running.');
 
@@ -144,10 +144,10 @@ class Node extends EventEmitter {
 	}
 
 	/**
-   * Get a socket by its name
-   * @param {string|Socket} name The name of the socket
-   * @returns {NodeServer|NodeServerClient|NodeSocket}
-   */
+   	 * Get a socket by its name
+   	 * @param {string|Socket} name The name of the socket
+   	 * @returns {NodeServer|NodeServerClient|NodeSocket}
+   	 */
 	get(name: string | NodeSocket) {
 		if (name instanceof NodeSocket) return name;
 		return (this.server && this.server.get(name)) || this.servers.get(name);

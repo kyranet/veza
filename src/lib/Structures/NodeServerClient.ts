@@ -31,9 +31,9 @@ class NodeServerClient extends SocketHandler {
 	}
 
 	/**
-   * Disconnect from the socket, this will also reject all messages
-   * @returns {boolean}
-   */
+   	 * Disconnect from the socket, this will also reject all messages
+   	 * @returns {boolean}
+   	 */
 	disconnect(): boolean {
 		if (!super.disconnect()) return false;
 		if (this.name) {
