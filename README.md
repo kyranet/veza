@@ -2,10 +2,10 @@
 
 <div align="center">
   <p>
-    <a href="https://www.npmjs.com/kyranet/veza">
+    <a href="https://www.npmjs.com/package/veza">
 		<img src="https://img.shields.io/npm/v/veza.svg?maxAge=3600" alt="NPM version" />
 	</a>
-    <a href="https://www.npmjs.com/kyranet/veza">
+    <a href="https://www.npmjs.com/package/veza">
 		<img src="https://img.shields.io/npm/dt/veza.svg?maxAge=3600" alt="NPM downloads" />
 	</a>
     <a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=1&branchName=master">
