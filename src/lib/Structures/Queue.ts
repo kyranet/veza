@@ -20,12 +20,15 @@ import { Node } from '../Node';
  */
 export class Queue extends Map<string, QueueEntry> {
 
-	private nodeSocket: NodeSocket;
-	private _rest: Buffer | null = null;
+	private nodeSocket!: NodeSocket;
+	private _rest!: Buffer | null;
 
 	public constructor(nodeSocket: any) {
 		super();
-		this.nodeSocket = nodeSocket;
+		Object.defineProperties(this, {
+			nodeSocket: { value: nodeSocket },
+			_rest: { value: null, writable: true }
+		});
 	}
 
 	/**

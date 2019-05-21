@@ -6,11 +6,13 @@ import { Socket } from 'net';
 
 export class NodeServerClient extends SocketHandler {
 
-	public server: NodeServer;
+	public readonly server!: NodeServer;
 
 	public constructor(node: Node, server: NodeServer, socket: Socket) {
 		super(node, null, socket);
-		this.server = server;
+		Object.defineProperties(this, {
+			server: { value: server }
+		});
 	}
 
 	public async setup() {

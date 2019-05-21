@@ -22,16 +22,16 @@ export class NodeMessage {
 	/**
 	 * Whether the message is receptive or not
 	 */
-	public receptive: boolean;
+	public readonly receptive!: boolean;
 
 	public constructor(client: SocketHandler, id: string, receptive: boolean, data: any) {
 		Object.defineProperties(this, {
 			client: { value: client },
-			id: { value: id }
+			id: { value: id, enumerable: true },
+			receptive: { value: receptive, enumerable: true }
 		});
 
 		this.data = data;
-		this.receptive = receptive;
 	}
 
 	/**

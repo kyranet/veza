@@ -5,6 +5,7 @@ import { Node } from '../src/index';
 const node = new Node('world')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
 	.on('client.disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('client.destroy', client => console.error(`[IPC] Client Destroyed: ${client.name}`))
 	.on('client.ready', async client => {
 		console.log(`[IPC] Connected to: ${client.name}`);
 		try {

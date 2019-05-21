@@ -8,15 +8,15 @@ export class NodeServer {
 	/**
 	 * The Node instance that manages this
 	 */
-	public node!: Node;
+	public readonly node!: Node;
+	public readonly clients!: Map<string, NodeServerClient | NodeSocket>;
 	public server!: Server | null;
-	public clients!: Map<string, NodeServerClient | NodeSocket>;
 
 	public constructor(node: Node) {
 		Object.defineProperties(this, {
-			node: { value: node, writable: true },
+			node: { value: node },
 			server: { value: null, writable: true },
-			clients: { value: new Map(), writable: true }
+			clients: { value: new Map(), enumerable: true }
 		});
 	}
 

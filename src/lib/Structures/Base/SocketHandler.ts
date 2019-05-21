@@ -12,7 +12,7 @@ export class SocketHandler extends Base {
 	/**
 	 * The socket that connects Veza to the network
 	 */
-	public socket!: Socket | null;
+	public socket: Socket | null;
 
 	/**
 	 * The status of this client
@@ -26,10 +26,7 @@ export class SocketHandler extends Base {
 
 	public constructor(node: Node, name: string | null, socket: Socket | null = null) {
 		super(node, name);
-		Object.defineProperties(this, {
-			socket: { value: socket, writable: true },
-			queue: { value: null, writable: true }
-		});
+		this.socket = socket;
 	}
 
 	/**
@@ -85,6 +82,7 @@ export class SocketHandler extends Base {
 
 		this.socket.destroy();
 		this.socket.removeAllListeners();
+		this.socket = null;
 
 		if (this.queue.size) {
 			const rejectError = new Error('Socket has been disconnected.');

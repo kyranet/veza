@@ -6,14 +6,15 @@ import { Node } from '../Node';
 export class NodeSocket extends SocketHandler {
 
 	private retriesRemaining: number;
-	private _reconnectionTimeout: NodeJS.Timer | null = null;
+	private _reconnectionTimeout!: NodeJS.Timer | null;
 
 	public constructor(node: Node, name: string, socket = null) {
 		super(node, name, socket);
 		this.retriesRemaining = node.maxRetries;
 
-		Object.defineProperty(this, '_reconnectionTimeout', { writable: true });
-		this._reconnectionTimeout = null;
+		Object.defineProperties(this, {
+			_reconnectionTimeout: { value: null, writable: true }
+		});
 	}
 
 	/**
@@ -69,6 +70,7 @@ export class NodeSocket extends SocketHandler {
 			this._reconnectionTimeout = null;
 		}
 
+		this.socket = null;
 		this.node.servers.delete(this.name!);
 		this.node.emit('client.destroy', this);
 		return true;
