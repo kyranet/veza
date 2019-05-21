@@ -1,13 +1,16 @@
-const {
+import {
 	// Symbols
-	kPing, kIdentify, kInvalidMessage,
+	kPing,
+	kIdentify,
+	kInvalidMessage,
 
 	// Constants
 	R_MESSAGE_TYPES,
 
 	// Helpers
-	toBigInt, decompressSmallInteger
-} = require('../Util/Constants');
+	toBigInt,
+	decompressSmallInteger
+} from '../Util/Constants';
 const { readHeader } = require('../Util/Header');
 
 /**
@@ -22,7 +25,10 @@ const { readHeader } = require('../Util/Header');
  */
 class Queue extends Map {
 
-	constructor(nodeSocket) {
+	nodeSocket: any;
+	_rest: any;
+
+	constructor(nodeSocket: any) {
 		super();
 		this.nodeSocket = nodeSocket;
 		this._rest = null;
@@ -70,7 +76,7 @@ class Queue extends Map {
 	 * @memberof Queue
 	 */
 
-	*process(buffer) {
+	*process(buffer: Buffer) {
 		if (this._rest) {
 			buffer = Buffer.concat([this._rest, buffer]);
 			this._rest = null;
@@ -114,7 +120,8 @@ class Queue extends Map {
 		this._rest = null;
 	}
 
-	_readMessage(body, type) { // eslint-disable-line complexity
+	_readMessage(body: Buffer, type: string) {
+		// eslint-disable-line complexity
 		if (type === 'PING') return kPing;
 		if (type === 'IDENTIFY') return kIdentify;
 		if (type === 'NULL') return null;
@@ -133,13 +140,13 @@ class Queue extends Map {
 		if (type === 'MAP') return new Map(JSON.parse(bodyString));
 		if (type === 'SET') return new Set(JSON.parse(bodyString));
 		if (type === 'ARRAY_BUFFER') return new ArrayBuffer(JSON.parse(bodyString));
-		if (type === 'FLOAT32_ARRAY') return new Float32Array(JSON.parse(bodyString));
-		if (type === 'FLOAT64_ARRAY') return new Float64Array(JSON.parse(bodyString));
+		if (type === 'FLOAT32_ARRAY') { return new Float32Array(JSON.parse(bodyString)); }
+		if (type === 'FLOAT64_ARRAY') { return new Float64Array(JSON.parse(bodyString)); }
 		if (type === 'INT8_ARRAY') return new Int8Array(JSON.parse(bodyString));
 		if (type === 'INT16_ARRAY') return new Int16Array(JSON.parse(bodyString));
 		if (type === 'INT32_ARRAY') return new Int32Array(JSON.parse(bodyString));
 		if (type === 'UINT8_ARRAY') return new Uint8Array(JSON.parse(bodyString));
-		if (type === 'UINT8_CLAMPEDARRAY') return new Uint8ClampedArray(JSON.parse(bodyString));
+		if (type === 'UINT8_CLAMPEDARRAY') { return new Uint8ClampedArray(JSON.parse(bodyString)); }
 		if (type === 'UINT16_ARRAY') return new Uint16Array(JSON.parse(bodyString));
 		if (type === 'UINT32_ARRAY') return new Uint32Array(JSON.parse(bodyString));
 
@@ -147,5 +154,4 @@ class Queue extends Map {
 	}
 
 }
-
-module.exports = Queue;
+export default Queue;

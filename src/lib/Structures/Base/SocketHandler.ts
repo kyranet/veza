@@ -1,13 +1,25 @@
-const { kPing, kIdentify, kInvalidMessage, STATUS } = require('../../Util/Constants');
-const { _packMessage } = require('../../Util/Transform');
+import {
+	kPing,
+	kIdentify,
+	kInvalidMessage,
+	STATUS
+} from '../../Util/Constants';
+const Transform = require('../../Util/Transform');
+const { _packMessage } = Transform;
 const { createID } = require('../../Util/Header');
-const NodeMessage = require('../NodeMessage');
-const Queue = require('../Queue');
-const Base = require('./Base');
+import NodeMessage from '../NodeMessage';
+import Queue from '../Queue';
+import NodeSocket from '../NodeSocket';
+import Base from './Base';
+import { SendOptions } from 'veza';
 
 class SocketHandler extends Base {
 
-	constructor(node, name, socket = null) {
+	socket: NodeSocket | null;
+	private queue: Queue;
+	private status: number;
+
+	constructor(node: Node, name: null | undefined, socket = null) {
 		super(node, name);
 		Object.defineProperties(this, {
 			socket: { value: null, writable: true },
@@ -30,8 +42,15 @@ class SocketHandler extends Base {
 	 * @param {SendOptions} [options={}] The options for this message
 	 * @returns {Promise<*>}
 	 */
-	send(data, { receptive = true, timeout = Infinity } = {}) {
-		if (!this.socket) return Promise.reject(new Error('This NodeSocket is not connected to a socket.'));
+	send(
+		data: any,
+		{ receptive = true, timeout = Infinity }: SendOptions = {}
+	): Promise<any> {
+		if (!this.socket) {
+			return Promise.reject(
+				new Error('This NodeSocket is not connected to a socket.')
+			);
+		}
 
 		return new Promise((resolve, reject) => {
 			const id = createID();
@@ -44,10 +63,15 @@ class SocketHandler extends Base {
 					return;
 				}
 
-				const timer = timeout !== Infinity && timeout !== -1
-					? setTimeout(() => send(reject, true, new Error('TIMEOUT_ERROR')), timeout)
-					: null;
-				const send = (fn, fromTimer, response) => {
+				const timer
+		  = timeout !== Infinity && timeout !== -1
+		  	? setTimeout(
+		  		// eslint-disable-next-line no-use-before-define
+		  		() => send(reject, true, new Error('TIMEOUT_ERROR')),
+		  		timeout
+		  	)
+		  	: null;
+				const send = (fn: Function, fromTimer: boolean, response: any) => {
 					if (timer && !fromTimer) clearTimeout(timer);
 					this.queue.delete(id);
 					return fn(response);
@@ -68,7 +92,7 @@ class SocketHandler extends Base {
 	 * Disconnect from the socket, this will also reject all messages
 	 * @returns {boolean}
 	 */
-	disconnect() {
+	disconnect(): boolean {
 		if (!this.socket) return false;
 
 		this.socket.destroy();
@@ -88,9 +112,9 @@ class SocketHandler extends Base {
 	 * Measure the latency between the server and this client
 	 * @returns {Promise<number>}
 	 */
-	ping() {
+	ping(): Promise<number> {
 		const now = Date.now();
-		return this.send(kPing).then((future) => future - now);
+		return this.send(kPing).then(future => future - now);
 	}
 
 	/**
@@ -100,7 +124,7 @@ class SocketHandler extends Base {
 	 * @returns {this}
 	 * @chainable
 	 */
-	on(event, cb) {
+	on(event: string, cb: Function): this {
 		if (this.socket) this.socket.on(event, cb);
 		return this;
 	}
@@ -112,7 +136,7 @@ class SocketHandler extends Base {
 	 * @returns {this}
 	 * @chainable
 	 */
-	once(event, cb) {
+	once(event: string, cb: Function): this {
 		if (this.socket) this.socket.once(event, cb);
 		return this;
 	}
@@ -124,16 +148,20 @@ class SocketHandler extends Base {
 	 * @returns {this}
 	 * @chainable
 	 */
-	off(event, cb) {
+	off(event: string, cb: Function): this {
 		if (this.socket) this.socket.off(event, cb);
 		return this;
 	}
 
-	_onData(data) {
+	_onData(data: any) {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
 			if (processed === kInvalidMessage) {
-				this.node.emit('error', new Error('Failed to process message, destroying Socket.'), this);
+				this.node.emit(
+					'error',
+					new Error('Failed to process message, destroying Socket.'),
+					this
+				);
 				this.disconnect();
 				break;
 			}
@@ -143,7 +171,15 @@ class SocketHandler extends Base {
 		}
 	}
 
-	_handleMessage({ id, receptive, data }) {
+	_handleMessage({
+		id,
+		receptive,
+		data
+	}: {
+		id: string;
+		receptive: boolean;
+		data: any;
+	}) {
 		if (this.queue.has(id)) {
 			this.queue.get(id).resolve(data);
 			return null;
@@ -161,4 +197,4 @@ class SocketHandler extends Base {
 
 }
 
-module.exports = SocketHandler;
+export default SocketHandler;

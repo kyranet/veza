@@ -1,7 +1,7 @@
-const { EventEmitter } = require('events');
-const NodeSocket = require('./Structures/NodeSocket');
-const NodeServer = require('./Structures/NodeServer');
-const { Socket } = require('net');
+import { EventEmitter } from 'events';
+import NodeSocket from './Structures/NodeSocket';
+import NodeServer from './Structures/NodeServer';
+import { NodeOptions, SendOptions, BroadcastOptions } from 'veza';
 
 class Node extends EventEmitter {
 
@@ -11,14 +11,25 @@ class Node extends EventEmitter {
 	 * @property {number} [retryTime = 200]
 	 */
 
+	public name: string;
+	private maxRetries: number;
+	private retryTime: number;
+	private server: NodeServer | null;
+	private servers: Map<string, NodeSocket>;
+
 	/**
 	 * @param {string} name The name for this Node
 	 * @param {NodeOptions} [options={}] The options for this Node instance
 	 */
-	constructor(name, { maxRetries = Infinity, retryTime = 200 } = {}) {
+	constructor(
+		name: string,
+		{ maxRetries = Infinity, retryTime = 200 }: NodeOptions = {}
+	) {
 		super();
 
-		if (typeof name !== 'string') throw new Error('A Node name must be specified and must be a string.');
+		if (typeof name !== 'string') {
+			throw new Error('A Node name must be specified and must be a string.');
+		}
 
 		/**
 		 * The name for this Node
@@ -27,15 +38,15 @@ class Node extends EventEmitter {
 		this.name = name;
 
 		/**
-		 * The amount of retries this Node will do when reconnecting
-		 * @type {number}
-		 */
+	 	 * The amount of retries this Node will do when reconnecting
+	 	 * @type {number}
+	 	 */
 		this.maxRetries = maxRetries;
 
 		/**
-		 * The time between connection retries
-		 * @type {number}
-		 */
+	 	 * The time between connection retries
+	 	 * @type {number}
+	 	 */
 		this.retryTime = retryTime;
 
 		Object.defineProperties(this, {
@@ -63,9 +74,15 @@ class Node extends EventEmitter {
 	 * @param {SendOptions} [options={}] The options for this message
 	 * @returns {Promise<*>}
 	 */
-	sendTo(name, data, options) {
+	sendTo(name: string, data: any, options: SendOptions): Promise<any> {
 		const socket = this.get(name);
-		if (!socket) return Promise.reject(new Error(`The socket ${name} is not available or not connected to this Node.`));
+		if (!socket) {
+			return Promise.reject(
+				new Error(
+					`The socket ${name} is not available or not connected to this Node.`
+				)
+			);
+		}
 		return socket.send(data, options);
 	}
 
@@ -75,8 +92,12 @@ class Node extends EventEmitter {
 	 * @param {...*} options The options to pass to connect
 	 * @returns {Promise<NodeSocket>}
 	 */
-	connectTo(name, ...options) {
-		if (this.servers.has(name)) return Promise.reject(new Error(`There is already a socket called ${name}`));
+	connectTo(name: string, ...options: any[]): Promise<NodeSocket> {
+		if (this.servers.has(name)) {
+			return Promise.reject(
+				new Error(`There is already a socket called ${name}`)
+			);
+		}
 		const client = new NodeSocket(this, name);
 		this.servers.set(name, client);
 
@@ -88,9 +109,13 @@ class Node extends EventEmitter {
 	 * @param {string} name The label name of the socket to disconnect
 	 * @returns {Promise<boolean>}
 	 */
-	disconnectFrom(name) {
+	disconnectFrom(name: string): Promise<boolean> {
 		const client = this.get(name);
-		if (!client) return Promise.reject(new Error(`The socket ${name} is not connected to this one.`));
+		if (!client) {
+			return Promise.reject(
+				new Error(`The socket ${name} is not connected to this one.`)
+			);
+		}
 		return Promise.resolve(client.disconnect());
 	}
 
@@ -100,8 +125,10 @@ class Node extends EventEmitter {
 	 * @param {BroadcastOptions} [options={}] The options for this broadcast
 	 * @returns {Promise<Array<*>>}
 	 */
-	broadcast(data, options) {
-		return this.server ? this.server.broadcast(data, options) : Promise.resolve([]);
+	broadcast(data: any, options: BroadcastOptions): Promise<Array<any>> {
+		return this.server
+			? this.server.broadcast(data, options)
+			: Promise.resolve([]);
 	}
 
 	/**
@@ -109,12 +136,11 @@ class Node extends EventEmitter {
 	 * @param {...*} options The options to pass to net.Server#listen
 	 * @returns {Promise<this>}
 	 */
-	serve(...options) {
+	serve(...options: any[]): Promise<this> {
 		if (this.server) throw new Error('There is already a server running.');
 
 		this.server = new NodeServer(this);
-		return this.server.connect(...options)
-			.then(() => this);
+		return this.server.connect(...options).then(() => this);
 	}
 
 	/**
@@ -122,14 +148,14 @@ class Node extends EventEmitter {
 	 * @param {string|Socket} name The name of the socket
 	 * @returns {NodeServer|NodeServerClient|NodeSocket}
 	 */
-	get(name) {
-		if (name instanceof Socket) return name;
+	get(name: string | NodeSocket) {
+		if (name instanceof NodeSocket) return name;
 		return (this.server && this.server.get(name)) || this.servers.get(name);
 	}
 
 }
 
-module.exports = Node;
+export default Node;
 
 /**
  * Emitted on a successful connection to a Socket

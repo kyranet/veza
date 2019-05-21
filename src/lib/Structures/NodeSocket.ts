@@ -1,10 +1,10 @@
-const SocketHandler = require('./Base/SocketHandler');
-const { STATUS } = require('../Util/Constants');
-const { Socket } = require('net');
+import SocketHandler from './Base/SocketHandler';
+import { STATUS } from '../Util/Constants';
+import { Socket } from 'net';
 
 class NodeSocket extends SocketHandler {
 
-	constructor(node, name, socket = null) {
+	constructor(node: Node, name: string, socket = null) {
 		super(node, name, socket);
 		this.retriesRemaining = node.maxRetries;
 
@@ -17,19 +17,23 @@ class NodeSocket extends SocketHandler {
 	 * @param {...*} options The options to pass to connect
 	 * @returns {Promise<NodeSocket>}
 	 */
-	async connect(...options) {
+	async connect(...options: any[]) {
 		if (!this.socket) this.socket = new Socket();
 
 		await new Promise((resolve, reject) => {
+			// eslint-disable-next-line no-use-before-define
 			const onConnect = () => resolve(cleanup(this));
+			// eslint-disable-next-line no-use-before-define
 			const onClose = () => reject(cleanup(this));
-			const onError = (error) => reject(cleanup(error));
-			const cleanup = (value) => {
+			// eslint-disable-next-line no-use-before-define
+			const onError = (error: any) => reject(cleanup(error));
+			const cleanup = (value: any) => {
 				this.socket.off('connect', onConnect);
 				this.socket.off('close', onClose);
 				this.socket.off('error', onError);
 				return value;
 			};
+
 			this.socket
 				.on('connect', onConnect)
 				.on('close', onClose)
@@ -54,7 +58,7 @@ class NodeSocket extends SocketHandler {
 	 * Disconnect from the socket, this will also reject all messages
 	 * @returns {boolean}
 	 */
-	disconnect() {
+	disconnect(): boolean {
 		if (!super.disconnect()) return false;
 
 		if (this._reconnectionTimeout) {
@@ -76,7 +80,7 @@ class NodeSocket extends SocketHandler {
 		this.node.emit('client.connect', this);
 	}
 
-	_onClose(...options) {
+	_onClose(...options: any[]) {
 		this.node.emit('client.disconnect', this);
 		this._reconnectionTimeout = setTimeout(() => {
 			if (this.retriesRemaining === 0) {
@@ -89,7 +93,7 @@ class NodeSocket extends SocketHandler {
 		}, this.node.retryTime);
 	}
 
-	_onError(error) {
+	_onError(error: any) {
 		const { code } = error;
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
 			if (this.status !== STATUS.DISCONNECTED) return;
@@ -102,4 +106,4 @@ class NodeSocket extends SocketHandler {
 
 }
 
-module.exports = NodeSocket;
+export default NodeSocket;

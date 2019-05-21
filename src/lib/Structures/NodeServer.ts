@@ -1,6 +1,7 @@
-const { Server, Socket } = require('net');
-const NodeServerClient = require('./NodeServerClient');
-const NodeSocket = require('./NodeSocket');
+import { Server, Socket } from 'net';
+import NodeServerClient from './NodeServerClient';
+import NodeSocket from './NodeSocket';
+import { BroadcastOptions, SendOptions } from 'veza';
 
 class NodeServer {
 
@@ -15,7 +16,11 @@ class NodeServer {
 	 * @property {RegExp} [filter] The filter for the broadcast
 	 */
 
-	constructor(node) {
+	node: Node;
+	server: any;
+	clients: Map<string, NodeServerClient | NodeSocket>;
+
+	constructor(node: Node) {
 		Object.defineProperties(this, {
 			node: { value: null, writable: true },
 			server: { value: null, writable: true },
@@ -44,11 +49,15 @@ class NodeServer {
 	 * @param {string|Socket|NodeServerClient|NodeSocket} name The NodeSocket to get
 	 * @returns {NodeServerClient|NodeSocket}
 	 */
-	get(name) {
+	get(name: string | Socket | NodeServerClient | NodeSocket) {
 		if (typeof name === 'string') return this.clients.get(name) || null;
-		if (name instanceof NodeServerClient || name instanceof NodeSocket) return name;
+		if (name instanceof NodeServerClient || name instanceof NodeSocket) {
+			return name;
+		}
 		if (name instanceof Socket) {
-			for (const client of this.clients.values()) if (client.socket === name) return client;
+			for (const client of this.clients.values()) {
+				if (client.socket === name) return client;
+			}
 			return null;
 		}
 
@@ -60,7 +69,7 @@ class NodeServer {
 	 * @param {string|Socket|NodeServerClient|NodeSocket} name The NodeSocket to get
 	 * @returns {boolean}
 	 */
-	has(name) {
+	has(name: string | Socket | NodeServerClient | NodeSocket): boolean {
 		return Boolean(this.get(name));
 	}
 
@@ -70,12 +79,19 @@ class NodeServer {
 	 * @param {BroadcastOptions} [options={}] The options for this broadcast
 	 * @returns {Promise<Array<*>>}
 	 */
-	broadcast(data, { receptive, timeout, filter } = {}) {
-		if (filter && !(filter instanceof RegExp)) throw new TypeError(`filter must be a RegExp instance.`);
+	broadcast(
+		data: any,
+		{ receptive, timeout, filter }: BroadcastOptions = {}
+	): Promise<Array<any>> {
+		if (filter && !(filter instanceof RegExp)) {
+			throw new TypeError(`filter must be a RegExp instance.`);
+		}
 
-		const test = filter ? (name) => filter.test(name) : () => true;
+		const test = filter ? (name: string) => filter.test(name) : () => true;
 		const promises = [];
-		for (const [name, client] of this.clients.entries()) if (test(name)) promises.push(client.send(data, { receptive, timeout }));
+		for (const [name, client] of this.clients.entries()) {
+			if (test(name)) promises.push(client.send(data, { receptive, timeout }));
+		}
 		return Promise.all(promises);
 	}
 
@@ -86,9 +102,19 @@ class NodeServer {
 	 * @param {SendOptions} [options={}] The options for this message
 	 * @returns {Promise<*>}
 	 */
-	sendTo(name, data, options) {
+	sendTo(
+		name: string | Socket | NodeSocket,
+		data: any,
+		options: SendOptions
+	): Promise<any> {
 		const nodeSocket = this.get(name);
-		if (!nodeSocket) return Promise.reject(new Error('Failed to send to the socket: It is not connected to this Node.'));
+		if (!nodeSocket) {
+			return Promise.reject(
+				new Error(
+					'Failed to send to the socket: It is not connected to this Node.'
+				)
+			);
+		}
 		return nodeSocket.send(data, options);
 	}
 
@@ -97,15 +123,18 @@ class NodeServer {
 	 * @param {...*} options The options to pass to net.Server#listen
 	 * @returns {Promise<void>}
 	 */
-	async connect(...options) {
+	async connect(...options: any[]): Promise<void> {
 		if (this.server) throw new Error('There is already a server.');
 
 		this.server = new Server();
 		await new Promise((resolve, reject) => {
+			// eslint-disable-next-line no-use-before-define
 			const onListening = () => resolve(cleanup(this));
+			// eslint-disable-next-line no-use-before-define
 			const onClose = () => reject(cleanup(this));
-			const onError = (error) => reject(cleanup(error));
-			const cleanup = (value) => {
+			// eslint-disable-next-line no-use-before-define
+			const onError = (error: any) => reject(cleanup(error));
+			const cleanup = (value: any) => {
 				this.server.off('listening', onListening);
 				this.server.off('close', onClose);
 				this.server.off('error', onError);
@@ -130,7 +159,7 @@ class NodeServer {
 	 * Disconnect the server and rejects all current messages
 	 * @returns {boolean}
 	 */
-	disconnect() {
+	disconnect(): boolean {
 		if (!this.server) return false;
 
 		this.server.close();
@@ -139,8 +168,9 @@ class NodeServer {
 		this.node.emit('server.destroy', this);
 
 		const rejectError = new Error('Server has been disconnected.');
-		for (const socket of this.clients.values())
+		for (const socket of this.clients.values()) {
 			for (const element of socket.queue.values()) element.reject(rejectError);
+		}
 
 		return true;
 	}
@@ -159,4 +189,4 @@ class NodeServer {
 
 }
 
-module.exports = NodeServer;
+export default NodeServer;

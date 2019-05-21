@@ -1,19 +1,31 @@
+import { SocketHandler } from 'veza';
+
 const { _packMessage } = require('../Util/Transform');
 
 class NodeMessage {
 
-	constructor(client, id, receptive, data) {
+	data: any;
+	receptive: boolean;
+	client: SocketHandler;
+	id: string;
+
+	constructor(
+		client: SocketHandler,
+		id: string,
+		receptive: boolean,
+		data: any
+	) {
 		Object.defineProperties(this, {
 			client: { value: client },
 			id: { value: id }
 		});
 
 		/**
-		 * The client that received this message
-		 * @type {SocketHandler}
-		 * @name NodeMessage#client
-		 * @property
-		 */
+	 	 * The client that received this message
+	 	 * @type {SocketHandler}
+	 	 * @name NodeMessage#client
+	 	 * @property
+	 	 */
 
 		/**
 		 * The id of this message
@@ -47,8 +59,8 @@ class NodeMessage {
 	 * Reply to the socket
 	 * @param {*} content The content to send
 	 */
-	reply(content) {
-		if (this.receptive) this.client.socket.write(_packMessage(this.id, content, false));
+	reply(content: any) {
+		if (this.receptive) { this.client.socket.write(_packMessage(this.id, content, false)); }
 	}
 
 	toJSON() {
@@ -68,10 +80,10 @@ class NodeMessage {
 	 * @returns {Readonly<this>}
 	 * @private
 	 */
-	freeze() {
+	freeze(): Readonly<this> {
 		return Object.freeze(this);
 	}
 
 }
 
-module.exports = NodeMessage;
+export default NodeMessage;
