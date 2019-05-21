@@ -34,11 +34,12 @@ export const S_MESSAGE_TYPES = Object.freeze({
 //   export const R_MESSAGE_TYPES= null;
 export const BUFFER_NULL = Buffer.from('\0');
 export const BUFFER_NL = Buffer.from('\n');
-export const STATUS = Object.freeze({
-	READY: 0,
-	CONNECTING: 1,
-	DISCONNECTED: 2
-});
+export enum SocketStatus {
+	Idle,
+	Ready,
+	Connecting,
+	Disconnected
+}
 
 // Helpers
 export const toBigInt = typeof BigInt === 'function' ? BigInt : Number;

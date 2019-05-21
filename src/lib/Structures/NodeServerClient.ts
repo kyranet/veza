@@ -1,5 +1,5 @@
 import { SocketHandler } from './Base/SocketHandler';
-import { kIdentify, STATUS } from '../Util/Constants';
+import { kIdentify, SocketStatus } from '../Util/Constants';
 import { NodeServer } from './NodeServer';
 import { Node } from '../Node';
 import { Socket } from 'net';
@@ -7,7 +7,6 @@ import { Socket } from 'net';
 export class NodeServerClient extends SocketHandler {
 
 	public server: NodeServer;
-	public status: any;
 
 	public constructor(node: Node, server: NodeServer, socket: Socket) {
 		super(node, null, socket);
@@ -22,7 +21,7 @@ export class NodeServerClient extends SocketHandler {
 
 		try {
 			const sName = await this.send(kIdentify);
-			this.status = STATUS.READY;
+			this.status = SocketStatus.Ready;
 			this.name = sName;
 
 			// Disconnect if a previous socket existed.
@@ -55,8 +54,8 @@ export class NodeServerClient extends SocketHandler {
 	private _onError(error: any) {
 		const { code } = error;
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
-			if (this.status !== STATUS.DISCONNECTED) return;
-			this.status = STATUS.DISCONNECTED;
+			if (this.status !== SocketStatus.Disconnected) return;
+			this.status = SocketStatus.Disconnected;
 			this.node.emit('client.disconnect', this);
 		} else {
 			this.node.emit('error', error, this);

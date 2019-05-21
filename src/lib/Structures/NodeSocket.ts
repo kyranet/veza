@@ -1,5 +1,5 @@
 import { SocketHandler } from './Base/SocketHandler';
-import { STATUS } from '../Util/Constants';
+import { SocketStatus } from '../Util/Constants';
 import { Socket } from 'net';
 import { Node } from '../Node';
 
@@ -21,8 +21,8 @@ export class NodeSocket extends SocketHandler {
 	 * @param options The options to pass to connect
 	 */
 	public async connect(...options: any[]): Promise<this> {
+		this.status = SocketStatus.Connecting;
 		if (!this.socket) this.socket = new Socket();
-
 		await new Promise((resolve, reject) => {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			const onConnect = () => resolve(cleanup(this));
@@ -46,7 +46,7 @@ export class NodeSocket extends SocketHandler {
 			this.socket!.connect(...options);
 		});
 
-		this.status = STATUS.READY;
+		this.status = SocketStatus.Ready;
 		this.node.emit('client.ready', this);
 		this.socket
 			.on('data', this._onData.bind(this))
@@ -99,8 +99,8 @@ export class NodeSocket extends SocketHandler {
 	private _onError(error: any) {
 		const { code } = error;
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
-			if (this.status !== STATUS.DISCONNECTED) return;
-			this.status = STATUS.DISCONNECTED;
+			if (this.status !== SocketStatus.Disconnected) return;
+			this.status = SocketStatus.Disconnected;
 			this.node.emit('client.disconnect', this);
 		} else {
 			this.node.emit('error', error, this);

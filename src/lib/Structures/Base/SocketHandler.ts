@@ -1,4 +1,4 @@
-import { kPing, kIdentify, kInvalidMessage, STATUS } from '../../Util/Constants';
+import { kPing, kIdentify, kInvalidMessage, SocketStatus } from '../../Util/Constants';
 import { _packMessage } from '../../Util/Transform';
 import { createID } from '../../Util/Header';
 import { NodeMessage } from '../NodeMessage';
@@ -14,11 +14,10 @@ export class SocketHandler extends Base {
 	 */
 	public socket!: Socket | null;
 
-	// TODO(kyranet): Change this to an enum
 	/**
 	 * The status of this client
 	 */
-	public status: number = STATUS.CONNECTING;
+	public status: SocketStatus = SocketStatus.Connecting;
 
 	/**
 	 * The incoming message queue for this handler
@@ -35,9 +34,8 @@ export class SocketHandler extends Base {
 
 	/**
 	 * Send a message to a connected socket
-	 * @param {*} data The data to send to the socket
-	 * @param {SendOptions} [options={}] The options for this message
-	 * @returns {Promise<*>}
+	 * @param data The data to send to the socket
+	 * @param options The options for this message
 	 */
 	public send(data: any, { receptive = true, timeout = Infinity }: SendOptions = {}): Promise<any> {
 		if (!this.socket) {
@@ -81,7 +79,6 @@ export class SocketHandler extends Base {
 
 	/**
 	 * Disconnect from the socket, this will also reject all messages
-	 * @returns {boolean}
 	 */
 	public disconnect(): boolean {
 		if (!this.socket) return false;
@@ -94,7 +91,7 @@ export class SocketHandler extends Base {
 			for (const element of this.queue.values()) element.reject(rejectError);
 		}
 
-		this.status = STATUS.DISCONNECTED;
+		this.status = SocketStatus.Disconnected;
 
 		return true;
 	}
