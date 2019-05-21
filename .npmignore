@@ -8,15 +8,17 @@ logs/
 
 # Miscellaneous
 .tmp/
-.vscode/
 docs/
 
 # NPM ignore
-.eslintignore
+.github/
+.vs/
+.vscode/
+.idea/
+examples/
+test/
 .eslintrc.json
 .gitattributes
-.github/
 .gitignore
 .travis.yml
-test/
-tslint.json
+tsconfig.json
