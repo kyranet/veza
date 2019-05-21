@@ -2,26 +2,31 @@
 // This Node is a socket that replies to hello.js with "world!" when it receives "Hello".
 
 // This example tests concurrency with parallel messages in IPC.
-const { Node } = require('../src/index');
-const sleep = require('util').promisify(setTimeout);
+import { Node } from '../src/index';
+import { promisify } from 'util';
+
+const sleep = promisify(setTimeout);
 const TIMES = 10000;
 
 const node = new Node('concurrent')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
-	.on('client.disconnect', (client) => console.error(`[IPC] Disconnected from ${client.name}`))
-	.on('client.ready', async (client) => {
+	.on('client.disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('client.ready', async client => {
 		console.log(`[IPC] Connected to: ${client.name}`);
 		console.log(`[IPC] Attempting to send and receive ${TIMES} messages...`);
-		let failed = 0, resolved = 0;
+		let failed = 0;
+		let resolved = 0;
 		let logged = false;
 		const before = Date.now();
 		for (let i = 0; i < TIMES; i++) {
 			// Let Node.js "breathe"
 			if (i % 1000 === 0) await sleep(1);
 
+			// eslint-disable-next-line promise/catch-or-return
 			client.send(`Test ${i}`)
-				.then(() => { resolved++; })
-				.catch(() => { failed++; })
+				// eslint-disable-next-line promise/prefer-await-to-then
+				.then(() => resolved++)
+				.catch(() => failed++)
 				.finally(() => {
 					if (logged || failed + resolved !== TIMES) return;
 					// Show how long it took
@@ -35,4 +40,4 @@ const node = new Node('concurrent')
 
 // Connect to hello
 node.connectTo('hello', 8001)
-	.catch((error) => console.error('[IPC] Disconnected!', error));
+	.catch(error => console.error('[IPC] Disconnected!', error));
