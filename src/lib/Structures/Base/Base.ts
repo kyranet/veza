@@ -10,12 +10,11 @@ class Base {
 		 * The Node instance that manages this
 		 * @type {Node}
 		 */
-		this.node = node;		
-
+		this.node = node;
 		/**
 		 * The name of this client
-		 * @type {string} 
-		 */  
+		 * @type {string}
+		 */
 		this.name = name;
 	}
 
