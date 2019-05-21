@@ -1,29 +1,29 @@
 # Veza <img src="https://github.com/kyranet/veza/blob/master/static/logo.png?raw=true" align="right" width="30%">
 
 <div align="center">
-  <p>
-    <a href="https://www.npmjs.com/package/veza">
-		<img src="https://img.shields.io/npm/v/veza.svg?maxAge=3600" alt="NPM version" />
-	</a>
-    <a href="https://www.npmjs.com/package/veza">
-		<img src="https://img.shields.io/npm/dt/veza.svg?maxAge=3600" alt="NPM downloads" />
-	</a>
-    <a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=1&branchName=master">
-		<img src="https://dev.azure.com/kyranet/kyranet.public/_apis/build/status/kyranet.veza?branchName=master" alt="Build status" />
-	</a>
-	<a href="https://lgtm.com/projects/g/kyranet/veza/alerts/">
-		<img src="https://img.shields.io/lgtm/alerts/g/kyranet/veza.svg?logo=lgtm&logoWidth=18" alt="Total alerts">
-	</a>
-	<a href="https://dependabot.com">
-		<img src="https://api.dependabot.com/badges/status?host=github&repo=kyranet/veza" alt="Dependabot Status">
-	</a>
-    <a href="https://www.patreon.com/kyranet">
-		<img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" />
-	</a>
-  </p>
-  <p>
-    <a href="https://nodei.co/npm/veza/"><img src="https://nodei.co/npm/veza.png?downloads=true&stars=true" alt="npm installnfo" /></a>
-  </p>
+	<p>
+		<a href="https://www.npmjs.com/package/veza">
+			<img src="https://img.shields.io/npm/v/veza.svg?maxAge=3600" alt="NPM version" />
+		</a>
+		<a href="https://www.npmjs.com/package/veza">
+			<img src="https://img.shields.io/npm/dt/veza.svg?maxAge=3600" alt="NPM downloads" />
+		</a>
+		<a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=1&branchName=master">
+			<img src="https://dev.azure.com/kyranet/kyranet.public/_apis/build/status/kyranet.veza?branchName=master" alt="Build status" />
+		</a>
+		<a href="https://lgtm.com/projects/g/kyranet/veza/alerts/">
+			<img src="https://img.shields.io/lgtm/alerts/g/kyranet/veza.svg?logo=lgtm&logoWidth=18" alt="Total alerts">
+		</a>
+		<a href="https://dependabot.com">
+			<img src="https://api.dependabot.com/badges/status?host=github&repo=kyranet/veza" alt="Dependabot Status">
+		</a>
+		<a href="https://www.patreon.com/kyranet">
+			<img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" />
+		</a>
+	</p>
+	<p>
+		<a href="https://nodei.co/npm/veza/"><img src="https://nodei.co/npm/veza.png?downloads=true&stars=true" alt="npm installnfo" /></a>
+	</p>
 </div>
 
 ## About
