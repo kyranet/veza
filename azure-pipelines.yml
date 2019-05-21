@@ -20,4 +20,4 @@ jobs:
       - script: yarn
         displayName: 'Install Dependencies'
       - script: 'yarn build'
-        displayName: 'Build'
+        displayName: 'Test Build'
