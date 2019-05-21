@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublishOnly": "yarn build",
+    "test:lint": "eslint --ext ts src examples",
     "lint": "eslint --ext ts src examples --fix",
-    "test": "eslint --ext ts src examples",
     "build": "tsc -p ."
   },
   "repository": {
