@@ -24,6 +24,14 @@ export class NodeServerClient extends SocketHandler {
 			const sName = await this.send(kIdentify);
 			this.status = STATUS.READY;
 			this.name = sName;
+
+			// Disconnect if a previous socket existed.
+			const existing = this.server.clients.get(sName);
+			if (existing) {
+				existing.disconnect();
+			}
+
+			// Add this socket to the clients.
 			this.server.clients.set(sName, this);
 			this.node.emit('client.identify', this);
 		} catch {
