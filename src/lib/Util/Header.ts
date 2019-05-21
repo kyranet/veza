@@ -23,19 +23,14 @@ function fill(bytes: number[], length: number) {
 	return bytes;
 }
 
-function createHeader(
-	id: string,
-	type: number,
-	receptive: any,
-	length: number
-) {
+export function createHeader(id: string, type: number, receptive: any, length: number) {
 	return Buffer.concat([
 		Buffer.from(id, 'base64'),
 		Buffer.from([type, receptive ? 1 : 0, ...fill(getBytes(length), 4)])
 	]);
 }
 
-function readHeader(header: any) {
+export function readHeader(header: any) {
 	return {
 		id: header.toString('base64', 0, 7),
 		type: header[7],
@@ -45,9 +40,7 @@ function readHeader(header: any) {
 }
 
 let a = 0;
-function createID() {
+export function createID() {
 	a = a < 0xffff ? a + 1 : 0;
 	return Buffer.from(getBytes(Date.now()).concat(a)).toString('base64');
 }
-
-export default Object.freeze({ createHeader, readHeader, createID });

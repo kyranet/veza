@@ -48,9 +48,9 @@ export const decompressSmallInteger = (integers: Buffer) => {
 	let number = 0;
 	let position = 0;
 	const byte = integers[0];
-	for (let i = integers.length - 1; i >= 1; i--)
-	// eslint-disable-next-line no-bitwise
-	{ number += integers[i] << (position++ * 8); }
+	for (let i = integers.length - 1; i >= 1; i--) {
+		number += integers[i] << (position++ * 8);
+	}
 
 	return byte ? -number : number;
 };

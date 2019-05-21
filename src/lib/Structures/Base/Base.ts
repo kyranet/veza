@@ -1,23 +1,21 @@
-class Base {
+import { Node } from '../../Node';
 
-	node: Node;
-	name: string | null;
+export class Base {
 
-	constructor(node: Node, name = null) {
+	/**
+	 * The Node instance that manages this
+	 */
+	public node: Node;
+
+	/**
+	 * The name of this client
+	 */
+	public name: string | null;
+
+	public constructor(node: Node, name: string = null) {
 		Object.defineProperty(this, 'node', { value: null, writable: true });
-
-		/**
-		 * The Node instance that manages this
-		 * @type {Node}
-		 */
 		this.node = node;
-		/**
-		 * The name of this client
-		 * @type {string}
-		 */
 		this.name = name;
 	}
 
 }
-
-export default Base;

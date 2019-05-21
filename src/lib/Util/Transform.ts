@@ -8,27 +8,20 @@ import {
 	BUFFER_NULL,
 	BUFFER_NL
 } from './Constants';
-
-import Header from './Header';
+import { createHeader } from './Header';
 
 /**
  * Pack a message into a buffer for usage in other sockets
- * @param {string} id The id of the message to pack
- * @param {*} message The message to send
- * @param {boolean} receptive Whether this message requires a response or not
- * @returns {Buffer}
+ * @param id The id of the message to pack
+ * @param message The message to send
+ * @param receptive Whether this message requires a response or not
  * @private
  */
-function _packMessage(
-	id: string,
-	message: any,
-	receptive: boolean = true
-): Buffer {
+export function _packMessage(id: string, message: any, receptive: boolean = true): Buffer {
 	if (message === kPing || message === kIdentify) receptive = false;
 	const [type, buffer] = _getMessageDetails(message);
-	// @ts-ignore
 	return Buffer.concat([
-		Header.createHeader(id, type, receptive, buffer.byteLength),
+		createHeader(id, type, receptive, buffer.byteLength),
 		buffer,
 		BUFFER_NL
 	]);
@@ -67,7 +60,7 @@ function _compressSmallInteger(integer: number) {
  * @param {*} message The message to convert
  * @returns {Array<number | Buffer>}
  */
-function _getMessageDetails(message: any): [number, Buffer] {
+export function _getMessageDetails(message: any): [number, Buffer] {
 	// eslint-disable-line complexity
 	if (message === kPing) { return [S_MESSAGE_TYPES.PING, Buffer.from(Date.now().toString())]; }
 	if (message === kIdentify) return [S_MESSAGE_TYPES.IDENTIFY, BUFFER_NULL];
@@ -141,5 +134,3 @@ function _getArrayType(array: { constructor: any }) {
 			return S_MESSAGE_TYPES.OBJECT;
 	}
 }
-
-export default Object.freeze({ _packMessage, _getMessageDetails });

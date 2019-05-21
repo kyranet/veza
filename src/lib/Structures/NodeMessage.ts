@@ -1,69 +1,64 @@
-import { SocketHandler } from 'veza';
+import { SocketHandler } from './Base/SocketHandler';
+import { _packMessage } from '../Util/Transform';
+import { Node } from '../Node';
 
-const { _packMessage } = require('../Util/Transform');
+export class NodeMessage {
 
-class NodeMessage {
+	/**
+	 * The client that received this message
+	 */
+	public client: SocketHandler;
 
-	data: any;
-	receptive: boolean;
-	client: SocketHandler;
-	id: string;
+	/**
+	 * The id of this message
+	 */
+	public id: string;
 
-	constructor(
-		client: SocketHandler,
-		id: string,
-		receptive: boolean,
-		data: any
-	) {
+	/**
+	 * The data received from the socket
+	 */
+	public data: any;
+
+	/**
+	 * Whether the message is receptive or not
+	 */
+	public receptive: boolean;
+
+	public constructor(client: SocketHandler, id: string, receptive: boolean, data: any) {
 		Object.defineProperties(this, {
 			client: { value: client },
 			id: { value: id }
 		});
 
-		/**
-	 	 * The client that received this message
-	 	 * @type {SocketHandler}
-	 	 * @name NodeMessage#client
-	 	 * @property
-	 	 */
-
-		/**
-		 * The id of this message
-		 * @type {string}
-		 * @name NodeMessage#id
-		 * @property
-		 */
-
-		/**
-		 * The data received from the socket
-		 * @type {*}
-		 */
 		this.data = data;
-
-		/**
-		 * Whether the message is receptive or not
-		 * @type {boolean}
-		 */
 		this.receptive = receptive;
 	}
 
 	/**
 	 * The Node instance that manages this process' veza node
-	 * @type {Node}
 	 */
-	get node() {
+	public get node(): Node {
 		return this.client.node;
 	}
 
 	/**
 	 * Reply to the socket
-	 * @param {*} content The content to send
+	 * @param content The content to send
 	 */
-	reply(content: any) {
-		if (this.receptive) { this.client.socket.write(_packMessage(this.id, content, false)); }
+	public reply(content: any): void {
+		if (this.receptive) {
+			this.client.socket.write(_packMessage(this.id, content, false));
+		}
 	}
 
-	toJSON() {
+	/**
+	 * Freeze the object
+	 */
+	public freeze(): Readonly<this> {
+		return Object.freeze(this);
+	}
+
+	public toJSON() {
 		return {
 			id: this.id,
 			data: this.data,
@@ -71,19 +66,8 @@ class NodeMessage {
 		};
 	}
 
-	toString() {
+	public toString() {
 		return `NodeMessage<${this.id}>`;
 	}
 
-	/**
-	 * Freeze the object
-	 * @returns {Readonly<this>}
-	 * @private
-	 */
-	freeze(): Readonly<this> {
-		return Object.freeze(this);
-	}
-
 }
-
-export default NodeMessage;

@@ -1,40 +1,40 @@
-import SocketHandler from './Base/SocketHandler';
+import { SocketHandler } from './Base/SocketHandler';
 import { kIdentify, STATUS } from '../Util/Constants';
-import NodeServer from './NodeServer';
+import { NodeServer } from './NodeServer';
+import { Node } from '../Node';
 
-class NodeServerClient extends SocketHandler {
+export class NodeServerClient extends SocketHandler {
 
-	server: NodeServer;
-	status: any;
-	name: string;
-	node: Node;
+	public server: NodeServer;
+	public status: any;
+	public name: string;
 
-	constructor(node: Node, server: NodeServer, socket: any) {
+	public constructor(node: Node, server: NodeServer, socket: any) {
 		super(node, null, socket);
 		this.server = server;
 	}
 
-	setup() {
+	public async setup() {
 		this.socket
 			.on('data', this._onData.bind(this))
 			.on('error', this._onError.bind(this))
 			.on('close', this._onClose.bind(this));
 
-		this.send(kIdentify)
-			.then(sName => {
-				this.status = STATUS.READY;
-				this.name = sName;
-				this.server.clients.set(this.name, this);
-				this.node.emit('client.identify', this);
-			})
-			.catch(this.disconnect.bind(this));
+		try {
+			const sName = await this.send(kIdentify);
+			this.status = STATUS.READY;
+			this.name = sName;
+			this.server.clients.set(this.name, this);
+			this.node.emit('client.identify', this);
+		} catch {
+			this.disconnect();
+		}
 	}
 
 	/**
 	 * Disconnect from the socket, this will also reject all messages
-	 * @returns {boolean}
 	 */
-	disconnect(): boolean {
+	public disconnect(): boolean {
 		if (!super.disconnect()) return false;
 		if (this.name) {
 			this.server.clients.delete(this.name);
@@ -44,7 +44,7 @@ class NodeServerClient extends SocketHandler {
 		return true;
 	}
 
-	_onError(error: any) {
+	private _onError(error: any) {
 		const { code } = error;
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
 			if (this.status !== STATUS.DISCONNECTED) return;
@@ -55,7 +55,7 @@ class NodeServerClient extends SocketHandler {
 		}
 	}
 
-	_onClose() {
+	private _onClose() {
 		this.disconnect();
 	}
 

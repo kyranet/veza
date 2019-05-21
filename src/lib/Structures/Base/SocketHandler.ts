@@ -1,39 +1,37 @@
-import {
-	kPing,
-	kIdentify,
-	kInvalidMessage,
-	STATUS
-} from '../../Util/Constants';
-const Transform = require('../../Util/Transform');
-const { _packMessage } = Transform;
-const { createID } = require('../../Util/Header');
-import NodeMessage from '../NodeMessage';
-import Queue from '../Queue';
-import NodeSocket from '../NodeSocket';
-import Base from './Base';
-import { SendOptions } from 'veza';
+import { kPing, kIdentify, kInvalidMessage, STATUS } from '../../Util/Constants';
+import { _packMessage } from '../../Util/Transform';
+import { createID } from '../../Util/Header';
+import { NodeMessage } from '../NodeMessage';
+import { Queue } from '../Queue';
+import { Base } from './Base';
+import { Node, SendOptions } from '../../Node';
+import { Socket } from 'net';
 
-class SocketHandler extends Base {
+export class SocketHandler extends Base {
 
-	socket: NodeSocket | null;
-	private queue: Queue;
-	private status: number;
+	/**
+	 * The socket that connects Veza to the network
+	 */
+	public socket: Socket | null;
 
-	constructor(node: Node, name: null | undefined, socket = null) {
+	// TODO(kyranet): Change this to an enum
+	/**
+	 * The status of this client
+	 */
+	public status: number = STATUS.CONNECTING;
+
+	/**
+	 * The incoming message queue for this handler
+	 */
+	public queue: Queue = new Queue(this);
+
+	public constructor(node: Node, name?: string, socket: Socket = null) {
 		super(node, name);
 		Object.defineProperties(this, {
 			socket: { value: null, writable: true },
 			queue: { value: null, writable: true }
 		});
-
 		this.socket = socket;
-		this.queue = new Queue(this);
-
-		/**
-		 * The status of this client
-		 * @type {number}
-		 */
-		this.status = STATUS.CONNECTING;
 	}
 
 	/**
@@ -42,10 +40,7 @@ class SocketHandler extends Base {
 	 * @param {SendOptions} [options={}] The options for this message
 	 * @returns {Promise<*>}
 	 */
-	send(
-		data: any,
-		{ receptive = true, timeout = Infinity }: SendOptions = {}
-	): Promise<any> {
+	public send(data: any, { receptive = true, timeout = Infinity }: SendOptions = {}): Promise<any> {
 		if (!this.socket) {
 			return Promise.reject(
 				new Error('This NodeSocket is not connected to a socket.')
@@ -63,19 +58,16 @@ class SocketHandler extends Base {
 					return;
 				}
 
-				const timer
-		  = timeout !== Infinity && timeout !== -1
-		  	? setTimeout(
-		  		// eslint-disable-next-line no-use-before-define
-		  		() => send(reject, true, new Error('TIMEOUT_ERROR')),
-		  		timeout
-		  	)
-		  	: null;
+				const timer = timeout !== Infinity && timeout !== -1
+					// eslint-disable-next-line no-use-before-define
+					? setTimeout(() => send(reject, true, new Error('TIMEOUT_ERROR')), timeout)
+					: null;
 				const send = (fn: Function, fromTimer: boolean, response: any) => {
 					if (timer && !fromTimer) clearTimeout(timer);
 					this.queue.delete(id);
 					return fn(response);
 				};
+
 				this.queue.set(id, {
 					resolve: send.bind(null, resolve, false),
 					reject: send.bind(null, reject, false)
@@ -92,7 +84,7 @@ class SocketHandler extends Base {
 	 * Disconnect from the socket, this will also reject all messages
 	 * @returns {boolean}
 	 */
-	disconnect(): boolean {
+	public disconnect(): boolean {
 		if (!this.socket) return false;
 
 		this.socket.destroy();
@@ -110,50 +102,50 @@ class SocketHandler extends Base {
 
 	/**
 	 * Measure the latency between the server and this client
-	 * @returns {Promise<number>}
 	 */
-	ping(): Promise<number> {
+	public async ping(): Promise<number> {
 		const now = Date.now();
-		return this.send(kPing).then(future => future - now);
+		const future = await this.send(kPing) as number;
+		return future - now;
 	}
 
 	/**
 	 * Add a new event listener on this client's socket
-	 * @param {string} event The event name
-	 * @param {Function} cb The callback to register
-	 * @returns {this}
+	 * @param event The event name
+	 * @param cb The callback to register
 	 * @chainable
 	 */
-	on(event: string, cb: Function): this {
+	// eslint-disable-next-line promise/prefer-await-to-callbacks
+	public on(event: string, cb: (...args: any[]) => void): this {
 		if (this.socket) this.socket.on(event, cb);
 		return this;
 	}
 
 	/**
 	 * Add a new event listener on this client's socket
-	 * @param {string} event The event name
-	 * @param {Function} cb The callback to register
-	 * @returns {this}
+	 * @param event The event name
+	 * @param cb The callback to register
 	 * @chainable
 	 */
-	once(event: string, cb: Function): this {
+	// eslint-disable-next-line promise/prefer-await-to-callbacks
+	public once(event: string, cb: (...args: any[]) => void): this {
 		if (this.socket) this.socket.once(event, cb);
 		return this;
 	}
 
 	/**
 	 * Remove an event listener on this client's socket
-	 * @param {string} event The event name
-	 * @param {Function} cb The callback to unregister
-	 * @returns {this}
+	 * @param event The event name
+	 * @param cb The callback to unregister
 	 * @chainable
 	 */
-	off(event: string, cb: Function): this {
+	// eslint-disable-next-line promise/prefer-await-to-callbacks
+	public off(event: string, cb: (...args: any[]) => void): this {
 		if (this.socket) this.socket.off(event, cb);
 		return this;
 	}
 
-	_onData(data: any) {
+	protected _onData(data: any) {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
 			if (processed === kInvalidMessage) {
@@ -171,15 +163,7 @@ class SocketHandler extends Base {
 		}
 	}
 
-	_handleMessage({
-		id,
-		receptive,
-		data
-	}: {
-		id: string;
-		receptive: boolean;
-		data: any;
-	}) {
+	protected _handleMessage({ id, receptive, data }: RawMessage) {
 		if (this.queue.has(id)) {
 			this.queue.get(id).resolve(data);
 			return null;
@@ -197,4 +181,8 @@ class SocketHandler extends Base {
 
 }
 
-export default SocketHandler;
+interface RawMessage {
+	id: string;
+	receptive: boolean;
+	data: any;
+}

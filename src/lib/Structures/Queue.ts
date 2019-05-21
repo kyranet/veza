@@ -11,34 +11,27 @@ import {
 	toBigInt,
 	decompressSmallInteger
 } from '../Util/Constants';
-const { readHeader } = require('../Util/Header');
-
-/**
- * @typedef {Object} QueueEntry
- * @property {Function} resolve The resolve function
- * @property {Function} reject The reject function
- * @private
- */
+import { readHeader } from '../Util/Header';
+import { NodeSocket } from './NodeSocket';
+import { Node } from '../Node';
 
 /**
  * @extends {Map<string,QueueEntry>}
  */
-class Queue extends Map {
+export class Queue extends Map<string, QueueEntry> {
 
-	nodeSocket: any;
-	_rest: any;
+	private nodeSocket: NodeSocket;
+	private _rest: Buffer | null = null;
 
-	constructor(nodeSocket: any) {
+	public constructor(nodeSocket: any) {
 		super();
 		this.nodeSocket = nodeSocket;
-		this._rest = null;
 	}
 
 	/**
 	 * The Node that manages this instance
-	 * @type {Node}
 	 */
-	get node() {
+	public get node(): Node {
 		return this.nodeSocket.node;
 	}
 
@@ -46,7 +39,7 @@ class Queue extends Map {
 	 * The name of the client that manages this instance
 	 * @type {string}
 	 */
-	get name() {
+	public get name() {
 		return this.nodeSocket.name;
 	}
 
@@ -54,7 +47,7 @@ class Queue extends Map {
 	 * The socket contained in the client that manages this instance
 	 * @type {Socket}
 	 */
-	get socket() {
+	public get socket() {
 		return this.nodeSocket.socket;
 	}
 
@@ -76,7 +69,7 @@ class Queue extends Map {
 	 * @memberof Queue
 	 */
 
-	*process(buffer: Buffer) {
+	public *process(buffer: Buffer) {
 		if (this._rest) {
 			buffer = Buffer.concat([this._rest, buffer]);
 			this._rest = null;
@@ -116,11 +109,11 @@ class Queue extends Map {
 	/**
 	 * Flushes the queue
 	 */
-	flush() {
+	public flush() {
 		this._rest = null;
 	}
 
-	_readMessage(body: Buffer, type: string) {
+	private _readMessage(body: Buffer, type: string) {
 		// eslint-disable-line complexity
 		if (type === 'PING') return kPing;
 		if (type === 'IDENTIFY') return kIdentify;
@@ -154,4 +147,8 @@ class Queue extends Map {
 	}
 
 }
-export default Queue;
+
+interface QueueEntry {
+	resolve: (value: any) => void;
+	reject: (error: Error) => void;
+}
