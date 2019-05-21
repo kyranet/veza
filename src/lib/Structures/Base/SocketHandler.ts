@@ -30,18 +30,18 @@ class SocketHandler extends Base {
 		this.queue = new Queue(this);
 
 		/**
-     	 * The status of this client
-     	 * @type {number}
-     	 */
+		 * The status of this client
+		 * @type {number}
+		 */
 		this.status = STATUS.CONNECTING;
 	}
 
 	/**
-   	 * Send a message to a connected socket
-   	 * @param {*} data The data to send to the socket
-   	 * @param {SendOptions} [options={}] The options for this message
-   	 * @returns {Promise<*>}
-   	 */
+	 * Send a message to a connected socket
+	 * @param {*} data The data to send to the socket
+	 * @param {SendOptions} [options={}] The options for this message
+	 * @returns {Promise<*>}
+	 */
 	send(
 		data: any,
 		{ receptive = true, timeout = Infinity }: SendOptions = {}
@@ -64,13 +64,13 @@ class SocketHandler extends Base {
 				}
 
 				const timer
-          = timeout !== Infinity && timeout !== -1
-          	? setTimeout(
-          		// eslint-disable-next-line no-use-before-define
-          		() => send(reject, true, new Error('TIMEOUT_ERROR')),
-          		timeout
-          	)
-          	: null;
+		  = timeout !== Infinity && timeout !== -1
+		  	? setTimeout(
+		  		// eslint-disable-next-line no-use-before-define
+		  		() => send(reject, true, new Error('TIMEOUT_ERROR')),
+		  		timeout
+		  	)
+		  	: null;
 				const send = (fn: Function, fromTimer: boolean, response: any) => {
 					if (timer && !fromTimer) clearTimeout(timer);
 					this.queue.delete(id);
@@ -89,9 +89,9 @@ class SocketHandler extends Base {
 	}
 
 	/**
-   	 * Disconnect from the socket, this will also reject all messages
-   	 * @returns {boolean}
-   	 */
+	 * Disconnect from the socket, this will also reject all messages
+	 * @returns {boolean}
+	 */
 	disconnect(): boolean {
 		if (!this.socket) return false;
 
@@ -109,45 +109,45 @@ class SocketHandler extends Base {
 	}
 
 	/**
-     * Measure the latency between the server and this client
-     * @returns {Promise<number>}
-     */
+	 * Measure the latency between the server and this client
+	 * @returns {Promise<number>}
+	 */
 	ping(): Promise<number> {
 		const now = Date.now();
 		return this.send(kPing).then(future => future - now);
 	}
 
 	/**
-     * Add a new event listener on this client's socket
-     * @param {string} event The event name
-     * @param {Function} cb The callback to register
-     * @returns {this}
-     * @chainable
-     */
+	 * Add a new event listener on this client's socket
+	 * @param {string} event The event name
+	 * @param {Function} cb The callback to register
+	 * @returns {this}
+	 * @chainable
+	 */
 	on(event: string, cb: Function): this {
 		if (this.socket) this.socket.on(event, cb);
 		return this;
 	}
 
 	/**
-     * Add a new event listener on this client's socket
-     * @param {string} event The event name
-     * @param {Function} cb The callback to register
-     * @returns {this}
-     * @chainable
-     */
+	 * Add a new event listener on this client's socket
+	 * @param {string} event The event name
+	 * @param {Function} cb The callback to register
+	 * @returns {this}
+	 * @chainable
+	 */
 	once(event: string, cb: Function): this {
 		if (this.socket) this.socket.once(event, cb);
 		return this;
 	}
 
 	/**
-     * Remove an event listener on this client's socket
-     * @param {string} event The event name
-     * @param {Function} cb The callback to unregister
-     * @returns {this}
-     * @chainable
-     */
+	 * Remove an event listener on this client's socket
+	 * @param {string} event The event name
+	 * @param {Function} cb The callback to unregister
+	 * @returns {this}
+	 * @chainable
+	 */
 	off(event: string, cb: Function): this {
 		if (this.socket) this.socket.off(event, cb);
 		return this;

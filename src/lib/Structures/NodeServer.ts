@@ -6,15 +6,15 @@ import { BroadcastOptions, SendOptions } from 'veza';
 class NodeServer {
 
 	/**
-     * @typedef {Object} SendOptions
-     * @property {boolean} [receptive = false] Whether this broadcast should wait for responses or not
-     * @property {number} [timeout = Infinity] The timeout, Infinity or -1 for no timeout
-     */
+	 * @typedef {Object} SendOptions
+	 * @property {boolean} [receptive = false] Whether this broadcast should wait for responses or not
+	 * @property {number} [timeout = Infinity] The timeout, Infinity or -1 for no timeout
+	 */
 
 	/**
-     * @typedef {SendOptions} BroadcastOptions
-     * @property {RegExp} [filter] The filter for the broadcast
-     */
+	 * @typedef {SendOptions} BroadcastOptions
+	 * @property {RegExp} [filter] The filter for the broadcast
+	 */
 
 	node: Node;
 	server: any;
@@ -28,27 +28,27 @@ class NodeServer {
 		});
 
 		/**
-         * The Node instance that manages this
-         * @type {Node}
-         */
+		 * The Node instance that manages this
+		 * @type {Node}
+		 */
 		this.node = node;
 		this.server = null;
 		this.clients = new Map();
 	}
 
 	/**
-     * The name of this node
-     * @type {string}
-     */
+	 * The name of this node
+	 * @type {string}
+	 */
 	get name() {
 		return this.node.name;
 	}
 
 	/**
-     * Get a NodeSocket by its name or Socket
-     * @param {string|Socket|NodeServerClient|NodeSocket} name The NodeSocket to get
-     * @returns {NodeServerClient|NodeSocket}
-     */
+	 * Get a NodeSocket by its name or Socket
+	 * @param {string|Socket|NodeServerClient|NodeSocket} name The NodeSocket to get
+	 * @returns {NodeServerClient|NodeSocket}
+	 */
 	get(name: string | Socket | NodeServerClient | NodeSocket) {
 		if (typeof name === 'string') return this.clients.get(name) || null;
 		if (name instanceof NodeServerClient || name instanceof NodeSocket) {
@@ -65,20 +65,20 @@ class NodeServer {
 	}
 
 	/**
-     * Check if a NodeSocket exists by its name of Socket
-     * @param {string|Socket|NodeServerClient|NodeSocket} name The NodeSocket to get
-     * @returns {boolean}
-     */
+	 * Check if a NodeSocket exists by its name of Socket
+	 * @param {string|Socket|NodeServerClient|NodeSocket} name The NodeSocket to get
+	 * @returns {boolean}
+	 */
 	has(name: string | Socket | NodeServerClient | NodeSocket): boolean {
 		return Boolean(this.get(name));
 	}
 
 	/**
-     * Broadcast a message to all connected sockets from this server
-     * @param {*} data The data to send to other sockets
-     * @param {BroadcastOptions} [options={}] The options for this broadcast
-     * @returns {Promise<Array<*>>}
-     */
+	 * Broadcast a message to all connected sockets from this server
+	 * @param {*} data The data to send to other sockets
+	 * @param {BroadcastOptions} [options={}] The options for this broadcast
+	 * @returns {Promise<Array<*>>}
+	 */
 	broadcast(
 		data: any,
 		{ receptive, timeout, filter }: BroadcastOptions = {}
@@ -96,12 +96,12 @@ class NodeServer {
 	}
 
 	/**
-   	 * Send a message to a connected socket
-   	 * @param {string|Socket|NodeSocket} name The label name of the socket to send the message to
-   	 * @param {*} data The data to send to the socket
-   	 * @param {SendOptions} [options={}] The options for this message
-   	 * @returns {Promise<*>}
-   	 */
+	 * Send a message to a connected socket
+	 * @param {string|Socket|NodeSocket} name The label name of the socket to send the message to
+	 * @param {*} data The data to send to the socket
+	 * @param {SendOptions} [options={}] The options for this message
+	 * @returns {Promise<*>}
+	 */
 	sendTo(
 		name: string | Socket | NodeSocket,
 		data: any,
@@ -119,10 +119,10 @@ class NodeServer {
 	}
 
 	/**
-   	 * Create a server for this Node instance.
-   	 * @param {...*} options The options to pass to net.Server#listen
-   	 * @returns {Promise<void>}
-   	 */
+	 * Create a server for this Node instance.
+	 * @param {...*} options The options to pass to net.Server#listen
+	 * @returns {Promise<void>}
+	 */
 	async connect(...options: any[]): Promise<void> {
 		if (this.server) throw new Error('There is already a server.');
 
