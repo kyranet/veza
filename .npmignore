@@ -21,7 +21,7 @@ test/
 .eslintrc.json
 .gitattributes
 .gitignore
-.travis.yml
+azure-pipelines.yml
 tsconfig.json
 
 # Source Code, only the dist is shipped
