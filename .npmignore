@@ -1,5 +1,6 @@
 # Packages
 node_modules/
+package-json.lock
 yarn.lock
 
 # Log files
@@ -22,3 +23,6 @@ test/
 .gitignore
 .travis.yml
 tsconfig.json
+
+# Source Code, only the dist is shipped
+src/

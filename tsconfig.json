@@ -3,10 +3,10 @@
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
 		"alwaysStrict": true,
-		"declaration": false,
+		"declaration": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"incremental": true,
+		"incremental": false,
 		"lib": [
 			"esnext",
 			"esnext.array",
@@ -24,12 +24,11 @@
     "sourceMap": true,
     "strict": true,
 		"strictBindCallApply": true,
-		"target": "esnext",
+    "target": "esnext",
+    "newLine": "LF",
 		"types": ["node"]
 	},
 	"include": [
-    "./src/**/*",
-    "./examples/**/*",
-    "./test/**/*"
+    "./src/**/*"
 	]
 }

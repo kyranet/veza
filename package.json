@@ -1,12 +1,13 @@
 {
   "name": "veza",
   "version": "0.4.0",
-  "description": "IPC Utilities",
-  "main": "src/index",
-  "types": "typings/index.d.ts",
+  "description": "IPC/TCP Networking Utility to connect several processes with great concurrency.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "lint": "eslint --ext ts src examples --fix",
-    "test": "eslint --ext ts src examples"
+    "test": "eslint --ext ts src examples",
+    "build": "tsc -p ."
   },
   "repository": {
     "type": "git",
@@ -14,14 +15,15 @@
   },
   "keywords": [
     "ipc",
-    "ipc-link",
     "tcp",
-    "tcp-link"
+    "socket",
+    "veza",
+    "node-ipc"
   ],
   "contributors": [
-    "kyranet"
+    "kyranet <kyradiscord@gmail.com>"
   ],
-  "author": "kyraNET",
+  "author": "kyranet <kyradiscord@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kyranet/veza/issues"
