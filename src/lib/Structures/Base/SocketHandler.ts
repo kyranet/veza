@@ -151,7 +151,7 @@ export class SocketHandler extends Base {
 				this.disconnect();
 				break;
 			}
-			const message = this._handleMessage(processed);
+			const message = this._handleMessage(processed as RawMessage);
 			if (message === null) continue;
 			this.node.emit('message', message);
 		}

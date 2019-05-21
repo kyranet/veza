@@ -60,7 +60,6 @@ export class NodeSocket extends SocketHandler {
 
 	/**
 	 * Disconnect from the socket, this will also reject all messages
-	 * @returns {boolean}
 	 */
 	public disconnect(): boolean {
 		if (!super.disconnect()) return false;

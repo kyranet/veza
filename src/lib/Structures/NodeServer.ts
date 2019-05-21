@@ -129,7 +129,6 @@ export class NodeServer {
 
 	/**
 	 * Disconnect the server and rejects all current messages
-	 * @returns {boolean}
 	 */
 	public disconnect(): boolean {
 		if (!this.server) return false;

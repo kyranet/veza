@@ -57,7 +57,7 @@ function _compressSmallInteger(integer: number) {
 
 /**
  * Get the message details
- * @param {*} message The message to convert
+ * @param message The message to convert
  * @returns {Array<number | Buffer>}
  */
 export function _getMessageDetails(message: any): [number, Buffer] {

@@ -14,10 +14,8 @@ import {
 import { readHeader } from '../Util/Header';
 import { NodeSocket } from './NodeSocket';
 import { Node } from '../Node';
+import { Socket } from 'net';
 
-/**
- * @extends {Map<string,QueueEntry>}
- */
 export class Queue extends Map<string, QueueEntry> {
 
 	private nodeSocket!: NodeSocket;
@@ -40,39 +38,22 @@ export class Queue extends Map<string, QueueEntry> {
 
 	/**
 	 * The name of the client that manages this instance
-	 * @type {string}
 	 */
-	public get name() {
-		return this.nodeSocket.name;
+	public get name(): string {
+		return this.nodeSocket.name!;
 	}
 
 	/**
 	 * The socket contained in the client that manages this instance
-	 * @type {Socket}
 	 */
-	public get socket() {
-		return this.nodeSocket.socket;
+	public get socket(): Socket {
+		return this.nodeSocket.socket!;
 	}
 
 	/**
-	 * @typedef {Object} QueueObject
-	 * @property {string} id The id of the message
-	 * @property {boolean} receptive Whether this message is receptive or not
-	 * @property {Buffer} data The data received from the socket
-	 * @private
-	 */
-
-	/**
 	 * Returns a new Iterator object that parses each value for this queue.
-	 * @name @@iterator
-	 * @method
-	 * @instance
-	 * @generator
-	 * @returns {Iterator<QueueObject|symbol>}
-	 * @memberof Queue
 	 */
-
-	public *process(buffer: Buffer) {
+	public *process(buffer: Buffer): IterableIterator<QueueObject | symbol> {
 		if (this._rest) {
 			buffer = Buffer.concat([this._rest, buffer]);
 			this._rest = null;
@@ -154,4 +135,10 @@ export class Queue extends Map<string, QueueEntry> {
 interface QueueEntry {
 	resolve: (value: any) => void;
 	reject: (error: Error) => void;
+}
+
+interface QueueObject {
+	id: string;
+	receptive: boolean;
+	data: any;
 }
