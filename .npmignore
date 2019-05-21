@@ -18,6 +18,7 @@ docs/
 .idea/
 examples/
 test/
+static/
 .eslintrc.json
 .gitattributes
 .gitignore

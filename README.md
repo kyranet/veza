@@ -1,4 +1,4 @@
-# Veza
+# Veza <img src="https://github.com/kyranet/veza/blob/master/static/images/logo.png?raw=true" align="right" width="30%">
 
 <div align="center">
   <p>
