@@ -19,12 +19,12 @@ export class Node extends EventEmitter {
 	/**
 	 * The server for this Node, if serving
 	 */
-	public server: NodeServer | null = null;
+	public server!: NodeServer | null;
 
 	/**
 	 * The servers this Node is connected to
 	 */
-	public servers: Map<string, NodeSocket> = new Map();
+	public readonly servers!: Map<string, NodeSocket>;
 
 	/**
 	 * The time between connection retries
@@ -42,7 +42,7 @@ export class Node extends EventEmitter {
 		this.retryTime = retryTime;
 		Object.defineProperties(this, {
 			server: { value: null, writable: true },
-			servers: { value: null, writable: true }
+			servers: { value: new Map() }
 		});
 	}
 
