@@ -1,11 +1,34 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2018",
-    "noImplicitAny": true,
-    "strictNullChecks": false,
-    "noEmit": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "files": ["typings/index.d.ts"]
+	"compileOnSave": true,
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"alwaysStrict": true,
+		"declaration": false,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"incremental": true,
+		"lib": [
+			"esnext",
+			"esnext.array",
+			"esnext.asynciterable",
+			"esnext.intl",
+			"esnext.symbol"
+		],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noUnusedLocals": true,
+		"outDir": "./dist",
+		"pretty": true,
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"strictBindCallApply": true,
+		"target": "esnext",
+		"types": ["node"]
+	},
+	"include": [
+    "./src/**/*",
+    "./examples/**/*",
+    "./test/**/*"
+	]
 }

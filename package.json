@@ -5,8 +5,8 @@
   "main": "src/index",
   "types": "typings/index.d.ts",
   "scripts": {
-    "lint": "eslint --ext ts src/ --fix",
-    "test": "eslint --ext ts src/ "
+    "lint": "eslint --ext ts src examples --fix",
+    "test": "eslint --ext ts src examples"
   },
   "repository": {
     "type": "git",
