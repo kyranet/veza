@@ -122,9 +122,9 @@ export class Node extends EventEmitter {
 	 * Get a socket by its name
 	 * @param name The name of the socket
 	 */
-	public get(name: string | NodeSocket): NodeServerClient | NodeSocket {
+	public get(name: string | NodeSocket): NodeServerClient | NodeSocket | null {
 		if (name instanceof NodeSocket) return name;
-		return (this.server && this.server.get(name)) || this.servers.get(name);
+		return (this.server && this.server.get(name)) || this.servers.get(name) || null;
 	}
 
 }

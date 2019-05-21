@@ -41,7 +41,6 @@ export const STATUS = Object.freeze({
 });
 
 // Helpers
-// @ts-ignore
 export const toBigInt = typeof BigInt === 'function' ? BigInt : Number;
 
 export const decompressSmallInteger = (integers: Buffer) => {
@@ -55,5 +54,4 @@ export const decompressSmallInteger = (integers: Buffer) => {
 	return byte ? -number : number;
 };
 
-// @ts-ignore
 export const R_MESSAGE_TYPES = Object.keys(S_MESSAGE_TYPES);

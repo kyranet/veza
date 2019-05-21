@@ -31,19 +31,19 @@ export class NodeSocket extends SocketHandler {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			const onError = (error: any) => reject(cleanup(error));
 			const cleanup = (value: any) => {
-				this.socket.off('connect', onConnect);
-				this.socket.off('close', onClose);
-				this.socket.off('error', onError);
+				this.socket!.off('connect', onConnect);
+				this.socket!.off('close', onClose);
+				this.socket!.off('error', onError);
 				return value;
 			};
 
-			this.socket
+			this.socket!
 				.on('connect', onConnect)
 				.on('close', onClose)
 				.on('error', onError);
 
 			// @ts-ignore
-			this.socket.connect(...options);
+			this.socket!.connect(...options);
 		});
 
 		this.status = STATUS.READY;
@@ -69,7 +69,7 @@ export class NodeSocket extends SocketHandler {
 			this._reconnectionTimeout = null;
 		}
 
-		this.node.servers.delete(this.name);
+		this.node.servers.delete(this.name!);
 		this.node.emit('client.destroy', this);
 		return true;
 	}

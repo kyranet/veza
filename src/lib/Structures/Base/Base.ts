@@ -12,7 +12,7 @@ export class Base {
 	 */
 	public name: string | null;
 
-	public constructor(node: Node, name: string = null) {
+	public constructor(node: Node, name: string | null = null) {
 		Object.defineProperty(this, 'node', { value: null, writable: true });
 		this.node = node;
 		this.name = name;

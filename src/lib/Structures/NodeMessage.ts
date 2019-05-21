@@ -7,12 +7,12 @@ export class NodeMessage {
 	/**
 	 * The client that received this message
 	 */
-	public client: SocketHandler;
+	public readonly client!: SocketHandler;
 
 	/**
 	 * The id of this message
 	 */
-	public id: string;
+	public readonly id!: string;
 
 	/**
 	 * The data received from the socket
@@ -47,7 +47,7 @@ export class NodeMessage {
 	 */
 	public reply(content: any): void {
 		if (this.receptive) {
-			this.client.socket.write(_packMessage(this.id, content, false));
+			this.client.socket!.write(_packMessage(this.id, content, false));
 		}
 	}
 

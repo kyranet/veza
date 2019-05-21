@@ -12,7 +12,7 @@ export class SocketHandler extends Base {
 	/**
 	 * The socket that connects Veza to the network
 	 */
-	public socket: Socket | null;
+	public socket!: Socket | null;
 
 	// TODO(kyranet): Change this to an enum
 	/**
@@ -25,13 +25,12 @@ export class SocketHandler extends Base {
 	 */
 	public queue: Queue = new Queue(this);
 
-	public constructor(node: Node, name?: string, socket: Socket = null) {
+	public constructor(node: Node, name: string | null, socket: Socket | null = null) {
 		super(node, name);
 		Object.defineProperties(this, {
-			socket: { value: null, writable: true },
+			socket: { value: socket, writable: true },
 			queue: { value: null, writable: true }
 		});
-		this.socket = socket;
 	}
 
 	/**
@@ -51,7 +50,7 @@ export class SocketHandler extends Base {
 			const id = createID();
 			try {
 				const message = _packMessage(id, data, receptive);
-				this.socket.write(message);
+				this.socket!.write(message);
 
 				if (!receptive) {
 					resolve(undefined);
@@ -164,16 +163,19 @@ export class SocketHandler extends Base {
 	}
 
 	protected _handleMessage({ id, receptive, data }: RawMessage) {
-		if (this.queue.has(id)) {
-			this.queue.get(id).resolve(data);
+		const queueData = this.queue.get(id);
+		if (queueData) {
+			queueData.resolve(data);
 			return null;
 		}
+
 		if (data === kPing) {
-			this.socket.write(_packMessage(id, Date.now(), false));
+			this.socket!.write(_packMessage(id, Date.now(), false));
 			return null;
 		}
+
 		if (data === kIdentify) {
-			this.socket.write(_packMessage(id, this.node.name, false));
+			this.socket!.write(_packMessage(id, this.node.name, false));
 			return null;
 		}
 		return new NodeMessage(this, id, receptive, data).freeze();

@@ -2,20 +2,20 @@ import { SocketHandler } from './Base/SocketHandler';
 import { kIdentify, STATUS } from '../Util/Constants';
 import { NodeServer } from './NodeServer';
 import { Node } from '../Node';
+import { Socket } from 'net';
 
 export class NodeServerClient extends SocketHandler {
 
 	public server: NodeServer;
 	public status: any;
-	public name: string;
 
-	public constructor(node: Node, server: NodeServer, socket: any) {
+	public constructor(node: Node, server: NodeServer, socket: Socket) {
 		super(node, null, socket);
 		this.server = server;
 	}
 
 	public async setup() {
-		this.socket
+		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('error', this._onError.bind(this))
 			.on('close', this._onClose.bind(this));
@@ -24,7 +24,7 @@ export class NodeServerClient extends SocketHandler {
 			const sName = await this.send(kIdentify);
 			this.status = STATUS.READY;
 			this.name = sName;
-			this.server.clients.set(this.name, this);
+			this.server.clients.set(sName, this);
 			this.node.emit('client.identify', this);
 		} catch {
 			this.disconnect();

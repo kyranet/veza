@@ -8,9 +8,9 @@ export class NodeServer {
 	/**
 	 * The Node instance that manages this
 	 */
-	public node: Node;
-	public server: Server | null;
-	public clients: Map<string, NodeServerClient | NodeSocket>;
+	public node!: Node;
+	public server!: Server | null;
+	public clients!: Map<string, NodeServerClient | NodeSocket>;
 
 	public constructor(node: Node) {
 		Object.defineProperties(this, {
@@ -31,7 +31,7 @@ export class NodeServer {
 	 * Get a NodeSocket by its name or Socket
 	 * @param name The NodeSocket to get
 	 */
-	public get(name: string | Socket | NodeServerClient | NodeSocket): NodeServerClient | NodeSocket {
+	public get(name: string | Socket | NodeServerClient | NodeSocket): NodeServerClient | NodeSocket | null {
 		if (typeof name === 'string') return this.clients.get(name) || null;
 		if (name instanceof NodeServerClient || name instanceof NodeSocket) {
 			return name;
@@ -107,17 +107,17 @@ export class NodeServer {
 			const onError = (error: any) => reject(cleanup(error));
 
 			const cleanup = (value: any) => {
-				this.server.off('listening', onListening);
-				this.server.off('close', onClose);
-				this.server.off('error', onError);
+				this.server!.off('listening', onListening);
+				this.server!.off('close', onClose);
+				this.server!.off('error', onError);
 				return value;
 			};
-			this.server
+			this.server!
 				.on('listening', onListening)
 				.on('close', onClose)
 				.on('error', onError);
 
-			this.server.listen(...options);
+			this.server!.listen(...options);
 		});
 
 		this.node.emit('server.ready', this);
@@ -147,11 +147,11 @@ export class NodeServer {
 		return true;
 	}
 
-	private _onConnection(socket) {
+	private _onConnection(socket: Socket) {
 		new NodeServerClient(this.node, this, socket).setup();
 	}
 
-	private _onError(error) {
+	private _onError(error: Error) {
 		this.node.emit('error', error, this);
 	}
 
