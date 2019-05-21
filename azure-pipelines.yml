@@ -10,6 +10,8 @@ jobs:
   - job: Build
     pool:
       vmImage: 'ubuntu-16.04'
+    dependsOn: Lint
+    condition: succeeded()
     steps:
       - task: NodeTool@0
         inputs:
@@ -18,4 +20,4 @@ jobs:
       - script: yarn
         displayName: 'Install Dependencies'
       - script: 'yarn build'
-        displayName: 'Test Build'
+        displayName: 'Build'
