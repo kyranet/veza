@@ -59,7 +59,7 @@ export class SocketHandler extends Base {
 				}
 
 				const timer = timeout !== Infinity && timeout !== -1
-					// eslint-disable-next-line no-use-before-define
+					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					? setTimeout(() => send(reject, true, new Error('TIMEOUT_ERROR')), timeout)
 					: null;
 				const send = (fn: Function, fromTimer: boolean, response: any) => {

@@ -133,13 +133,13 @@ export class Queue extends Map<string, QueueEntry> {
 		if (type === 'MAP') return new Map(JSON.parse(bodyString));
 		if (type === 'SET') return new Set(JSON.parse(bodyString));
 		if (type === 'ARRAY_BUFFER') return new ArrayBuffer(JSON.parse(bodyString));
-		if (type === 'FLOAT32_ARRAY') { return new Float32Array(JSON.parse(bodyString)); }
-		if (type === 'FLOAT64_ARRAY') { return new Float64Array(JSON.parse(bodyString)); }
+		if (type === 'FLOAT32_ARRAY') return new Float32Array(JSON.parse(bodyString));
+		if (type === 'FLOAT64_ARRAY') return new Float64Array(JSON.parse(bodyString));
 		if (type === 'INT8_ARRAY') return new Int8Array(JSON.parse(bodyString));
 		if (type === 'INT16_ARRAY') return new Int16Array(JSON.parse(bodyString));
 		if (type === 'INT32_ARRAY') return new Int32Array(JSON.parse(bodyString));
 		if (type === 'UINT8_ARRAY') return new Uint8Array(JSON.parse(bodyString));
-		if (type === 'UINT8_CLAMPEDARRAY') { return new Uint8ClampedArray(JSON.parse(bodyString)); }
+		if (type === 'UINT8_CLAMPEDARRAY') return new Uint8ClampedArray(JSON.parse(bodyString));
 		if (type === 'UINT16_ARRAY') return new Uint16Array(JSON.parse(bodyString));
 		if (type === 'UINT32_ARRAY') return new Uint32Array(JSON.parse(bodyString));
 

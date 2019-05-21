@@ -19,7 +19,9 @@ function parseBytes(bytes: number[]) {
 }
 
 function fill(bytes: number[], length: number) {
-	if (bytes.length < length) { for (let i = length - bytes.length; i > 0; i--) bytes.unshift(0); }
+	if (bytes.length < length) {
+		for (let i = length - bytes.length; i > 0; i--) bytes.unshift(0);
+	}
 	return bytes;
 }
 

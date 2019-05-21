@@ -62,11 +62,14 @@ function _compressSmallInteger(integer: number) {
  */
 export function _getMessageDetails(message: any): [number, Buffer] {
 	// eslint-disable-line complexity
-	if (message === kPing) { return [S_MESSAGE_TYPES.PING, Buffer.from(Date.now().toString())]; }
-	if (message === kIdentify) return [S_MESSAGE_TYPES.IDENTIFY, BUFFER_NULL];
+	if (message === kPing) {
+		return [S_MESSAGE_TYPES.PING, Buffer.from(Date.now().toString())];
+	}
+	if (message === kIdentify) {
+		return [S_MESSAGE_TYPES.IDENTIFY, BUFFER_NULL];
+	}
 
 	switch (typeof message) {
-		// @ts-ignore
 		case 'bigint':
 			return [S_MESSAGE_TYPES.BIGINT, Buffer.from(message.toString())];
 		case 'undefined':
@@ -75,7 +78,9 @@ export function _getMessageDetails(message: any): [number, Buffer] {
 			return [S_MESSAGE_TYPES.STRING, Buffer.from(message)];
 		case 'number':
 			if (Number.isInteger(message)) {
-				if (_isByteInteger(message)) { return [S_MESSAGE_TYPES.BYTE, Buffer.from(message.toString())]; }
+				if (_isByteInteger(message)) {
+					return [S_MESSAGE_TYPES.BYTE, Buffer.from(message.toString())];
+				}
 				if (_isSmallInteger(message)) {
 					return [
 						S_MESSAGE_TYPES.SMALL_INTEGER,
@@ -93,16 +98,29 @@ export function _getMessageDetails(message: any): [number, Buffer] {
 			];
 		case 'object': {
 			if (message === null) return [S_MESSAGE_TYPES.NULL, BUFFER_NULL];
-			if (message.constructor === Object) { return [S_MESSAGE_TYPES.OBJECT, Buffer.from(JSON.stringify(message))]; }
-			if (message instanceof Set) { return [S_MESSAGE_TYPES.SET, Buffer.from(JSON.stringify([...message]))]; }
-			if (message instanceof Map) { return [S_MESSAGE_TYPES.MAP, Buffer.from(JSON.stringify([...message]))]; }
-			if (Buffer.isBuffer(message)) return [S_MESSAGE_TYPES.BUFFER, message];
+			if (message.constructor === Object) {
+				return [S_MESSAGE_TYPES.OBJECT, Buffer.from(JSON.stringify(message))];
+			}
+
+			if (message instanceof Set) {
+				return [S_MESSAGE_TYPES.SET, Buffer.from(JSON.stringify([...message]))];
+			}
+
+			if (message instanceof Map) {
+				return [S_MESSAGE_TYPES.MAP, Buffer.from(JSON.stringify([...message]))];
+			}
+
+			if (Buffer.isBuffer(message)) {
+				return [S_MESSAGE_TYPES.BUFFER, message];
+			}
+
 			if ('buffer' in message && message.buffer instanceof ArrayBuffer) {
 				return [
 					_getArrayType(message),
 					Buffer.from(JSON.stringify([...message]))
 				];
 			}
+
 			return [S_MESSAGE_TYPES.OBJECT, Buffer.from(JSON.stringify(message))];
 		}
 		default:

@@ -99,11 +99,11 @@ export class NodeServer {
 
 		this.server = new Server();
 		await new Promise((resolve, reject) => {
-			// eslint-disable-next-line no-use-before-define
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			const onListening = () => resolve(cleanup(this));
-			// eslint-disable-next-line no-use-before-define
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			const onClose = () => reject(cleanup(this));
-			// eslint-disable-next-line no-use-before-define
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			const onError = (error: any) => reject(cleanup(error));
 
 			const cleanup = (value: any) => {
