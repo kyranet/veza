@@ -2,10 +2,24 @@
 
 <div align="center">
   <p>
-    <a href="https://www.npmjs.com/kyranet/veza"><img src="https://img.shields.io/npm/v/veza.svg?maxAge=3600" alt="NPM version" /></a>
-    <a href="https://www.npmjs.com/kyranet/veza"><img src="https://img.shields.io/npm/dt/veza.svg?maxAge=3600" alt="NPM downloads" /></a>
-    <a href="https://travis-ci.org/kyranet/veza"><img src="https://travis-ci.org/kyranet/veza.svg" alt="Build status" /></a>
-    <a href="https://www.patreon.com/kyranet"><img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" /></a>
+    <a href="https://www.npmjs.com/kyranet/veza">
+		<img src="https://img.shields.io/npm/v/veza.svg?maxAge=3600" alt="NPM version" />
+	</a>
+    <a href="https://www.npmjs.com/kyranet/veza">
+		<img src="https://img.shields.io/npm/dt/veza.svg?maxAge=3600" alt="NPM downloads" />
+	</a>
+    <a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=1&branchName=master">
+		<img src="https://dev.azure.com/kyranet/kyranet.public/_apis/build/status/kyranet.veza?branchName=master" alt="Build status" />
+	</a>
+	<a href="https://lgtm.com/projects/g/kyranet/veza/alerts/">
+		<img src="https://img.shields.io/lgtm/alerts/g/kyranet/veza.svg?logo=lgtm&logoWidth=18" alt="Total alerts">
+	</a>
+	<a href="https://dependabot.com">
+		<img src="https://api.dependabot.com/badges/status?host=github&repo=kyranet/veza" alt="Dependabot Status">
+	</a>
+    <a href="https://www.patreon.com/kyranet">
+		<img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" />
+	</a>
   </p>
   <p>
     <a href="https://nodei.co/npm/veza/"><img src="https://nodei.co/npm/veza.png?downloads=true&stars=true" alt="npm installnfo" /></a>
@@ -29,66 +43,22 @@ take avantage of the byte range `0x00`-`0xFF`) at the start of every message con
 the id, the datatype, the receptive flag, and the length of the message (4.2gb
 maximum size).
 
-## Usage
+## Examples
 
-Check the examples [here](https://github.com/kyranet/veza/tree/master/test) for
-working micro **Veza** applications.
+All examples are written in TypeScript and are available [here](https://github.com/kyranet/veza/tree/master/examples).
 
-`hello.js`
+## Contributing
 
-```javascript
-const { Node } = require('veza');
+1. Fork it!
+1. Create your feature branch: `git checkout -b my-new-feature`
+1. Commit your changes: `git commit -am 'Add some feature'`
+1. Push to the branch: `git push origin my-new-feature`
+1. Submit a pull request!
 
-const node = new Node('hello')
-	.on('client.identify', (client) => console.log(`[IPC] Client Connected: ${client.name}`))
-	.on('client.disconnect', (client) => console.log(`[IPC] Client Disconnected: ${client.name}`))
-	.on('client.destroy', (client) => console.log(`[IPC] Client Destroyed: ${client.name}`))
-	.on('server.ready', (server) => console.log(`[IPC] Client Ready: Named ${server.name}`))
-	.on('message', (message) => {
-		console.log(`Received data:`, message.data);
-		message.reply(message.data);
-	})
-	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}`, error));
+## Author
 
-node.serve(8001)
-	.catch((error) => console.error('[IPC] Disconnected!', error));
-```
+**veza** © [kyranet](https://github.com/kyranet), released under the
+[MIT](https://github.com/kyranet/veza/blob/master/LICENSE) License.
+Authored and maintained by kyranet.
 
-`world.js`
-
-```javascript
-const { Node } = require('veza');
-
-const node = new Node('world')
-	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
-	.on('client.disconnect', (client) => console.error(`[IPC] Disconnected from ${client.name}`))
-	.on('client.ready', (client) => {
-		console.log(`[IPC] Connected to: ${client.name}`);
-		client.send('Hello', { timeout: 5000 })
-			.then((result) => console.log(`[TEST] Hello ${result}`))
-			.catch((error) => console.error(`[TEST] Client send errored: ${error}`));
-	});
-
-node.connectTo('hello', 8001)
-	.catch((error) => console.error('[IPC] Disconnected!', error));
-```
-
-> If you run `hello.js` (aka server), and in another window, `world.js`, world will
-connect to hello, once ready, it will send hello "Hello", for which the server will
- reply with "world!", logging from the latter "Hello world!" in the terminal.
-
----
-
-The differences with IPC-Link are:
-
-- **Veza** does not rely on **node-ipc**, but rather uses `net.Socket`, `net.Server`
-and `events.EventEmitter`.
-- **Veza** does not use JSON objects: it uses buffers with headers.
-- **Veza** does not abstract `net.Socket#connect` nor `net.Server#listen`, as opposed
-to what **node-ipc** does.
-- **Veza** does not send a message to a socket if it's not connected, you must connect
-first (in node-ipc, it attempts to connect using the name, which breaks in many
-cases and leads to unexpected behaviour).
-- **Veza** supports recurrency as opposed to blocking message queues.
-
-> Originally, **Veza** was called **ipc-link-core**.
+> Github [kyranet](https://github.com/kyranet) - Twitter [@kyranet_](https://twitter.com/kyranet_)
