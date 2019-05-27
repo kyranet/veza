@@ -40,7 +40,7 @@
     "eslint": "^5.16.0",
     "eslint-config-klasa": "github:dirigeants/klasa-lint",
     "eslint-config-marine": "^2.2.0",
-    "tape": "^4.10.1",
+    "tape": "^4.10.2",
     "typescript": "^3.4.5"
   }
 }
