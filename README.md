@@ -2,6 +2,9 @@
 
 <div align="center">
 	<p>
+		<a href="https://discord.gg/pE5sfxK">
+			<img src="https://discordapp.com/api/guilds/582495121698717696/embed.png" alt="Discord" />
+		</a>
 		<a href="https://www.npmjs.com/package/veza">
 			<img src="https://img.shields.io/npm/v/veza.svg?maxAge=3600" alt="NPM version" />
 		</a>
