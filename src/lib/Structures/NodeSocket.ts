@@ -1,6 +1,6 @@
 import { SocketHandler } from './Base/SocketHandler';
 import { SocketStatus } from '../Util/Constants';
-import { Socket } from 'net';
+import { Socket, SocketConnectOpts } from 'net';
 import { Node } from '../Node';
 
 export class NodeSocket extends SocketHandler {
@@ -21,6 +21,10 @@ export class NodeSocket extends SocketHandler {
 	 * Connect to the socket
 	 * @param options The options to pass to connect
 	 */
+	public async connect(options: SocketConnectOpts, connectionListener?: () => void): Promise<this>;
+	public async connect(port: number, host: string, connectionListener?: () => void): Promise<this>;
+	public async connect(port: number, connectionListener?: () => void): Promise<this>;
+	public async connect(path: string, connectionListener?: () => void): Promise<this>;
 	public async connect(...options: any[]): Promise<this> {
 		this.status = SocketStatus.Connecting;
 		if (!this.socket) this.socket = new Socket();

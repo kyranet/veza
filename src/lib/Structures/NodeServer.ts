@@ -1,4 +1,4 @@
-import { Server, Socket } from 'net';
+import { Server, Socket, ListenOptions } from 'net';
 import { NodeServerClient } from './NodeServerClient';
 import { NodeSocket } from './NodeSocket';
 import { Node, BroadcastOptions, SendOptions } from '../Node';
@@ -94,6 +94,15 @@ export class NodeServer {
 	 * Create a server for this Node instance.
 	 * @param options The options to pass to net.Server#listen
 	 */
+	public async connect(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): Promise<void>;
+	public async connect(port?: number, hostname?: string, listeningListener?: () => void): Promise<void>;
+	public async connect(port?: number, backlog?: number, listeningListener?: () => void): Promise<void>;
+	public async connect(port?: number, listeningListener?: () => void): Promise<void>;
+	public async connect(path: string, backlog?: number, listeningListener?: () => void): Promise<void>;
+	public async connect(path: string, listeningListener?: () => void): Promise<void>;
+	public async connect(options: ListenOptions, listeningListener?: () => void): Promise<void>;
+	public async connect(handle: any, backlog?: number, listeningListener?: () => void): Promise<void>;
+	public async connect(handle: any, listeningListener?: () => void): Promise<void>;
 	public async connect(...options: any[]): Promise<void> {
 		if (this.server) throw new Error('There is already a server.');
 

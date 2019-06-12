@@ -3,6 +3,7 @@ import { NodeSocket } from './Structures/NodeSocket';
 import { NodeServer } from './Structures/NodeServer';
 import { NodeServerClient } from './Structures/NodeServerClient';
 import { NodeMessage } from './Structures/NodeMessage';
+import { ListenOptions, SocketConnectOpts } from 'net';
 
 export class Node extends EventEmitter {
 
@@ -69,6 +70,10 @@ export class Node extends EventEmitter {
 	 * @param name The label name for the socket
 	 * @param options The options to pass to connect
 	 */
+	public connectTo(name: string, options: SocketConnectOpts, connectionListener?: () => void): Promise<NodeSocket>;
+	public connectTo(name: string, port: number, host: string, connectionListener?: () => void): Promise<NodeSocket>;
+	public connectTo(name: string, port: number, connectionListener?: () => void): Promise<NodeSocket>;
+	public connectTo(name: string, path: string, connectionListener?: () => void): Promise<NodeSocket>;
 	public connectTo(name: string, ...options: any[]): Promise<NodeSocket> {
 		if (this.servers.has(name)) {
 			return Promise.reject(
@@ -78,6 +83,7 @@ export class Node extends EventEmitter {
 		const client = new NodeSocket(this, name);
 		this.servers.set(name, client);
 
+		// @ts-ignore
 		return client.connect(...options);
 	}
 
@@ -110,6 +116,15 @@ export class Node extends EventEmitter {
 	 * Create a server for this Node instance.
 	 * @param options The options to pass to net.Server#listen
 	 */
+	public async serve(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): Promise<this>;
+	public async serve(port?: number, hostname?: string, listeningListener?: () => void): Promise<this>;
+	public async serve(port?: number, backlog?: number, listeningListener?: () => void): Promise<this>;
+	public async serve(port?: number, listeningListener?: () => void): Promise<this>;
+	public async serve(path: string, backlog?: number, listeningListener?: () => void): Promise<this>;
+	public async serve(path: string, listeningListener?: () => void): Promise<this>;
+	public async serve(options: ListenOptions, listeningListener?: () => void): Promise<this>;
+	public async serve(handle: any, backlog?: number, listeningListener?: () => void): Promise<this>;
+	public async serve(handle: any, listeningListener?: () => void): Promise<this>;
 	public async serve(...options: any[]): Promise<this> {
 		if (this.server) throw new Error('There is already a server running.');
 
