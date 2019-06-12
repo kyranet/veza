@@ -1,14 +1,5 @@
 {
-  "extends": "marine/node",
-  "rules": {
-		"@typescript-eslint/explicit-function-return-type": 0,
-		"@typescript-eslint/no-use-before-define": ["error", { "typedefs": false, "functions": false }],
-		"@typescript-eslint/promise-function-async": 0,
-		"no-dupe-class-members": 0,
-		"no-use-before-define": 0,
-		"padded-blocks": ["error", { "classes": "always" }],
-		"operator-linebreak": ["error", "before"]
-  },
+  "extends": "bamboo",
   "globals": {
     "BigInt": true
   }
