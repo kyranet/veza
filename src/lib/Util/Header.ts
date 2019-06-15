@@ -1,48 +1,52 @@
-function getBytes(number: number) {
-	const result = [];
-	while (number >= 1) {
-		result.unshift(Math.floor(number) % 0xff);
-		number /= 0xff;
-	}
-
-	return result;
+let i = 0;
+export function create(receptive: boolean) {
+	const header = new Uint8Array(7);
+	writeDate(header, Date.now());
+	writeIncrement(header, i);
+	writeReceptive(header, receptive);
+	i = i < 0xFFFF ? i + 1 : 0;
+	return header;
 }
 
-function parseBytes(bytes: number[]) {
-	let number = 0;
-	let n = 1;
-	for (let i = bytes.length - 1; i >= 0; i--) {
-		number += bytes[i] * n;
-		n *= 0xff;
-	}
-	return number;
+export function createFromID(id: number, receptive: boolean) {
+	const header = new Uint8Array(7);
+	writeDate(header, id >> 0o20);
+	writeIncrement(header, id & 0xFFFF);
+	writeReceptive(header, receptive);
+	return header;
 }
 
-function fill(bytes: number[], length: number) {
-	if (bytes.length < length) {
-		for (let i = length - bytes.length; i > 0; i--) bytes.unshift(0);
-	}
-	return bytes;
-}
-
-export function createHeader(id: string, type: number, receptive: any, length: number) {
-	return Buffer.concat([
-		Buffer.from(id, 'base64'),
-		Buffer.from([type, receptive ? 1 : 0, ...fill(getBytes(length), 4)])
-	]);
-}
-
-export function readHeader(header: any) {
+export function read(header: Uint8Array) {
 	return {
-		id: header.toString('base64', 0, 7),
-		type: header[7],
-		receptive: Boolean(header[8]),
-		length: parseBytes(header.slice(9, 13))
+		id: (readDate(header) << 0o20) + readIncrement(header),
+		receptive: Boolean(header[6])
 	};
 }
 
-let a = 0;
-export function createID() {
-	a = a < 0xffff ? a + 1 : 0;
-	return Buffer.from(getBytes(Date.now()).concat(a)).toString('base64');
+function writeDate(header: Uint8Array, date: number) {
+	header[3] = date & 0xFF;
+	date >>= 8;
+	header[2] = date & 0xFF;
+	date >>= 8;
+	header[1] = date & 0xFF;
+	date >>= 8;
+	header[0] = date & 0xFF;
+}
+
+function writeIncrement(header: Uint8Array, increment: number) {
+	header[5] = increment & 0xFF;
+	increment >>= 8;
+	header[4] = increment & 0xFF;
+}
+
+function writeReceptive(header: Uint8Array, receptive: boolean) {
+	header[6] = receptive ? 1 : 0;
+}
+
+function readDate(header: Uint8Array) {
+	return (header[0] << 0o30) + (header[1] << 0o20) + (header[2] << 0o10) + header[3];
+}
+
+function readIncrement(header: Uint8Array) {
+	return (header[4] << 0o10) + header[5];
 }

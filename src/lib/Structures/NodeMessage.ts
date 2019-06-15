@@ -1,6 +1,7 @@
 import { SocketHandler } from './Base/SocketHandler';
-import { _packMessage } from '../Util/Transform';
 import { Node } from '../Node';
+import { createFromID } from '../Util/Header';
+import { serialize } from 'binarytf';
 
 export class NodeMessage {
 
@@ -12,7 +13,7 @@ export class NodeMessage {
 	/**
 	 * The id of this message
 	 */
-	public readonly id!: string;
+	public readonly id!: number;
 
 	/**
 	 * The data received from the socket
@@ -24,7 +25,7 @@ export class NodeMessage {
 	 */
 	public readonly receptive!: boolean;
 
-	public constructor(client: SocketHandler, id: string, receptive: boolean, data: any) {
+	public constructor(client: SocketHandler, id: number, receptive: boolean, data: any) {
 		Object.defineProperties(this, {
 			client: { value: client },
 			id: { value: id, enumerable: true },
@@ -45,9 +46,12 @@ export class NodeMessage {
 	 * Reply to the socket
 	 * @param content The content to send
 	 */
-	public reply(content: any): void {
+	public reply(content: unknown): void {
 		if (this.receptive) {
-			this.client.socket!.write(_packMessage(this.id, content, false));
+			this.client.socket!.write(Buffer.concat([
+				createFromID(this.id, false),
+				serialize(content)
+			]));
 		}
 	}
 
