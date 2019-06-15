@@ -91,14 +91,10 @@ export class Node extends EventEmitter {
 	 * Disconnect from a socket, this will also reject all messages
 	 * @param name The label name of the socket to disconnect
 	 */
-	public disconnectFrom(name: string): Promise<boolean> {
+	public disconnectFrom(name: string) {
 		const client = this.get(name);
-		if (!client) {
-			return Promise.reject(
-				new Error(`The socket ${name} is not connected to this one.`)
-			);
-		}
-		return Promise.resolve(client.disconnect());
+		if (client) return client.disconnect();
+		throw new Error(`The socket ${name} is not connected to this one.`);
 	}
 
 	/**
@@ -106,7 +102,7 @@ export class Node extends EventEmitter {
 	 * @param data The data to send to other sockets
 	 * @param options The options for this broadcast
 	 */
-	public broadcast(data: any, options: BroadcastOptions = {}): Promise<Array<any>> {
+	public broadcast(data: any, options: BroadcastOptions = {}) {
 		return this.server
 			? this.server.broadcast(data, options)
 			: Promise.resolve([]);
