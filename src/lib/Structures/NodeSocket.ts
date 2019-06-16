@@ -121,7 +121,7 @@ export class NodeSocket extends SocketHandler {
 
 	private async _handshake() {
 		this.status = SocketStatus.Connected;
-		this.node.emit('client.connected', this);
+		this.node.emit('client.connect', this);
 		await new Promise((resolve, reject) => {
 			const onData = (message: Uint8Array) => {
 				try {

@@ -4,6 +4,7 @@ import { NodeServer } from './Structures/NodeServer';
 import { NodeServerClient } from './Structures/NodeServerClient';
 import { NodeMessage } from './Structures/NodeMessage';
 import { ListenOptions, SocketConnectOpts } from 'net';
+import { SocketHandler } from './Structures/Base/SocketHandler';
 
 export class Node extends EventEmitter {
 
@@ -133,39 +134,232 @@ export class Node extends EventEmitter {
 }
 
 export interface Node {
-	on(event: 'client.connect', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	on(event: 'client.destroy', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	on(event: 'client.disconnect', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	on(event: 'client.identify', listener: (client: NodeServerClient) => void): this;
-	on(event: 'client.ready', listener: (client: NodeSocket) => void): this;
-	on(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
-	on(event: 'message', listener: (message: NodeMessage) => void): this;
-	on(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
-	on(event: 'server.destroy', listener: (server: NodeServer) => void): this;
-	on(event: 'server.ready', listener: (server: NodeServer) => void): this;
-	on(event: string, listener: Function): this;
-	once(event: 'client.connect', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	once(event: 'client.destroy', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	once(event: 'client.disconnect', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	once(event: 'client.identify', listener: (client: NodeServerClient) => void): this;
-	once(event: 'client.ready', listener: (client: NodeSocket) => void): this;
-	once(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
-	once(event: 'message', listener: (message: NodeMessage) => void): this;
-	once(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
-	once(event: 'server.destroy', listener: (server: NodeServer) => void): this;
-	once(event: 'server.ready', listener: (server: NodeServer) => void): this;
-	once(event: string, listener: Function): this;
-	off(event: 'client.connect', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	off(event: 'client.destroy', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	off(event: 'client.disconnect', listener: (client: NodeSocket | NodeServerClient) => void): this;
-	off(event: 'client.identify', listener: (client: NodeServerClient) => void): this;
-	off(event: 'client.ready', listener: (client: NodeSocket) => void): this;
-	off(event: 'error', listener: (error: Error, node: NodeServer | NodeServerClient | NodeSocket) => void): this;
-	off(event: 'message', listener: (message: NodeMessage) => void): this;
-	off(event: 'raw', listener: (node: NodeServerClient | NodeSocket, buffer: Buffer) => void): this;
-	off(event: 'server.destroy', listener: (server: NodeServer) => void): this;
-	off(event: 'server.ready', listener: (server: NodeServer) => void): this;
-	off(event: string, listener: Function): this;
+	/**
+	 * Emitted on a successful connection to a Socket.
+	 */
+	on(event: 'client.connect', listener: ClientConnectEvent): this;
+	/**
+	 * Emitted on a a Socket destroy.
+	 */
+	on(event: 'client.destroy', listener: ClientDestroyEvent): this;
+	/**
+	 * Emitted on a successful disconnection from a Socket.
+	 */
+	on(event: 'client.disconnect', listener: ClientDisconnectEvent): this;
+	/**
+	 * Emitted on a successful identification from a Socket.
+	 */
+	on(event: 'client.identify', listener: ClientIdentifyEvent): this;
+	/**
+	 * Emitted when a Socket is ready for usage.
+	 */
+	on(event: 'client.ready', listener: ClientReadyEvent): this;
+	/**
+	 * Emitted when a node emits an error.
+	 */
+	on(event: 'error', listener: ErrorEvent): this;
+	/**
+	 * Emitted when a node receives a message.
+	 */
+	on(event: 'message', listener: EventMessage): this;
+	/**
+	 * Emitted when a Node receives a message.
+	 */
+	on(event: 'raw', listener: RawEvent): this;
+	/**
+	 * Emitted when a server destroys.
+	 */
+	on(event: 'server.destroy', listener: ServerDestroyEvent): this;
+	/**
+	 * Emitted when a server is ready.
+	 */
+	on(event: 'server.ready', listener: ServerReadyEvent): this;
+
+	/**
+	 * Emitted on a successful connection to a Socket.
+	 */
+	once(event: 'client.connect', listener: ClientConnectEvent): this;
+	/**
+	 * Emitted on a a Socket destroy.
+	 */
+	once(event: 'client.destroy', listener: ClientDestroyEvent): this;
+	/**
+	 * Emitted on a successful disconnection from a Socket.
+	 */
+	once(event: 'client.disconnect', listener: ClientDisconnectEvent): this;
+	/**
+	 * Emitted on a successful identification from a Socket.
+	 */
+	once(event: 'client.identify', listener: ClientIdentifyEvent): this;
+	/**
+	 * Emitted when a Socket is ready for usage.
+	 */
+	once(event: 'client.ready', listener: ClientReadyEvent): this;
+	/**
+	 * Emitted when a node emits an error.
+	 */
+	once(event: 'error', listener: ErrorEvent): this;
+	/**
+	 * Emitted when a node receives a message.
+	 */
+	once(event: 'message', listener: EventMessage): this;
+	/**
+	 * Emitted when a Node receives a message.
+	 */
+	once(event: 'raw', listener: RawEvent): this;
+	/**
+	 * Emitted when a server destroys.
+	 */
+	once(event: 'server.destroy', listener: ServerDestroyEvent): this;
+	/**
+	 * Emitted when a server is ready.
+	 */
+	once(event: 'server.ready', listener: ServerReadyEvent): this;
+
+	/**
+	 * Emitted on a successful connection to a Socket.
+	 */
+	off(event: 'client.connect', listener: ClientConnectEvent): this;
+	/**
+	 * Emitted on a a Socket destroy.
+	 */
+	off(event: 'client.destroy', listener: ClientDestroyEvent): this;
+	/**
+	 * Emitted on a successful disconnection from a Socket.
+	 */
+	off(event: 'client.disconnect', listener: ClientDisconnectEvent): this;
+	/**
+	 * Emitted on a successful identification from a Socket.
+	 */
+	off(event: 'client.identify', listener: ClientIdentifyEvent): this;
+	/**
+	 * Emitted when a Socket is ready for usage.
+	 */
+	off(event: 'client.ready', listener: ClientReadyEvent): this;
+	/**
+	 * Emitted when a node emits an error.
+	 */
+	off(event: 'error', listener: ErrorEvent): this;
+	/**
+	 * Emitted when a node receives a message.
+	 */
+	off(event: 'message', listener: EventMessage): this;
+	/**
+	 * Emitted when a Node receives a message.
+	 */
+	off(event: 'raw', listener: RawEvent): this;
+	/**
+	 * Emitted when a server destroys.
+	 */
+	off(event: 'server.destroy', listener: ServerDestroyEvent): this;
+	/**
+	 * Emitted when a server is ready.
+	 */
+	off(event: 'server.ready', listener: ServerReadyEvent): this;
+
+	/**
+	 * Emitted on a successful connection to a Socket.
+	 */
+	emit(event: 'client.connect', ...args: Parameters<ClientConnectEvent>): boolean;
+	/**
+	 * Emitted on a a Socket destroy.
+	 */
+	emit(event: 'client.destroy', ...args: Parameters<ClientDestroyEvent>): boolean;
+	/**
+	 * Emitted on a successful disconnection from a Socket.
+	 */
+	emit(event: 'client.disconnect', ...args: Parameters<ClientDisconnectEvent>): boolean;
+	/**
+	 * Emitted on a successful identification from a Socket.
+	 */
+	emit(event: 'client.identify', ...args: Parameters<ClientIdentifyEvent>): boolean;
+	/**
+	 * Emitted when a Socket is ready for usage.
+	 */
+	emit(event: 'client.ready', ...args: Parameters<ClientReadyEvent>): boolean;
+	/**
+	 * Emitted when a node emits an error.
+	 */
+	emit(event: 'error', ...args: Parameters<ErrorEvent>): boolean;
+	/**
+	 * Emitted when a node receives a message.
+	 */
+	emit(event: 'message', ...args: Parameters<EventMessage>): boolean;
+	/**
+	 * Emitted when a Node receives a message.
+	 */
+	emit(event: 'raw', ...args: Parameters<RawEvent>): boolean;
+	/**
+	 * Emitted when a server destroys.
+	 */
+	emit(event: 'server.destroy', ...args: Parameters<ServerDestroyEvent>): boolean;
+	/**
+	 * Emitted when a server is ready.
+	 */
+	emit(event: 'server.ready', ...args: Parameters<ServerReadyEvent>): boolean;
+}
+
+interface ClientConnectEvent {
+	/**
+	 * @param client The client that has connected
+	 */
+	(client: NodeSocket | NodeServerClient): unknown;
+}
+interface ClientDestroyEvent {
+	/**
+	 * @param client The client that was destroyed
+	 */
+	(client: NodeSocket | NodeServerClient): unknown;
+}
+interface ClientDisconnectEvent {
+	/**
+	 * @param client The client that was disconnected
+	 */
+	(client: NodeSocket | NodeServerClient): unknown;
+}
+interface ClientIdentifyEvent {
+	/**
+	 * @param client The identified client
+	 */
+	(client: NodeServerClient): unknown;
+}
+interface ClientReadyEvent {
+	/**
+	 * @param client The client that has turned ready
+	 */
+	(client: NodeSocket): unknown;
+}
+interface ErrorEvent {
+	/**
+	 * @param error The error emitted
+	 * @param node The client or server that emitted the error
+	 */
+	(error: Error, node: SocketHandler | NodeServer): unknown;
+}
+interface EventMessage {
+	/**
+	 * @param message The message received
+	 */
+	(message: NodeMessage): unknown;
+}
+interface RawEvent {
+	/**
+	 * @param client The client that received the message
+	 * @param buffer The raw data received from the socket
+	 */
+	(node: SocketHandler, buffer: Uint8Array): unknown;
+}
+interface ServerDestroyEvent {
+	/**
+	 * @param server The server that was destroyed
+	 */
+	(server: NodeServer): unknown;
+}
+interface ServerReadyEvent {
+	/**
+	 * @param server The server that has turned ready
+	 */
+	(server: NodeServer): unknown;
 }
 
 export interface NodeOptions {
@@ -181,56 +375,3 @@ export interface SendOptions {
 export interface BroadcastOptions extends SendOptions {
 	filter?: RegExp;
 }
-
-/**
- * Emitted on a successful connection to a Socket
- * @event Node#client.connect
- * @param {NodeSocket | NodeServerClient} client The client that manages the socket
- */
-/**
- * Emitted on a a Socket destroy
- * @event Node#client.destroy
- * @param {NodeSocket | NodeServerClient} client The client that manages the socket
- */
-/**
- * Emitted on a successful disconnection from a Socket
- * @event Node#client.disconnect
- * @param {NodeSocket | NodeServerClient} client The client that manages the socket
- */
-/**
- * Emitted on a successful identification from a Socket
- * @event Node#client.identify
- * @param {NodeServerClient} client The client that manages the socket
- */
-/**
- * Emitted when a Socket is ready for usage
- * @event Node#client.ready
- * @param {NodeSocket | NodeServerClient} client The client that manages the socket
- */
-/**
- * Emitted when a node emits an error
- * @event Node#error
- * @param {Error} error The omitted error
- * @param {NodeServer | NodeServerClient | NodeSocket} node The client that manages the socket
- */
-/**
- * Emitted when a node receives a message
- * @event Node#message
- * @param {NodeMessage} message The message received
- */
-/**
- * Emitted when a node receives a message
- * @event Node#raw
- * @param {NodeSocket | NodeServerClient} client The client that manages the socket
- * @param {Buffer} buffer The raw data received from the socket
- */
-/**
- * Emitted when a server destroys
- * @event Node#server.destroy
- * @param {ServerNode} server The client that manages the socket
- */
-/**
- * Emitted when a server is ready
- * @event Node#server.ready
- * @param {ServerNode} server The client that manages the socket
- */

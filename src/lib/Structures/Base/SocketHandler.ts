@@ -130,15 +130,11 @@ export class SocketHandler extends Base {
 		return this;
 	}
 
-	protected _onData(data: any) {
+	protected _onData(data: Uint8Array) {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
 			if (processed === kInvalidMessage) {
-				this.node.emit(
-					'error',
-					new Error('Failed to process message, destroying Socket.'),
-					this
-				);
+				this.node.emit('error', new Error('Failed to process message, destroying Socket.'), this);
 				this.disconnect();
 				break;
 			}
