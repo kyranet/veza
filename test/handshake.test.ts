@@ -84,3 +84,74 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 		t.fail('Disconnection should not error.');
 	}
 });
+
+test('Socket Basic Message', { timeout: 5000 }, async t => {
+	t.plan(3);
+	const [nodeServer, nodeSocket] = await setup(t, 8003);
+
+	nodeServer.once('message', message => {
+		t.true(message.receptive, 'The message was sent as receptive.');
+		t.equal(message.data, 'Hello');
+		message.reply('World');
+	});
+	const response = await nodeSocket.sendTo('Server', 'Hello') as string;
+	t.equal(response, 'World');
+
+	try {
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
+});
+
+// TODO(kyranet): Fix the headers, plus run tests on them before.
+test.skip('Socket Concurrent Messages', { timeout: 5000 }, async t => {
+	t.plan(6);
+	const [nodeServer, nodeSocket] = await setup(t, 8004);
+
+	const messages = ['Hello', 'High'];
+	const replies = ['World', 'Five!'];
+	nodeServer.on('message', message => {
+		t.equal(message.receptive, true, 'The message was sent as receptive.');
+		t.equal(message.data, messages.shift(), 'The message should match with the value.');
+		message.reply(replies.shift());
+	});
+	nodeServer.on('raw', (_: unknown, buffer: Buffer) => console.log(buffer));
+
+	const [first, second] = await Promise.all([
+		nodeSocket.sendTo('Server', messages[0]),
+		nodeSocket.sendTo('Server', messages[1])
+	]);
+	t.equal(first, 'World');
+	t.equal(second, 'Five!');
+
+	try {
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
+});
+
+async function setup(t: test.Test, port: number) {
+	const nodeServer = new Node('Server');
+	const nodeSocket = new Node('Socket');
+
+	try {
+		// Open server
+		await nodeServer.serve(port);
+		await nodeSocket.connectTo(port);
+
+		await new Promise(resolve => {
+			nodeServer.once('client.identify', resolve);
+		});
+	} catch {
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
+
+		t.fail('TCP Connection Failed.');
+	}
+
+	return [nodeServer, nodeSocket];
+}

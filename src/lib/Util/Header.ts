@@ -23,7 +23,7 @@ export function read(header: Uint8Array) {
 	};
 }
 
-function writeDate(header: Uint8Array, date: number) {
+export function writeDate(header: Uint8Array, date: number) {
 	header[3] = date & 0xFF;
 	date >>= 8;
 	header[2] = date & 0xFF;
@@ -33,20 +33,20 @@ function writeDate(header: Uint8Array, date: number) {
 	header[0] = date & 0xFF;
 }
 
-function writeIncrement(header: Uint8Array, increment: number) {
+export function writeIncrement(header: Uint8Array, increment: number) {
 	header[5] = increment & 0xFF;
 	increment >>= 8;
 	header[4] = increment & 0xFF;
 }
 
-function writeReceptive(header: Uint8Array, receptive: boolean) {
+export function writeReceptive(header: Uint8Array, receptive: boolean) {
 	header[6] = receptive ? 1 : 0;
 }
 
-function readDate(header: Uint8Array) {
+export function readDate(header: Uint8Array) {
 	return (header[0] << 0o30) + (header[1] << 0o20) + (header[2] << 0o10) + header[3];
 }
 
-function readIncrement(header: Uint8Array) {
+export function readIncrement(header: Uint8Array) {
 	return (header[4] << 0o10) + header[5];
 }

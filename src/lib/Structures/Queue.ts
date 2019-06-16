@@ -51,7 +51,7 @@ export class Queue extends Map<number, QueueEntry> {
 
 		while (buffer) {
 			// If the header separator was not found, it may be due to an impartial message
-			if (buffer.length + this.offset <= 7) {
+			if (buffer.length - this.offset <= 7) {
 				this._rest = buffer;
 				break;
 			}
