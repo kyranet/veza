@@ -7,6 +7,10 @@ yarn.lock
 logs/
 *.log
 
+# Build files
+*.tsbuildinfo
+*.tgz
+
 # Miscellaneous
 .tmp/
 docs/
