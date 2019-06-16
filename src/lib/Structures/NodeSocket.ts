@@ -2,14 +2,14 @@ import { SocketHandler } from './Base/SocketHandler';
 import { SocketStatus } from '../Util/Constants';
 import { Socket, SocketConnectOpts } from 'net';
 import { Node } from '../Node';
-import { deserialize } from 'binarytf';
+import { deserialize, serialize } from 'binarytf';
 
 export class NodeSocket extends SocketHandler {
 
 	private retriesRemaining: number;
 	private _reconnectionTimeout!: NodeJS.Timer | null;
 
-	public constructor(node: Node, name: string, socket = null) {
+	public constructor(node: Node, name: string | null, socket = null) {
 		super(node, name, socket);
 		this.retriesRemaining = node.maxRetries;
 
@@ -30,6 +30,7 @@ export class NodeSocket extends SocketHandler {
 		await this._connect(...options);
 		await this._handshake();
 
+		this.node.servers.set(this.name!, this);
 		this.status = SocketStatus.Ready;
 		this.node.emit('client.ready', this);
 		this.socket!
@@ -44,7 +45,7 @@ export class NodeSocket extends SocketHandler {
 	/**
 	 * Disconnect from the socket, this will also reject all messages
 	 */
-	public disconnect(): boolean {
+	public disconnect() {
 		if (!super.disconnect()) return false;
 
 		if (this._reconnectionTimeout) {
@@ -127,6 +128,14 @@ export class NodeSocket extends SocketHandler {
 					const name = deserialize(message, 7);
 					if (typeof name === 'string') {
 						this.name = name;
+
+						// Reply with the name of the node, using the header id and concatenating with the
+						// serialized name afterwards.
+						this.socket!.write(Buffer.concat([
+							message.subarray(0, 6),
+							new Uint8Array([0]),
+							serialize(this.node.name)
+						]));
 						// eslint-disable-next-line @typescript-eslint/no-use-before-define
 						return resolve(cleanup());
 					}

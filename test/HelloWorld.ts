@@ -39,7 +39,7 @@ test('Basic Empty Server (Connect and Disconnect)', { timeout: 5000 }, async t =
 });
 
 test('Basic Socket', { timeout: 5000 }, async t => {
-	t.plan(7);
+	t.plan(11);
 
 	const nodeServer = new Node('Server');
 	const nodeSocket = new Node('Socket');
@@ -53,24 +53,33 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 	}
 
 	try {
-		await nodeSocket.connectTo('MyServer', PORT);
-
+		await nodeSocket.connectTo(PORT);
 		t.equal(nodeSocket.servers.size, 1);
 
-		const myServer = nodeSocket.servers.get('MyServer')!;
+		const myServer = nodeSocket.servers.get('Server')!;
 		t.notEqual(myServer, undefined);
+		t.notEqual(myServer.socket, null);
 		t.equal(myServer.name, 'Server');
 		t.equal(myServer.node, nodeSocket);
-		t.equal(myServer.queue.size, 0);
 		t.equal(myServer.status, SocketStatus.Ready);
-		t.notEqual(myServer.socket, null);
+
+		await new Promise(resolve => {
+			nodeServer.once('client.identify', resolve);
+		});
+
+		const mySocket = nodeServer.server!.clients.get('Socket')!;
+		t.notEqual(mySocket, undefined);
+		t.notEqual(mySocket.socket, null);
+		t.equal(mySocket.name, 'Socket');
+		t.equal(mySocket.node, nodeServer);
+		t.equal(mySocket.status, SocketStatus.Ready);
 	} catch {
 		t.fail('This port should always exist.');
 	}
 
 	try {
 		nodeServer.server!.disconnect();
-		nodeSocket.disconnectFrom('MyServer');
+		nodeSocket.disconnectFrom('Server');
 	} catch {
 		t.fail('Disconnection should not error.');
 	}

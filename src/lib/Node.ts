@@ -70,21 +70,13 @@ export class Node extends EventEmitter {
 	 * @param name The label name for the socket
 	 * @param options The options to pass to connect
 	 */
-	public connectTo(name: string, options: SocketConnectOpts, connectionListener?: () => void): Promise<NodeSocket>;
-	public connectTo(name: string, port: number, host: string, connectionListener?: () => void): Promise<NodeSocket>;
-	public connectTo(name: string, port: number, connectionListener?: () => void): Promise<NodeSocket>;
-	public connectTo(name: string, path: string, connectionListener?: () => void): Promise<NodeSocket>;
-	public connectTo(name: string, ...options: any[]): Promise<NodeSocket> {
-		if (this.servers.has(name)) {
-			return Promise.reject(
-				new Error(`There is already a socket called ${name}`)
-			);
-		}
-		const client = new NodeSocket(this, name);
-		this.servers.set(name, client);
-
+	public connectTo(options: SocketConnectOpts, connectionListener?: () => void): Promise<NodeSocket>;
+	public connectTo(port: number, host: string, connectionListener?: () => void): Promise<NodeSocket>;
+	public connectTo(port: number, connectionListener?: () => void): Promise<NodeSocket>;
+	public connectTo(path: string, connectionListener?: () => void): Promise<NodeSocket>;
+	public connectTo(...options: any[]): Promise<NodeSocket> {
 		// @ts-ignore
-		return client.connect(...options);
+		return new NodeSocket(this, null).connect(...options);
 	}
 
 	/**
