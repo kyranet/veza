@@ -93,9 +93,6 @@ test('Socket Events', { timeout: 5000 }, async t => {
 	const PORT = 8003;
 	await nodeServer.serve(PORT);
 
-	nodeServer.on('error', console.error);
-	nodeSocket.on('error', console.error);
-
 	// socket.connect and socket.ready are called when connecting
 	nodeSocket.on('socket.connect', client => {
 		t.equal(client.name, null, 'Connect is done before the identify step, it is not available until ready.');
