@@ -46,14 +46,12 @@ export class NodeSocket extends SocketHandler {
 	 * Disconnect from the socket, this will also reject all messages
 	 */
 	public disconnect() {
-		if (!super.disconnect()) return false;
-
+		super.disconnect();
 		if (this._reconnectionTimeout) {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
 		}
 
-		this.socket = null;
 		this.node.servers.delete(this.name!);
 		this.node.emit('socket.destroy', this);
 		return true;
@@ -69,12 +67,16 @@ export class NodeSocket extends SocketHandler {
 	}
 
 	private _onClose(...options: any[]) {
-		this.node.emit('socket.disconnect', this);
+		if (this.status !== SocketStatus.Disconnected) {
+			this.status = SocketStatus.Disconnected;
+			this.node.emit('socket.disconnect', this);
+		}
 		this._reconnectionTimeout = setTimeout(() => {
 			if (this.retriesRemaining === 0) {
 				this.disconnect();
-			} else {
-				this.retriesRemaining--;
+			} else if (this.socket) {
+				--this.retriesRemaining;
+				this.status = SocketStatus.Connecting;
 				// @ts-ignore
 				this.socket.connect(...options);
 			}

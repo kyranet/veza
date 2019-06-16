@@ -6,5 +6,6 @@ export enum SocketStatus {
 	Ready,
 	Connected,
 	Connecting,
-	Disconnected
+	Disconnected,
+	Destroyed
 }

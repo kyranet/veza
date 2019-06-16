@@ -77,7 +77,7 @@ export class SocketHandler extends Base {
 	/**
 	 * Disconnect from the socket, this will also reject all messages
 	 */
-	public disconnect(): boolean {
+	public disconnect() {
 		if (!this.socket) return false;
 
 		this.socket.destroy();
@@ -89,7 +89,7 @@ export class SocketHandler extends Base {
 			for (const element of this.queue.values()) element.reject(rejectError);
 		}
 
-		this.status = SocketStatus.Disconnected;
+		this.status = SocketStatus.Destroyed;
 
 		return true;
 	}

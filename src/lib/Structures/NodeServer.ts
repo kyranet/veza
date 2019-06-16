@@ -9,7 +9,7 @@ export class NodeServer {
 	 * The Node instance that manages this
 	 */
 	public readonly node!: Node;
-	public readonly clients!: Map<string, NodeServerClient | NodeSocket>;
+	public readonly clients!: Map<string, NodeServerClient>;
 	public server!: Server | null;
 
 	public constructor(node: Node) {
@@ -147,9 +147,8 @@ export class NodeServer {
 		this.node.server = null;
 		this.node.emit('server.destroy', this);
 
-		const rejectError = new Error('Server has been disconnected.');
 		for (const socket of this.clients.values()) {
-			for (const element of socket.queue.values()) element.reject(rejectError);
+			socket.disconnect();
 		}
 
 		return true;

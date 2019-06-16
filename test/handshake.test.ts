@@ -85,13 +85,68 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 	}
 });
 
-// TODO(kyranet): Complete this test
-test.skip('Basic Events', { timeout: 5000 }, async t => {
-	t.plan(11);
+test('Socket Events', { timeout: 5000 }, async t => {
+	t.plan(28);
 
-	// const nodeServer = new Node('Server');
-	// const nodeSocket = new Node('Socket');
-	// const PORT = 8003;
+	const nodeServer = new Node('Server');
+	const nodeSocket = new Node('Socket');
+	const PORT = 8003;
+	await nodeServer.serve(PORT);
+
+	nodeServer.on('error', console.error);
+	nodeSocket.on('error', console.error);
+
+	// socket.connect and socket.ready are called when connecting
+	nodeSocket.on('socket.connect', client => {
+		t.equal(client.name, null, 'Connect is done before the identify step, it is not available until ready.');
+		t.equal(client.node, nodeSocket, 'The client node should be the parent Node itself.');
+		t.equal(client.status, SocketStatus.Connected, 'When this event fires, the status should be "Connected".');
+		t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
+		t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
+		t.notEqual(client.queue.socket, null, 'The socket must not be null during connection.');
+		t.notEqual(client.socket, null, 'The socket must not be null during connection.');
+	});
+	nodeSocket.on('socket.ready', client => {
+		t.equal(client.name, 'Server', 'Ready is emitted after the identify step, the name should be available.');
+		t.equal(client.node, nodeSocket, 'The client node should be the parent Node itself.');
+		t.equal(client.status, SocketStatus.Ready, 'When this event fires, the status should be "Connected".');
+		t.equal(client.queue.size, 0, 'The queue must be empty after connection.');
+		t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
+		t.notEqual(client.queue.socket, null, 'The socket must not be null after connection.');
+		t.notEqual(client.socket, null, 'The socket must not be null after connection.');
+	});
+
+	await nodeSocket.connectTo(PORT);
+	await new Promise(resolve => {
+		nodeServer.once('client.ready', resolve);
+	});
+
+	// Test a server outage
+	nodeSocket.on('socket.disconnect', client => {
+		t.equal(client.name, 'Server', 'The name should always be available, even after being disconnected.');
+		t.equal(client.node, nodeSocket, 'The client node should be the parent Node itself.');
+		t.equal(client.status, SocketStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
+		t.equal(client.queue.size, 0, 'The queue must be empty during a disconnection.');
+		t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
+		t.notEqual(client.queue.socket, null, 'The socket must not be null during a disconnection.');
+		t.notEqual(client.socket, null, 'The socket must not be null during a disconnection.');
+		destroy();
+	});
+	nodeServer.server!.disconnect();
+
+	function destroy() {
+		// Test a socket disconnection
+		nodeSocket.on('socket.destroy', client => {
+			t.equal(client.name, 'Server', 'The name should always be available, even after being disconnected.');
+			t.equal(client.node, nodeSocket, 'The client node should be the parent Node itself.');
+			t.equal(client.status, SocketStatus.Destroyed, 'When this event fires, the status should be "Destroyed".');
+			t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
+			t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
+			t.equal(client.queue.socket, null, 'The socket is destroyed and nullified.');
+			t.equal(client.socket, null, 'The socket is destroyed and nullified.');
+		});
+		nodeSocket.disconnectFrom('Server');
+	}
 });
 
 test('Socket Basic Message', { timeout: 5000 }, async t => {
