@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"sourceMap": true,
 		"declaration": true,
+		"removeComments": false,
 		"outDir": "./dist",
 		"types": ["node"]
 	},
