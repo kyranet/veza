@@ -1,9 +1,9 @@
 node_modules/
 package-lock.json
-yarn.lock
 .vs/
 .idea/
 dist/
-test/*.js
-test/*.js.map
-test/*.tsbuildinfo
+*.js
+*.js.map
+*.tsbuildinfo
+*.tgz
