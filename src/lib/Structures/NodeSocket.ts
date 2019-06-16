@@ -32,7 +32,7 @@ export class NodeSocket extends SocketHandler {
 
 		this.node.servers.set(this.name!, this);
 		this.status = SocketStatus.Ready;
-		this.node.emit('client.ready', this);
+		this.node.emit('socket.ready', this);
 		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('connect', this._onConnect.bind(this))
@@ -55,7 +55,7 @@ export class NodeSocket extends SocketHandler {
 
 		this.socket = null;
 		this.node.servers.delete(this.name!);
-		this.node.emit('client.destroy', this);
+		this.node.emit('socket.destroy', this);
 		return true;
 	}
 
@@ -65,11 +65,11 @@ export class NodeSocket extends SocketHandler {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
 		}
-		this.node.emit('client.connect', this);
+		this.node.emit('socket.connect', this);
 	}
 
 	private _onClose(...options: any[]) {
-		this.node.emit('client.disconnect', this);
+		this.node.emit('socket.disconnect', this);
 		this._reconnectionTimeout = setTimeout(() => {
 			if (this.retriesRemaining === 0) {
 				this.disconnect();
@@ -86,7 +86,7 @@ export class NodeSocket extends SocketHandler {
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
 			if (this.status !== SocketStatus.Disconnected) return;
 			this.status = SocketStatus.Disconnected;
-			this.node.emit('client.disconnect', this);
+			this.node.emit('socket.disconnect', this);
 		} else {
 			this.node.emit('error', error, this);
 		}
@@ -121,7 +121,7 @@ export class NodeSocket extends SocketHandler {
 
 	private async _handshake() {
 		this.status = SocketStatus.Connected;
-		this.node.emit('client.connect', this);
+		this.node.emit('socket.connect', this);
 		await new Promise((resolve, reject) => {
 			const onData = (message: Uint8Array) => {
 				try {

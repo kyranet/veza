@@ -137,6 +137,22 @@ export interface Node {
 	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
+	on(event: 'socket.connect', listener: SocketConnectEvent): this;
+	/**
+	 * Emitted on a a Socket destroy.
+	 */
+	on(event: 'socket.destroy', listener: SocketDestroyEvent): this;
+	/**
+	 * Emitted on a successful disconnection from a Socket.
+	 */
+	on(event: 'socket.disconnect', listener: SocketDisconnectEvent): this;
+	/**
+	 * Emitted when a Socket is ready for usage.
+	 */
+	on(event: 'socket.ready', listener: SocketReadyEvent): this;
+	/**
+	 * Emitted on a successful connection to a Socket.
+	 */
 	on(event: 'client.connect', listener: ClientConnectEvent): this;
 	/**
 	 * Emitted on a a Socket destroy.
@@ -175,6 +191,22 @@ export interface Node {
 	 */
 	on(event: 'server.ready', listener: ServerReadyEvent): this;
 
+	/**
+	 * Emitted on a successful connection to a Socket.
+	 */
+	once(event: 'socket.connect', listener: SocketConnectEvent): this;
+	/**
+	 * Emitted on a a Socket destroy.
+	 */
+	once(event: 'socket.destroy', listener: SocketDestroyEvent): this;
+	/**
+	 * Emitted on a successful disconnection from a Socket.
+	 */
+	once(event: 'socket.disconnect', listener: SocketDisconnectEvent): this;
+	/**
+	 * Emitted when a Socket is ready for usage.
+	 */
+	once(event: 'socket.ready', listener: SocketReadyEvent): this;
 	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
@@ -219,6 +251,22 @@ export interface Node {
 	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
+	off(event: 'socket.connect', listener: SocketConnectEvent): this;
+	/**
+	 * Emitted on a a Socket destroy.
+	 */
+	off(event: 'socket.destroy', listener: SocketDestroyEvent): this;
+	/**
+	 * Emitted on a successful disconnection from a Socket.
+	 */
+	off(event: 'socket.disconnect', listener: SocketDisconnectEvent): this;
+	/**
+	 * Emitted when a Socket is ready for usage.
+	 */
+	off(event: 'socket.ready', listener: SocketReadyEvent): this;
+	/**
+	 * Emitted on a successful connection to a Socket.
+	 */
 	off(event: 'client.connect', listener: ClientConnectEvent): this;
 	/**
 	 * Emitted on a a Socket destroy.
@@ -257,6 +305,22 @@ export interface Node {
 	 */
 	off(event: 'server.ready', listener: ServerReadyEvent): this;
 
+	/**
+	 * Emitted on a successful connection to a Socket.
+	 */
+	emit(event: 'socket.connect', ...args: Parameters<SocketConnectEvent>): boolean;
+	/**
+	 * Emitted on a a Socket destroy.
+	 */
+	emit(event: 'socket.destroy', ...args: Parameters<SocketDestroyEvent>): boolean;
+	/**
+	 * Emitted on a successful disconnection from a Socket.
+	 */
+	emit(event: 'socket.disconnect', ...args: Parameters<SocketDisconnectEvent>): boolean;
+	/**
+	 * Emitted when a Socket is ready for usage.
+	 */
+	emit(event: 'socket.ready', ...args: Parameters<SocketReadyEvent>): boolean;
 	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
@@ -299,23 +363,47 @@ export interface Node {
 	emit(event: 'server.ready', ...args: Parameters<ServerReadyEvent>): boolean;
 }
 
+interface SocketReadyEvent {
+	/**
+	 * @param client The client that has turned ready
+	 */
+	(client: NodeSocket): unknown;
+}
+interface SocketConnectEvent {
+	/**
+	 * @param client The client that has connected
+	 */
+	(client: NodeSocket): unknown;
+}
+interface SocketDestroyEvent {
+	/**
+	 * @param client The client that was destroyed
+	 */
+	(client: NodeSocket): unknown;
+}
+interface SocketDisconnectEvent {
+	/**
+	 * @param client The client that was disconnected
+	 */
+	(client: NodeSocket): unknown;
+}
 interface ClientConnectEvent {
 	/**
 	 * @param client The client that has connected
 	 */
-	(client: NodeSocket | NodeServerClient): unknown;
+	(client: NodeServerClient): unknown;
 }
 interface ClientDestroyEvent {
 	/**
 	 * @param client The client that was destroyed
 	 */
-	(client: NodeSocket | NodeServerClient): unknown;
+	(client: NodeServerClient): unknown;
 }
 interface ClientDisconnectEvent {
 	/**
 	 * @param client The client that was disconnected
 	 */
-	(client: NodeSocket | NodeServerClient): unknown;
+	(client: NodeServerClient): unknown;
 }
 interface ClientIdentifyEvent {
 	/**
@@ -327,7 +415,7 @@ interface ClientReadyEvent {
 	/**
 	 * @param client The client that has turned ready
 	 */
-	(client: NodeSocket): unknown;
+	(client: NodeServerClient): unknown;
 }
 interface ErrorEvent {
 	/**

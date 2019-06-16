@@ -85,9 +85,18 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 	}
 });
 
+// TODO(kyranet): Complete this test
+test.skip('Basic Events', { timeout: 5000 }, async t => {
+	t.plan(11);
+
+	// const nodeServer = new Node('Server');
+	// const nodeSocket = new Node('Socket');
+	// const PORT = 8003;
+});
+
 test('Socket Basic Message', { timeout: 5000 }, async t => {
 	t.plan(3);
-	const [nodeServer, nodeSocket] = await setup(t, 8003);
+	const [nodeServer, nodeSocket] = await setup(t, 8004);
 
 	nodeServer.once('message', message => {
 		t.true(message.receptive, 'The message was sent as receptive.');
@@ -142,7 +151,7 @@ async function setup(t: test.Test, port: number) {
 		await nodeSocket.connectTo(port);
 
 		await new Promise(resolve => {
-			nodeServer.once('client.identify', resolve);
+			nodeServer.once('client.ready', resolve);
 		});
 	} catch {
 		nodeServer.server!.disconnect();

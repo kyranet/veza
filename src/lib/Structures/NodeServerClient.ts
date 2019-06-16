@@ -16,6 +16,7 @@ export class NodeServerClient extends SocketHandler {
 	}
 
 	public async setup() {
+		this.node.emit('client.connect', this);
 		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('error', this._onError.bind(this))
@@ -25,6 +26,7 @@ export class NodeServerClient extends SocketHandler {
 			const sName = await this.send(this.server.name);
 			this.status = SocketStatus.Ready;
 			this.name = sName;
+			this.node.emit('client.identify', this);
 
 			// Disconnect if a previous socket existed.
 			const existing = this.server.clients.get(sName);
@@ -34,7 +36,7 @@ export class NodeServerClient extends SocketHandler {
 
 			// Add this socket to the clients.
 			this.server.clients.set(sName, this);
-			this.node.emit('client.identify', this);
+			this.node.emit('client.ready', this);
 		} catch {
 			this.disconnect();
 		}
