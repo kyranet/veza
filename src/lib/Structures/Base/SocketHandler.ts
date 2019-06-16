@@ -1,11 +1,11 @@
-import { kPing, kIdentify, kInvalidMessage, SocketStatus } from '../../Util/Constants';
-import { _packMessage } from '../../Util/Transform';
-import { createID } from '../../Util/Header';
+import { kInvalidMessage, SocketStatus } from '../../Util/Constants';
 import { NodeMessage } from '../NodeMessage';
 import { Queue } from '../Queue';
 import { Base } from './Base';
 import { Node, SendOptions } from '../../Node';
 import { Socket } from 'net';
+import { create, read } from '../../Util/Header';
+import { serialize } from 'binarytf';
 
 export class SocketHandler extends Base {
 
@@ -42,10 +42,10 @@ export class SocketHandler extends Base {
 		}
 
 		return new Promise((resolve, reject) => {
-			const id = createID();
+			const header = create(receptive);
+			const { id } = read(header);
 			try {
-				const message = _packMessage(id, data, receptive);
-				this.socket!.write(message);
+				this.socket!.write(Buffer.concat([header, serialize(data)]));
 
 				if (!receptive) {
 					resolve(undefined);
@@ -92,15 +92,6 @@ export class SocketHandler extends Base {
 		this.status = SocketStatus.Disconnected;
 
 		return true;
-	}
-
-	/**
-	 * Measure the latency between the server and this client
-	 */
-	public async ping(): Promise<number> {
-		const now = Date.now();
-		const future = await this.send(kPing) as number;
-		return future - now;
 	}
 
 	/**
@@ -152,34 +143,25 @@ export class SocketHandler extends Base {
 				break;
 			}
 			const message = this._handleMessage(processed as RawMessage);
-			if (message === null) continue;
-			this.node.emit('message', message);
+			if (message) this.node.emit('message', message);
 		}
 	}
 
 	protected _handleMessage({ id, receptive, data }: RawMessage) {
+		// Response message
 		const queueData = this.queue.get(id);
 		if (queueData) {
 			queueData.resolve(data);
 			return null;
 		}
 
-		if (data === kPing) {
-			this.socket!.write(_packMessage(id, Date.now(), false));
-			return null;
-		}
-
-		if (data === kIdentify) {
-			this.socket!.write(_packMessage(id, this.node.name, false));
-			return null;
-		}
 		return new NodeMessage(this, id, receptive, data).freeze();
 	}
 
 }
 
 interface RawMessage {
-	id: string;
+	id: number;
 	receptive: boolean;
 	data: any;
 }

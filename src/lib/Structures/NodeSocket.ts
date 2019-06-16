@@ -2,13 +2,14 @@ import { SocketHandler } from './Base/SocketHandler';
 import { SocketStatus } from '../Util/Constants';
 import { Socket, SocketConnectOpts } from 'net';
 import { Node } from '../Node';
+import { deserialize, serialize } from 'binarytf';
 
 export class NodeSocket extends SocketHandler {
 
 	private retriesRemaining: number;
 	private _reconnectionTimeout!: NodeJS.Timer | null;
 
-	public constructor(node: Node, name: string, socket = null) {
+	public constructor(node: Node, name: string | null, socket = null) {
 		super(node, name, socket);
 		this.retriesRemaining = node.maxRetries;
 
@@ -26,34 +27,13 @@ export class NodeSocket extends SocketHandler {
 	public async connect(port: number, connectionListener?: () => void): Promise<this>;
 	public async connect(path: string, connectionListener?: () => void): Promise<this>;
 	public async connect(...options: any[]): Promise<this> {
-		this.status = SocketStatus.Connecting;
-		if (!this.socket) this.socket = new Socket();
-		await new Promise((resolve, reject) => {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onConnect = () => resolve(cleanup(this));
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onClose = () => reject(cleanup(this));
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onError = (error: any) => reject(cleanup(error));
-			const cleanup = (value: any) => {
-				this.socket!.off('connect', onConnect);
-				this.socket!.off('close', onClose);
-				this.socket!.off('error', onError);
-				return value;
-			};
+		await this._connect(...options);
+		await this._handshake();
 
-			this.socket!
-				.on('connect', onConnect)
-				.on('close', onClose)
-				.on('error', onError);
-
-			// @ts-ignore
-			this.socket!.connect(...options);
-		});
-
+		this.node.servers.set(this.name!, this);
 		this.status = SocketStatus.Ready;
 		this.node.emit('client.ready', this);
-		this.socket
+		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('connect', this._onConnect.bind(this))
 			.on('close', this._onClose.bind(this, ...options))
@@ -65,7 +45,7 @@ export class NodeSocket extends SocketHandler {
 	/**
 	 * Disconnect from the socket, this will also reject all messages
 	 */
-	public disconnect(): boolean {
+	public disconnect() {
 		if (!super.disconnect()) return false;
 
 		if (this._reconnectionTimeout) {
@@ -110,6 +90,74 @@ export class NodeSocket extends SocketHandler {
 		} else {
 			this.node.emit('error', error, this);
 		}
+	}
+
+	private async _connect(...options: any[]) {
+		this.status = SocketStatus.Connecting;
+		if (!this.socket) this.socket = new Socket();
+		await new Promise((resolve, reject) => {
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			const onConnect = () => resolve(cleanup(this));
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			const onClose = () => reject(cleanup(this));
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			const onError = (error: any) => reject(cleanup(error));
+			const cleanup = (value: any) => {
+				this.socket!.off('connect', onConnect);
+				this.socket!.off('close', onClose);
+				this.socket!.off('error', onError);
+				return value;
+			};
+
+			this.socket!
+				.on('connect', onConnect)
+				.on('close', onClose)
+				.on('error', onError);
+
+			// @ts-ignore
+			this.socket!.connect(...options);
+		});
+	}
+
+	private async _handshake() {
+		this.status = SocketStatus.Connected;
+		this.node.emit('client.connected', this);
+		await new Promise((resolve, reject) => {
+			const onData = (message: Uint8Array) => {
+				try {
+					const name = deserialize(message, 7);
+					if (typeof name === 'string') {
+						this.name = name;
+
+						// Reply with the name of the node, using the header id and concatenating with the
+						// serialized name afterwards.
+						this.socket!.write(Buffer.concat([
+							message.subarray(0, 6),
+							new Uint8Array([0]),
+							serialize(this.node.name)
+						]));
+						// eslint-disable-next-line @typescript-eslint/no-use-before-define
+						return resolve(cleanup());
+					}
+				} catch { }
+				reject(new Error('Unexpected response from the server.'));
+			};
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			const onClose = () => reject(cleanup(this));
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			const onError = (error: any) => reject(cleanup(error));
+			const cleanup = <T = unknown>(value?: T) => {
+				this.socket!.off('data', onData);
+				this.socket!.off('close', onClose);
+				this.socket!.off('error', onError);
+				return value;
+			};
+
+			this.socket!
+				.on('data', onData)
+				.on('close', onClose)
+				.on('error', onError);
+		});
 	}
 
 }

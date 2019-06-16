@@ -1,6 +1,6 @@
 {
   "name": "veza",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "IPC/TCP Networking Utility to connect several processes with great concurrency.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -42,5 +42,8 @@
     "eslint-config-bamboo": "^1.3.0",
     "tape": "^4.10.2",
     "typescript": "^3.5.2"
+  },
+  "dependencies": {
+    "binarytf": "1.0.0"
   }
 }

@@ -1,5 +1,5 @@
 import { SocketHandler } from './Base/SocketHandler';
-import { kIdentify, SocketStatus } from '../Util/Constants';
+import { SocketStatus } from '../Util/Constants';
 import { NodeServer } from './NodeServer';
 import { Node } from '../Node';
 import { Socket } from 'net';
@@ -22,7 +22,7 @@ export class NodeServerClient extends SocketHandler {
 			.on('close', this._onClose.bind(this));
 
 		try {
-			const sName = await this.send(kIdentify);
+			const sName = await this.send(this.server.name);
 			this.status = SocketStatus.Ready;
 			this.name = sName;
 
