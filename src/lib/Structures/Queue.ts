@@ -9,7 +9,7 @@ export class Queue extends Map<number, QueueEntry> {
 
 	private offset: number = 0;
 	private nodeSocket!: NodeSocket;
-	private _rest!: Buffer | null;
+	private _rest!: Uint8Array | null;
 
 	public constructor(nodeSocket: any) {
 		super();
@@ -43,7 +43,7 @@ export class Queue extends Map<number, QueueEntry> {
 	/**
 	 * Returns a new Iterator object that parses each value for this queue.
 	 */
-	public *process(buffer: Buffer | null) {
+	public *process(buffer: Uint8Array | null) {
 		if (this._rest) {
 			buffer = Buffer.concat([this._rest, buffer!]);
 			this._rest = null;
@@ -56,7 +56,7 @@ export class Queue extends Map<number, QueueEntry> {
 				break;
 			}
 
-			const { id, receptive } = read(buffer);
+			const { id, receptive } = read(buffer.subarray(this.offset, this.offset + 7));
 			try {
 				const { value, offset } = deserializeWithMetadata(buffer, this.offset + 7);
 				if (offset === -1) {

@@ -105,8 +105,7 @@ test('Socket Basic Message', { timeout: 5000 }, async t => {
 	}
 });
 
-// TODO(kyranet): Fix the headers, plus run tests on them before.
-test.skip('Socket Concurrent Messages', { timeout: 5000 }, async t => {
+test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	t.plan(6);
 	const [nodeServer, nodeSocket] = await setup(t, 8004);
 
@@ -117,7 +116,6 @@ test.skip('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 		t.equal(message.data, messages.shift(), 'The message should match with the value.');
 		message.reply(replies.shift());
 	});
-	nodeServer.on('raw', (_: unknown, buffer: Buffer) => console.log(buffer));
 
 	const [first, second] = await Promise.all([
 		nodeSocket.sendTo('Server', messages[0]),
