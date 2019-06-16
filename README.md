@@ -33,18 +33,18 @@
 
 **Veza** is a lower level version of [IPC-Link](https://github.com/kyranet/ipc-link)
 that is lightning fast and operates with raw buffers as opposed to sending buffered
-stringified JSON objects. This library has no dependencies and uses built-in modules
-(`net`, `events`...) to operate.
+stringified `JSON` objects. This library has [`binarytf`][binarytf] as the only
+dependency, which serves for fast and compact message serialization and deserialization,
+while using built-in modules (`net`, `events`...) to do the IPC / TCP operations.
 
 In Veza, you have "nodes", which can either create a server (and receive messages)
 or connect to other servers, even both at the same time. Additionally, you have
 `client.send(data);` which will wait for the socket to reply back.
 
 > One of Veza's special features is the ability to glue truncated messages and split
-concatenated messages, for which it uses a 13-bit "header" (encoded in base-256 to
-take avantage of the byte range `0x00`-`0xFF`) at the start of every message containing
-the id, the datatype, the receptive flag, and the length of the message (4.2gb
-maximum size).
+concatenated messages, for which it uses a delimiter detection from [`binarytf`][binarytf]
+to find where messages end at and where the next continues. Furthermore, it prepends a
+compressed 7-bit header for id matching and the receptivity of the message.
 
 ## Examples
 
@@ -65,3 +65,5 @@ All examples are written in TypeScript and are available [here](https://github.c
 Authored and maintained by kyranet.
 
 > Github [kyranet](https://github.com/kyranet) - Twitter [@kyranet_](https://twitter.com/kyranet_)
+
+[binarytf]: https://www.npmjs.com/package/binarytf
