@@ -10,7 +10,7 @@ export function create(receptive: boolean) {
 
 export function createFromID(id: number, receptive: boolean) {
 	const header = new Uint8Array(7);
-	writeDate(header, id >> 0o20);
+	writeDate(header, Number(BigInt(id) >> 0o20n));
 	writeIncrement(header, id & 0xFFFF);
 	writeReceptive(header, receptive);
 	return header;
@@ -18,7 +18,7 @@ export function createFromID(id: number, receptive: boolean) {
 
 export function read(header: Uint8Array) {
 	return {
-		id: (readDate(header) << 0o20) + readIncrement(header),
+		id: Number(BigInt(readDate(header)) << 0o20n) + readIncrement(header),
 		receptive: Boolean(header[6])
 	};
 }
