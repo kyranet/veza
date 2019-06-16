@@ -1,29 +1,8 @@
 {
-	"compileOnSave": true,
+	"extends": "eslint-config-bamboo",
 	"compilerOptions": {
-		"allowSyntheticDefaultImports": true,
-		"alwaysStrict": true,
-		"declaration": false,
-		"emitDecoratorMetadata": false,
-		"experimentalDecorators": false,
-		"incremental": true,
-		"lib": [
-			"esnext",
-			"esnext.array",
-			"esnext.asynciterable",
-			"esnext.intl",
-			"esnext.symbol"
-		],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"noUnusedLocals": true,
-		"pretty": false,
-		"resolveJsonModule": true,
 		"sourceMap": true,
-		"strict": true,
-		"strictBindCallApply": true,
-		"target": "esnext",
-		"newLine": "LF",
+		"declaration": false,
 		"types": ["node", "tape"]
 	}
 }
