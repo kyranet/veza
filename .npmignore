@@ -11,6 +11,10 @@ logs/
 *.tsbuildinfo
 *.tgz
 
+# Test and Coverage results and files
+test.xml
+.nyc_output/
+
 # Miscellaneous
 .tmp/
 docs/
@@ -26,6 +30,7 @@ static/
 .eslintrc.json
 .gitattributes
 .gitignore
+.nycrc.json
 azure-pipelines.yml
 tsconfig.json
 

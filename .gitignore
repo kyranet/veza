@@ -7,3 +7,7 @@ dist/
 *.js.map
 *.tsbuildinfo
 *.tgz
+
+# Test and Coverage results and files
+test.xml
+.nyc_output/
