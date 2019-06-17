@@ -3,7 +3,7 @@ import { NodeSocket } from './Structures/NodeSocket';
 import { NodeServer } from './Structures/NodeServer';
 import { NodeServerClient } from './Structures/NodeServerClient';
 import { NodeMessage } from './Structures/NodeMessage';
-import { ListenOptions, SocketConnectOpts } from 'net';
+import { ListenOptions, SocketConnectOpts, Socket } from 'net';
 import { SocketHandler } from './Structures/Base/SocketHandler';
 
 export class Node extends EventEmitter {
@@ -126,9 +126,9 @@ export class Node extends EventEmitter {
 	 * Get a socket by its name
 	 * @param name The name of the socket
 	 */
-	public get(name: string | NodeSocket): NodeServerClient | NodeSocket | null {
-		if (name instanceof NodeSocket) return name;
-		return (this.server && this.server.get(name)) || this.servers.get(name) || null;
+	public get(name: string | SocketHandler | Socket) {
+		if (name instanceof SocketHandler) return name;
+		return (this.server && this.server.get(name)) || this.servers.get(name as string) || null;
 	}
 
 }
