@@ -33,5 +33,19 @@ jobs:
         displayName: 'Install Node.js'
       - script: yarn
         displayName: 'Install Dependencies'
-      - script: 'yarn test'
-        displayName: 'Test Suite'
+      - script: 'yarn test:azure'
+        displayName: 'Generate Test Results'
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: $(System.DefaultWorkingDirectory)/test.xml
+        displayName: 'Publish Test Results'
+      - script: 'yarn run coverage'
+        displayName: 'Generate Coverage Results'
+      - script: 'yarn run coverage:report'
+        displayName: 'Report Coverage Results'
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: 'cobertura'
+          summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml
+        displayName: 'Publish Coverage Results'
