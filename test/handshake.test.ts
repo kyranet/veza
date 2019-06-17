@@ -1,4 +1,4 @@
-import { Node } from '../dist/lib/Node';
+import { Node } from '../dist/index';
 import { SocketStatus } from '../dist/lib/Util/Constants';
 import * as test from 'tape';
 
