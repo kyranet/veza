@@ -11,8 +11,11 @@
 		<a href="https://www.npmjs.com/package/veza">
 			<img src="https://img.shields.io/npm/dt/veza.svg?maxAge=3600" alt="NPM downloads" />
 		</a>
-		<a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=1&branchName=master">
+		<a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=9&branchName=master">
 			<img src="https://dev.azure.com/kyranet/kyranet.public/_apis/build/status/kyranet.veza?branchName=master" alt="Build status" />
+		</a>
+		<a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=9&branchName=master">
+			<img src="https://img.shields.io/azure-devops/coverage/kyranet/kyranet.public/9/master.svg" alt="Azure DevOps coverage">
 		</a>
 		<a href="https://lgtm.com/projects/g/kyranet/veza/alerts/">
 			<img src="https://img.shields.io/lgtm/alerts/g/kyranet/veza.svg?logo=lgtm&logoWidth=18" alt="Total alerts">
