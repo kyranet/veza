@@ -164,6 +164,15 @@ test('Socket Basic Message', { timeout: 5000 }, async t => {
 	} catch {
 		t.fail('Disconnection should not error.');
 	}
+
+	// Unknown socket
+	setTimeout(() => {
+		try {
+			nodeSocket.sendTo('aSocketThatDoesntExist', 'unnessecaryData');
+		} catch {
+			t.pass('Unknown socket produces error');
+		}
+	}, 1500);
 });
 
 test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
