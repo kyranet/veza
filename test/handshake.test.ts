@@ -147,7 +147,7 @@ test('Socket Events', { timeout: 5000 }, async t => {
 });
 
 test('Socket Basic Message', { timeout: 5000 }, async t => {
-	t.plan(3);
+	t.plan(4);
 	const [nodeServer, nodeSocket] = await setup(t, 8004);
 
 	nodeServer.once('message', message => {
@@ -166,7 +166,7 @@ test('Socket Basic Message', { timeout: 5000 }, async t => {
 	}
 
 	// Unknown socket
-	nodeSocket.sendTo('Vlad', 'furryShit').catch(e => t.equal(e, new Error('The socket Vlad is not available or not connected to this Node.'), 'Unknown socket throws an error'));
+	nodeSocket.sendTo('Vlad', 'furryShit').catch(e => t.equal(e.message, 'The socket Vlad is not available or not connected to this Node.', 'Unknown socket throws an error'));
 });
 
 test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
