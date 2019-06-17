@@ -13,8 +13,8 @@ test('Basic Empty Node', t => {
 	t.equal(node.servers.size, 0, 'Expected servers to be zero, as it has not connected.');
 });
 
-test('Basic Empty Server (Connect and Disconnect)', { timeout: 5000 }, async t => {
-	t.plan(8);
+test('Basic Server', { timeout: 5000 }, async t => {
+	t.plan(10);
 
 	const node = new Node('Server');
 	const PORT = 8001;
@@ -22,24 +22,32 @@ test('Basic Empty Server (Connect and Disconnect)', { timeout: 5000 }, async t =
 	t.equal(node.server, null, 'The server should be null as this is not serving.');
 	try {
 		await node.serve(PORT);
-
-		// Connected
-		t.notEqual(node.server, null, 'The server should now not be null as this is now serving.');
-		t.equal(node.server!.clients.size, 0, 'The server should not have a connected client.');
-		t.equal(node.server!.name, 'Server', 'The server should be named after the node.');
-		t.equal(node.server!.node, node, 'The Servers node should be its parent.');
-		t.notEqual(node.server!.server, null, 'The internal server should not be null.');
-
-		// Disconnected
-		t.true(node.server!.disconnect(), 'The disconnection should be successful.');
-		t.equal(node.server, null, 'The server should be null as it has disconnected.');
 	} catch {
 		t.fail('Server should not crash.');
 	}
+
+	// Connected
+	t.notEqual(node.server, null, 'The server should now not be null as this is now serving.');
+	t.equal(node.server!.clients.size, 0, 'The server should not have a connected client.');
+	t.equal(node.server!.name, 'Server', 'The server should be named after the node.');
+	t.equal(node.server!.node, node, 'The Servers node should be its parent.');
+	t.notEqual(node.server!.server, null, 'The internal server should not be null.');
+
+	try {
+		await node.serve(PORT + 1);
+		t.fail('This call should definitely crash.');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'There is already a server running.', 'The error message should match.');
+	}
+
+	// Disconnected
+	t.true(node.server!.disconnect(), 'The disconnection should be successful.');
+	t.equal(node.server, null, 'The server should be null as it has disconnected.');
 });
 
 test('Basic Socket', { timeout: 5000 }, async t => {
-	t.plan(11);
+	t.plan(17);
 
 	const nodeServer = new Node('Server');
 	const nodeSocket = new Node('Socket');
@@ -57,25 +65,32 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 		t.equal(nodeSocket.servers.size, 1);
 
 		const myServer = nodeSocket.servers.get('Server')!;
-		t.notEqual(myServer, undefined);
-		t.notEqual(myServer.socket, null);
-		t.equal(myServer.name, 'Server');
-		t.equal(myServer.node, nodeSocket);
-		t.equal(myServer.status, SocketStatus.Ready);
+		t.notEqual(myServer, undefined, 'The node should exist.');
+		t.notEqual(myServer.socket, null, 'The socket should not be null.');
+		t.equal(myServer.name, 'Server', 'The name of the node must be the name of the server.');
+		t.equal(myServer.node, nodeSocket, 'The node must be the same as the node they come from.');
+		t.equal(myServer.status, SocketStatus.Ready, 'The socket should have a status of ready.');
+		t.equal(nodeSocket.get('Server'), myServer, 'Node#get should return the same instance.');
+		t.equal(nodeSocket.get(myServer), myServer, 'When passing a NodeSocket, Node#get should return it.');
 
 		await new Promise(resolve => {
 			nodeServer.once('client.identify', resolve);
 		});
 
 		const mySocket = nodeServer.server!.clients.get('Socket')!;
-		t.notEqual(mySocket, undefined);
-		t.notEqual(mySocket.socket, null);
-		t.equal(mySocket.name, 'Socket');
-		t.equal(mySocket.node, nodeServer);
-		t.equal(mySocket.status, SocketStatus.Ready);
+		t.notEqual(mySocket, undefined, 'The node should exist.');
+		t.notEqual(mySocket.socket, null, 'The socket should not be null.');
+		t.equal(mySocket.name, 'Socket', 'The name of the node must be the name of the socket that connected to this server.');
+		t.equal(mySocket.node, nodeServer, 'The node must be the same as the node they come from.');
+		t.equal(mySocket.status, SocketStatus.Ready, 'The socket should have a status of ready.');
+		t.equal(nodeServer.get('Socket'), mySocket, 'Node#get should return the same instance.');
+		t.equal(nodeServer.get(mySocket), mySocket, 'When passing a NodeSocket, Node#get should return it.');
 	} catch {
 		t.fail('This port should always exist.');
 	}
+
+	t.equal(nodeServer.get('Unknown'), null, 'Node#get should return null on unknown nodes.');
+	t.equal(nodeSocket.get('Unknown'), null, 'Node#get should return null on unknown nodes.');
 
 	try {
 		nodeServer.server!.disconnect();
