@@ -4,6 +4,7 @@ export function create(receptive: boolean) {
 	writeDate(header, Date.now());
 	writeIncrement(header, i);
 	writeReceptive(header, receptive);
+	/* istanbul ignore next: Basic arithmetic, but needs to run 458745 times for the other branch to run. */
 	i = i < 0xFFFF ? i + 1 : 0;
 	return header;
 }
