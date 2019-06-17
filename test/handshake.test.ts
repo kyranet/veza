@@ -203,6 +203,22 @@ test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	}
 });
 
+test('Message broadcasting', { timeout: 5000 }, async t => {
+	t.plan(2);
+	const [nodeServer, nodeSocket] = await setup(t, 8005);
+
+	nodeSocket.once('message', m => {
+		t.equal(m.data, 'Kyra is a speedwhore', 'Message is exactly the one sent');
+		t.equal(m.receptive, false, 'Message keeps its receptive value');
+	});
+
+	try {
+		await nodeServer.broadcast('Kyra is a speedwhore', { receptive: false });
+	} catch (e) {
+		t.fail('Message broadcast failed');
+	}
+});
+
 async function setup(t: test.Test, port: number) {
 	const nodeServer = new Node('Server');
 	const nodeSocket = new Node('Socket');
