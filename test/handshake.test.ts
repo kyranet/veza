@@ -166,13 +166,7 @@ test('Socket Basic Message', { timeout: 5000 }, async t => {
 	}
 
 	// Unknown socket
-	setTimeout(() => {
-		try {
-			nodeSocket.sendTo('aSocketThatDoesntExist', 'unnessecaryData');
-		} catch {
-			t.pass('Unknown socket produces error');
-		}
-	}, 1500);
+	nodeSocket.sendTo('Vlad', 'furryShit').catch(e => t.equal(e, new Error('The socket Vlad is not available or not connected to this Node.'), 'Unknown socket throws an error'));
 });
 
 test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
