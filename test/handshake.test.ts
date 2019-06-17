@@ -217,9 +217,16 @@ test('Message broadcasting', { timeout: 5000 }, async t => {
 	} catch (e) {
 		t.fail('Message broadcast failed');
 	}
-
-	nodeServer.server!.disconnect();
-	nodeSocket.disconnectFrom('Server');
+	/*
+	* Remember the meme in r/ProgrammerHumor about ;egacy code and how if it's removed the whole thing stops working?
+	* This is exactly it.
+	* Remove the setTimeout, and the tests never run (for some reason.)
+	* - Charalampos
+	*/
+	setTimeout(() => {
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
+	}, 1000);
 });
 
 async function setup(t: test.Test, port: number) {
