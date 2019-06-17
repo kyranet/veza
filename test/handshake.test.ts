@@ -39,7 +39,7 @@ test('Basic Empty Server (Connect and Disconnect)', { timeout: 5000 }, async t =
 });
 
 test('Basic Socket', { timeout: 5000 }, async t => {
-	t.plan(12);
+	t.plan(11);
 
 	const nodeServer = new Node('Server');
 	const nodeSocket = new Node('Socket');
@@ -83,12 +83,17 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 	} catch {
 		t.fail('Disconnection should not error.');
 	}
+});
 
-	// Disconnect unknown socket
+test('Socket Unknown Server Disconnection (Invalid)', async t => {
+	t.plan(1);
+
+	const nodeSocket = new Node('Socket');
 	try {
 		nodeSocket.disconnectFrom('Unknown');
-	} catch (e) {
-		t.equal(e.message, 'The socket Unknown is not connected to this one.', 'You can\'t disconnect from an unknown socket');
+	} catch (error) {
+		t.equal(error.message, 'The socket Unknown is not connected to this one.',
+			'Disconnecting from unconnected sockets should always throw an error.');
 	}
 });
 
@@ -154,7 +159,7 @@ test('Socket Events', { timeout: 5000 }, async t => {
 });
 
 test('Socket Basic Message', { timeout: 5000 }, async t => {
-	t.plan(4);
+	t.plan(3);
 	const [nodeServer, nodeSocket] = await setup(t, 8004);
 
 	nodeServer.once('message', message => {
@@ -171,9 +176,19 @@ test('Socket Basic Message', { timeout: 5000 }, async t => {
 	} catch {
 		t.fail('Disconnection should not error.');
 	}
+});
 
-	// Unknown socket
-	nodeSocket.sendTo('Vlad', 'furryShit').catch(e => t.equal(e.message, 'The socket Vlad is not available or not connected to this Node.', 'Unknown socket throws an error'));
+test('Socket Unknown Server Message Sending (Invalid)', async t => {
+	t.plan(1);
+
+	const nodeSocket = new Node('Socket');
+
+	try {
+		await nodeSocket.sendTo('Unknown', 'Foo');
+	} catch (error) {
+		t.equal(error.message, 'The socket Unknown is not available or not connected to this Node.',
+			'Sending messages to unconnected sockets should always throw an error.');
+	}
 });
 
 test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
@@ -204,29 +219,30 @@ test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 });
 
 test('Message broadcasting', { timeout: 5000 }, async t => {
-	t.plan(2);
+	t.plan(5);
 	const [nodeServer, nodeSocket] = await setup(t, 8005);
 
-	nodeSocket.once('message', m => {
-		t.equal(m.data, 'Kyra is a speedwhore', 'Message is exactly the one sent');
-		t.equal(m.receptive, false, 'Message keeps its receptive value');
+	nodeSocket.once('message', message => {
+		t.equal(message.data, 'Foo', 'Message is exactly the one sent');
+		t.equal(message.receptive, true, 'Message keeps its receptive value');
+		message.reply('Bar');
 	});
 
 	try {
-		await nodeServer.broadcast('Kyra is a speedwhore', { receptive: false });
+		const response = await nodeServer.broadcast('Foo');
+		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
+		t.equal(response.length, 1, 'There is only one connected socket, therefore it should be an array with one value.');
+		t.equal(response[0], 'Bar', 'The socket responded with "Bar", therefore the first entry should be the same.');
 	} catch (e) {
 		t.fail('Message broadcast failed');
 	}
-	/*
-	* Remember the meme in r/ProgrammerHumor about ;egacy code and how if it's removed the whole thing stops working?
-	* This is exactly it.
-	* Remove the setTimeout, and the tests never run (for some reason.)
-	* - Charalampos
-	*/
-	setTimeout(() => {
+
+	try {
 		nodeServer.server!.disconnect();
 		nodeSocket.disconnectFrom('Server');
-	}, 1000);
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
 });
 
 async function setup(t: test.Test, port: number) {
