@@ -158,23 +158,52 @@ test('Socket Events', { timeout: 5000 }, async t => {
 	}
 });
 
-test('Socket Basic Message', { timeout: 5000 }, async t => {
-	t.plan(3);
+test('Socket Message', { timeout: 5000 }, async t => {
+	t.plan(11);
 	const [nodeServer, nodeSocket] = await setup(t, 8004);
 
-	nodeServer.once('message', message => {
-		t.true(message.receptive, 'The message was sent as receptive.');
-		t.equal(message.data, 'Hello');
-		message.reply('World');
-	});
-	const response = await nodeSocket.sendTo('Server', 'Hello') as string;
-	t.equal(response, 'World');
+	// Test receptive (default) message delivery
+	{
+		nodeServer.once('message', message => {
+			t.true(message.receptive, 'The message was sent as receptive.');
+			t.equal(message.node, nodeServer, 'The messages node should be the server node.');
+			t.equal(message.data, 'Hello');
+			message.reply('World');
 
-	try {
-		nodeServer.server!.disconnect();
-		nodeSocket.disconnectFrom('Server');
-	} catch {
-		t.fail('Disconnection should not error.');
+			const json = message.toJSON();
+			t.equal(json.id, message.id, 'The values from NodeMessage#toJSON and the ones from NodeMessage must be the same.');
+			t.equal(json.data, message.data, 'The values from NodeMessage#toJSON and the ones from NodeMessage must be the same.');
+			t.equal(json.receptive, message.receptive, 'The values from NodeMessage#toJSON and the ones from NodeMessage must be the same.');
+
+			t.equal(message.toString(), `NodeMessage<${message.id}>`);
+		});
+
+		const response = await nodeSocket.sendTo('Server', 'Hello') as string;
+		t.equal(response, 'World');
+	}
+
+	// Test non-receptive message delivery
+	{
+		nodeServer.once('message', message => {
+			t.false(message.receptive, 'The message was sent as not receptive.');
+			t.equal(message.data, 'Foo');
+			message.reply('Bar');
+
+			// Finish the tests
+			finish();
+		});
+
+		const response = await nodeSocket.sendTo('Server', 'Foo', { receptive: false }) as undefined;
+		t.equal(response, undefined);
+	}
+
+	function finish() {
+		try {
+			nodeServer.server!.disconnect();
+			nodeSocket.disconnectFrom('Server');
+		} catch {
+			t.fail('Disconnection should not error.');
+		}
 	}
 });
 
