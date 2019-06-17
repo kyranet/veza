@@ -217,6 +217,9 @@ test('Message broadcasting', { timeout: 5000 }, async t => {
 	} catch (e) {
 		t.fail('Message broadcast failed');
 	}
+
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
 });
 
 async function setup(t: test.Test, port: number) {
