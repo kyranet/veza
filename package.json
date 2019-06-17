@@ -9,7 +9,7 @@
     "test": "yarn build && yarn build:test && yarn test:run",
     "test:run": "node test/suite",
     "test:lint": "eslint --ext ts src examples",
-    "test:azure": "yarn build && yarn build:test && yarn test:run | yarn tap-xunit --package=\"veza\" > test.xml",
+    "test:azure": "yarn build && yarn build:test && yarn test:run | tap-xunit --package=\"veza\" > test.xml",
     "coverage": "yarn nyc --require ts-node/register --require source-map-support/register tape test/suite.ts | yarn tap-nyc",
     "coverage:report": "yarn nyc report --reporter=cobertura",
     "lint": "eslint --ext ts src examples --fix",
