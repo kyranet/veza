@@ -1,7 +1,7 @@
 {
   "extends": "@istanbuljs/nyc-config-typescript",
   "all": true,
-  "check-coverage": true,
+  "check-coverage": false,
   "watermarks": {
     "lines": [80, 95],
     "functions": [80, 95],
