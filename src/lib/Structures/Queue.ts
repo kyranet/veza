@@ -1,7 +1,6 @@
 import { kInvalidMessage } from '../Util/Constants';
 import { NodeSocket } from './NodeSocket';
 import { Node } from '../Node';
-import { Socket } from 'net';
 import { read } from '../Util/Header';
 import { deserializeWithMetadata } from 'binarytf';
 
@@ -27,23 +26,10 @@ export class Queue extends Map<number, QueueEntry> {
 	}
 
 	/**
-	 * The name of the client that manages this instance
-	 */
-	public get name(): string {
-		return this.nodeSocket.name!;
-	}
-
-	/**
-	 * The socket contained in the client that manages this instance
-	 */
-	public get socket(): Socket {
-		return this.nodeSocket.socket!;
-	}
-
-	/**
 	 * Returns a new Iterator object that parses each value for this queue.
 	 */
 	public *process(buffer: Uint8Array | null) {
+		/* istanbul ignore next: This is hard to reproduce in Azure, it needs the buffer to overflow and split. */
 		if (this._rest) {
 			buffer = Buffer.concat([this._rest, buffer!]);
 			this._rest = null;
@@ -51,6 +37,7 @@ export class Queue extends Map<number, QueueEntry> {
 
 		while (buffer) {
 			// If the header separator was not found, it may be due to an impartial message
+			/* istanbul ignore next: This is hard to reproduce in Azure, it needs the buffer to overflow and split. */
 			if (buffer.length - this.offset <= 7) {
 				this._rest = buffer;
 				break;
@@ -67,8 +54,11 @@ export class Queue extends Map<number, QueueEntry> {
 				}
 				yield { id, receptive, data: value };
 			} catch {
+				/* istanbul ignore next: Hard to reproduce in Azure. */
 				this.offset = 0;
+				/* istanbul ignore next: Hard to reproduce in Azure. */
 				yield kInvalidMessage;
+				/* istanbul ignore next: Hard to reproduce in Azure. */
 				break;
 			}
 		}
