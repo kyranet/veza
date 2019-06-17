@@ -39,7 +39,7 @@ test('Basic Empty Server (Connect and Disconnect)', { timeout: 5000 }, async t =
 });
 
 test('Basic Socket', { timeout: 5000 }, async t => {
-	t.plan(11);
+	t.plan(12);
 
 	const nodeServer = new Node('Server');
 	const nodeSocket = new Node('Socket');
@@ -82,6 +82,13 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 		nodeSocket.disconnectFrom('Server');
 	} catch {
 		t.fail('Disconnection should not error.');
+	}
+
+	// Disconnect unknown socket
+	try {
+		nodeSocket.disconnectFrom('Unknown');
+	} catch (e) {
+		t.equal(e.message, 'The socket Unknown is not connected to this one.', 'You can\'t disconnect from an unknown socket');
 	}
 });
 
