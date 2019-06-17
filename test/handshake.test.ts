@@ -98,7 +98,7 @@ test('Socket Unknown Server Disconnection (Invalid)', async t => {
 });
 
 test('Socket Events', { timeout: 5000 }, async t => {
-	t.plan(28);
+	t.plan(24);
 
 	const nodeServer = new Node('Server');
 	const nodeSocket = new Node('Socket');
@@ -112,7 +112,6 @@ test('Socket Events', { timeout: 5000 }, async t => {
 		t.equal(client.status, SocketStatus.Connected, 'When this event fires, the status should be "Connected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
 		t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
-		t.notEqual(client.queue.socket, null, 'The socket must not be null during connection.');
 		t.notEqual(client.socket, null, 'The socket must not be null during connection.');
 	});
 	nodeSocket.on('socket.ready', client => {
@@ -121,7 +120,6 @@ test('Socket Events', { timeout: 5000 }, async t => {
 		t.equal(client.status, SocketStatus.Ready, 'When this event fires, the status should be "Connected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty after connection.');
 		t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
-		t.notEqual(client.queue.socket, null, 'The socket must not be null after connection.');
 		t.notEqual(client.socket, null, 'The socket must not be null after connection.');
 	});
 
@@ -137,7 +135,6 @@ test('Socket Events', { timeout: 5000 }, async t => {
 		t.equal(client.status, SocketStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty during a disconnection.');
 		t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
-		t.notEqual(client.queue.socket, null, 'The socket must not be null during a disconnection.');
 		t.notEqual(client.socket, null, 'The socket must not be null during a disconnection.');
 		destroy();
 	});
@@ -151,7 +148,6 @@ test('Socket Events', { timeout: 5000 }, async t => {
 			t.equal(client.status, SocketStatus.Destroyed, 'When this event fires, the status should be "Destroyed".');
 			t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
 			t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
-			t.equal(client.queue.socket, null, 'The socket is destroyed and nullified.');
 			t.equal(client.socket, null, 'The socket is destroyed and nullified.');
 		});
 		nodeSocket.disconnectFrom('Server');
