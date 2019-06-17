@@ -85,6 +85,18 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 	}
 });
 
+test('Socket Unknown Server Disconnection (Invalid)', async t => {
+	t.plan(1);
+
+	const nodeSocket = new Node('Socket');
+	try {
+		nodeSocket.disconnectFrom('Unknown');
+	} catch (error) {
+		t.equal(error.message, 'The socket Unknown is not connected to this one.',
+			'Disconnecting from unconnected sockets should always throw an error.');
+	}
+});
+
 test('Socket Events', { timeout: 5000 }, async t => {
 	t.plan(28);
 
@@ -166,6 +178,19 @@ test('Socket Basic Message', { timeout: 5000 }, async t => {
 	}
 });
 
+test('Socket Unknown Server Message Sending (Invalid)', async t => {
+	t.plan(1);
+
+	const nodeSocket = new Node('Socket');
+
+	try {
+		await nodeSocket.sendTo('Unknown', 'Foo');
+	} catch (error) {
+		t.equal(error.message, 'The socket Unknown is not available or not connected to this Node.',
+			'Sending messages to unconnected sockets should always throw an error.');
+	}
+});
+
 test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	t.plan(6);
 	const [nodeServer, nodeSocket] = await setup(t, 8004);
@@ -184,6 +209,33 @@ test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	]);
 	t.equal(first, 'World');
 	t.equal(second, 'Five!');
+
+	try {
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
+});
+
+test('Message broadcasting', { timeout: 5000 }, async t => {
+	t.plan(5);
+	const [nodeServer, nodeSocket] = await setup(t, 8005);
+
+	nodeSocket.once('message', message => {
+		t.equal(message.data, 'Foo', 'Message is exactly the one sent');
+		t.equal(message.receptive, true, 'Message keeps its receptive value');
+		message.reply('Bar');
+	});
+
+	try {
+		const response = await nodeServer.broadcast('Foo');
+		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
+		t.equal(response.length, 1, 'There is only one connected socket, therefore it should be an array with one value.');
+		t.equal(response[0], 'Bar', 'The socket responded with "Bar", therefore the first entry should be the same.');
+	} catch (e) {
+		t.fail('Message broadcast failed');
+	}
 
 	try {
 		nodeServer.server!.disconnect();
