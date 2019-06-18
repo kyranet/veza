@@ -115,7 +115,7 @@ export class Node extends EventEmitter {
 	public async serve(handle: any, backlog?: number, listeningListener?: () => void): Promise<this>;
 	public async serve(handle: any, listeningListener?: () => void): Promise<this>;
 	public async serve(...options: any[]): Promise<this> {
-		if (this.server) throw new Error('There is already a server running.');
+		if (this.server) throw new Error('There is already a server.');
 
 		this.server = new NodeServer(this);
 		await this.server.connect(...options);

@@ -43,7 +43,7 @@ export class NodeServer {
 			return null;
 		}
 
-		throw new TypeError(`Expected a string or an instance of Socket`);
+		throw new TypeError('Expected a string, NodeServerClient, or Socket.');
 	}
 
 	/**
@@ -78,7 +78,7 @@ export class NodeServer {
 	 * @param data The data to send to the socket
 	 * @param options The options for this message
 	 */
-	public sendTo(name: string | Socket | NodeSocket, data: any, options: SendOptions): Promise<any> {
+	public sendTo(name: string | Socket | NodeSocket, data: any, options?: SendOptions): Promise<any> {
 		const nodeSocket = this.get(name);
 		if (!nodeSocket) {
 			return Promise.reject(
@@ -159,6 +159,7 @@ export class NodeServer {
 	}
 
 	private _onError(error: Error) {
+		/* istanbul ignore next: Hard to reproduce in Azure. */
 		this.node.emit('error', error, this);
 	}
 

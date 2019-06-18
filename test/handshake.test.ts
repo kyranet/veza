@@ -1,6 +1,7 @@
-import { Node } from '../dist/index';
+import { Node, NodeServerClient } from '../dist/index';
 import { SocketStatus } from '../dist/lib/Util/Constants';
 import * as test from 'tape';
+import { Socket } from 'net';
 
 test('Basic Empty Node', t => {
 	t.plan(5);
@@ -14,7 +15,7 @@ test('Basic Empty Node', t => {
 });
 
 test('Basic Server', { timeout: 5000 }, async t => {
-	t.plan(10);
+	t.plan(12);
 
 	const node = new Node('Server');
 	const PORT = 8001;
@@ -38,7 +39,15 @@ test('Basic Server', { timeout: 5000 }, async t => {
 		t.fail('This call should definitely crash.');
 	} catch (error) {
 		t.true(error instanceof Error, 'The error should be an instance of Error.');
-		t.equal(error.message, 'There is already a server running.', 'The error message should match.');
+		t.equal(error.message, 'There is already a server.', 'The error message should match.');
+	}
+
+	try {
+		await node.server!.connect(PORT + 1);
+		t.fail('This call should definitely crash.');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'There is already a server.', 'The error message should match.');
 	}
 
 	// Disconnected
@@ -190,9 +199,44 @@ test('Socket Double Disconnection', { timeout: 5000 }, async t => {
 	}
 });
 
+test('NodeServer Socket Retrieval', async t => {
+	t.plan(8);
+	const [nodeServer, nodeSocket] = await setup(t, 8005);
+	const server = nodeServer.server!;
+	const socket = nodeServer.get('Socket')! as NodeServerClient;
+
+	t.equal(server.get('Socket'), socket, 'The socket is called "Socket", and got found.');
+	t.equal(server.get(socket), socket, 'Retrieving the NodeServerClient instance itself should return it.');
+	t.equal(server.get(socket.socket!), socket, "Retrieving the NodeServerClient's socket should try to find the instance that manages it.");
+
+	const forgedSocket = new Socket();
+	t.equal(server.get(forgedSocket), null, 'A socket that does not belong to the NodeServer should return null.');
+	forgedSocket.destroy();
+
+	t.true(server.has('Socket'), 'The socket "Socket" is connected to this server.');
+	t.false(server.has('Foo'), 'The socket "Foo" is not connected to this server.');
+
+	try {
+		// TypeScript ignoring since this is an assertion for JavaScript users
+		// @ts-ignore
+		server.get(0);
+		t.fail('This should not run, as the previous statement throws');
+	} catch (error) {
+		t.true(error instanceof TypeError, 'The error should be an instance of TypeError.');
+		t.equal(error.message, 'Expected a string, NodeServerClient, or Socket.', 'An invalid NodeServer#get returns a TypeError explaining the types.');
+	}
+
+	try {
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
+});
+
 test('Socket Message', { timeout: 5000 }, async t => {
 	t.plan(15);
-	const [nodeServer, nodeSocket] = await setup(t, 8005);
+	const [nodeServer, nodeSocket] = await setup(t, 8006);
 
 	// Test receptive (default) message delivery
 	{
@@ -270,9 +314,43 @@ test('Socket Unknown Server Message Sending (Invalid)', async t => {
 	}
 });
 
+test('Server Messages', { timeout: 5000 }, async t => {
+	t.plan(5);
+	const [nodeServer, nodeSocket] = await setup(t, 8007);
+
+	nodeSocket.on('message', message => {
+		t.equal(message.receptive, true, 'The message was sent as receptive.');
+		t.equal(message.data, 'Foo', 'The message should match with the value.');
+		message.reply('Bar');
+	});
+
+	try {
+		const response = await nodeServer.server!.sendTo('Socket', 'Foo', { timeout: 250 });
+		t.equal(response, 'Bar');
+	} catch {
+		t.fail('This should not fail.');
+	}
+
+	try {
+		await nodeServer.server!.sendTo('Unknown', 'Hello');
+		t.fail('This should not run, as the previous statement throws');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'Failed to send to the socket: It is not connected to this Node.',
+			'Trying to send a message to an unknown socket sends this message.');
+	}
+
+	try {
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
+});
+
 test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	t.plan(6);
-	const [nodeServer, nodeSocket] = await setup(t, 8006);
+	const [nodeServer, nodeSocket] = await setup(t, 8007);
 
 	const messages = ['Hello', 'High'];
 	const replies = ['World', 'Five!'];
@@ -298,8 +376,8 @@ test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 });
 
 test('Message Broadcast', { timeout: 5000 }, async t => {
-	t.plan(5);
-	const [nodeServer, nodeSocket] = await setup(t, 8007);
+	t.plan(7);
+	const [nodeServer, nodeSocket] = await setup(t, 8008);
 
 	nodeSocket.once('message', message => {
 		t.equal(message.data, 'Foo', 'Message is exactly the one sent');
@@ -317,6 +395,14 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 	}
 
 	try {
+		const response = await nodeServer.broadcast('Foo', { filter: /NothingMatches/, timeout: 250 });
+		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
+		t.equal(response.length, 0, 'There is only one connected socket, but the filter does not match any one.');
+	} catch (e) {
+		t.fail('Message broadcast failed');
+	}
+
+	try {
 		nodeServer.server!.disconnect();
 		nodeSocket.disconnectFrom('Server');
 	} catch {
@@ -326,7 +412,7 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 
 test('Message Timeout', { timeout: 5000 }, async t => {
 	t.plan(5);
-	const [nodeServer, nodeSocket] = await setup(t, 8008);
+	const [nodeServer, nodeSocket] = await setup(t, 8009);
 
 	try {
 		await nodeSocket.sendTo('Server', 'Foo', { timeout: 250 });
@@ -372,7 +458,7 @@ test('Message Timeout', { timeout: 5000 }, async t => {
 
 test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async t => {
 	t.plan(3);
-	const [nodeServer, nodeSocket] = await setup(t, 8009);
+	const [nodeServer, nodeSocket] = await setup(t, 8010);
 
 	nodeServer.on('message', message => {
 		message.reply('Bar');
