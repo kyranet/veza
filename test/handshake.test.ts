@@ -4,6 +4,7 @@ import * as test from 'tape';
 import { Socket } from 'net';
 import { create } from '../dist/lib/Util/Header';
 import { get, createServer } from 'http';
+import { serialize } from 'binarytf';
 import { URL } from 'url';
 
 let port = 8000;
@@ -265,7 +266,7 @@ test('Socket Connection Retries (Successful Reconnect)', { timeout: 7500 }, asyn
 
 test('Socket Connection Retries (Abrupt Close)', { timeout: 7500 }, async t => {
 	t.plan(3);
-	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: Infinity, retryTime: 200 });
+	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: -1, retryTime: 200 });
 	nodeServer.server!.disconnect();
 
 	let firedConnecting = false;
@@ -330,6 +331,67 @@ test('HTTP Server', { timeout: 5000 }, async t => {
 		t.true(error instanceof Error, 'The error thrown should be an instance of Error.');
 		t.equal(error.message, 'Connection Timed Out.',
 			'Servers like HTTP ones do not send a message upon connection, so a server that does not send anything is expected to time out.');
+	}
+
+	server.close(error => {
+		t.equal(error, undefined, 'There should not be an error with closing the server.');
+	});
+});
+
+test('HTTP Server (Incorrect Handshake)', { timeout: 5000 }, async t => {
+	t.plan(5);
+	const nodeSocket = new Node('Socket', { handshakeTimeout: -1 });
+	const server = createServer(() => {
+		t.fail('This should not be called - in Veza, the server sends the message, and the socket replies.');
+	});
+	server
+		.on('close', () => t.pass('A connection should be closed.'))
+		.on('connection', socket => {
+			t.pass('A connection should be able to be made.');
+			socket.write(Buffer.from('Hello World!'));
+		});
+
+	await new Promise(resolve => server.listen(++port, resolve));
+
+	try {
+		await nodeSocket.connectTo(port);
+		t.fail('The connection should not be successful.');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error thrown should be an instance of Error.');
+		t.equal(error.message, 'Unexpected response from the server.',
+			'The message sent by the HTTP server is not binaryTF, therefore this should fail.');
+	}
+
+	server.close(error => {
+		t.equal(error, undefined, 'There should not be an error with closing the server.');
+	});
+});
+
+test('HTTP Server (Malicious Forged Handshake)', { timeout: 5000 }, async t => {
+	t.plan(5);
+	const nodeSocket = new Node('Socket', { handshakeTimeout: -1 });
+	const server = createServer(() => {
+		t.fail('This should not be called - in Veza, the server sends the message, and the socket replies.');
+	});
+	server
+		.on('close', () => t.pass('A connection should be closed.'))
+		.on('connection', socket => {
+			t.pass('A connection should be able to be made.');
+			socket.write(Buffer.concat([
+				new Uint8Array([0, 0, 0, 0, 0, 0, 1]),
+				serialize(420)
+			]));
+		});
+
+	await new Promise(resolve => server.listen(++port, resolve));
+
+	try {
+		await nodeSocket.connectTo(port);
+		t.fail('The connection should not be successful.');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error thrown should be an instance of Error.');
+		t.equal(error.message, 'Unexpected response from the server.',
+			'The message sent by the HTTP server is not binaryTF, therefore this should fail.');
 	}
 
 	server.close(error => {
@@ -614,7 +676,7 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 });
 
 test('Message Timeout', { timeout: 5000 }, async t => {
-	t.plan(5);
+	t.plan(4);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
 	try {
@@ -638,14 +700,6 @@ test('Message Timeout', { timeout: 5000 }, async t => {
 	try {
 		// Timeout -1 means no timeout
 		const response = await nodeSocket.sendTo('Server', 'Foo', { timeout: -1 });
-		t.equal(response, 'Bar', 'The server replied with "Bar", so this should be "Bar".');
-	} catch {
-		t.fail('The socket should not error.');
-	}
-
-	try {
-		// Timeout Infinity means no timeout
-		const response = await nodeSocket.sendTo('Server', 'Foo', { timeout: Infinity });
 		t.equal(response, 'Bar', 'The server replied with "Bar", so this should be "Bar".');
 	} catch {
 		t.fail('The socket should not error.');

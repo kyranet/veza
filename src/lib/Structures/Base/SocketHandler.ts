@@ -34,7 +34,7 @@ export class SocketHandler extends Base {
 	 * @param data The data to send to the socket
 	 * @param options The options for this message
 	 */
-	public send(data: any, { receptive = true, timeout = Infinity }: SendOptions = {}): Promise<any> {
+	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}): Promise<any> {
 		if (!this.socket) {
 			return Promise.reject(
 				new Error('This NodeSocket is not connected to a socket.')
@@ -52,10 +52,10 @@ export class SocketHandler extends Base {
 					return;
 				}
 
-				const timer = timeout !== Infinity && timeout !== -1
+				const timer = timeout === -1
+					? null
 					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					? setTimeout(() => send(reject, true, new Error('Timed out.')), timeout)
-					: null;
+					: setTimeout(() => send(reject, true, new Error('Timed out.')), timeout);
 				const send = (fn: Function, fromTimer: boolean, response: any) => {
 					if (timer && !fromTimer) clearTimeout(timer);
 					this.queue.delete(id);

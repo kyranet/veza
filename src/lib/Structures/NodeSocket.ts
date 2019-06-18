@@ -11,7 +11,7 @@ export class NodeSocket extends SocketHandler {
 
 	public constructor(node: Node, name: string | null, socket = null) {
 		super(node, name, socket);
-		this.retriesRemaining = node.maxRetries;
+		this.retriesRemaining = node.maxRetries === -1 ? Infinity : node.maxRetries;
 
 		Object.defineProperties(this, {
 			_reconnectionTimeout: { value: null, writable: true }
@@ -19,7 +19,7 @@ export class NodeSocket extends SocketHandler {
 	}
 
 	private get canReconnect() {
-		return (this.node.retryTime !== -1 || this.node.retryTime !== Infinity) && this.retriesRemaining > 0;
+		return this.node.retryTime !== -1 && this.retriesRemaining > 0;
 	}
 
 	/**
@@ -137,7 +137,7 @@ export class NodeSocket extends SocketHandler {
 		this.node.emit('socket.connect', this);
 		await new Promise((resolve, reject) => {
 			let timeout: NodeJS.Timeout;
-			if (this.node.handshakeTimeout !== -1 || this.node.handshakeTimeout !== Infinity) {
+			if (this.node.handshakeTimeout !== -1) {
 				timeout = setTimeout(() => {
 					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					onError(new Error('Connection Timed Out.'));
@@ -164,7 +164,11 @@ export class NodeSocket extends SocketHandler {
 						return resolve(cleanup());
 					}
 				} catch { }
-				reject(new Error('Unexpected response from the server.'));
+				// eslint-disable-next-line @typescript-eslint/no-use-before-define
+				onError(new Error('Unexpected response from the server.'));
+				this.socket!.destroy();
+				this.socket!.removeAllListeners();
+				this.socket = null;
 			};
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			const onClose = () => reject(cleanup(this));
