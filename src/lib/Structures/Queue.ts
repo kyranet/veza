@@ -54,6 +54,7 @@ export class Queue extends Map<number, QueueEntry> {
 				}
 				yield { id, receptive, data: value };
 			} catch {
+				// TODO(kyranet): This should try buffer glues
 				this.offset = 0;
 				yield kInvalidMessage;
 				break;

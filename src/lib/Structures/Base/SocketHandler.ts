@@ -107,10 +107,10 @@ export class SocketHandler extends Base {
 				} else {
 					this.node.emit('error', new Error('Failed to process message.'), this);
 				}
-				break;
+			} else {
+				const message = this._handleMessage(processed);
+				if (message) this.node.emit('message', message);
 			}
-			const message = this._handleMessage(processed as RawMessage);
-			if (message) this.node.emit('message', message);
 		}
 	}
 
