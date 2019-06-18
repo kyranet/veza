@@ -244,7 +244,28 @@ test('Client Events', { timeout: 5000 }, async t => {
 	}
 });
 
-// TODO(kyranet): Add `server.*` event tests.
+test('Server Events', { timeout: 5000 }, async t => {
+	t.plan(10);
+	const nodeServer = new Node('Server');
+	nodeServer.on('server.ready', server => {
+		t.equal(server.clients.size, 0, 'The amount of clients at start-up should be 0.');
+		t.equal(server.name, 'Server', 'The name of the server should be the same as the Node itself.');
+		t.equal(server.node, nodeServer, 'The node of the server should be the node itself.');
+		t.notEqual(server.server, null, 'The server should not be null.');
+		t.notEqual(nodeServer.server, null, 'Node#server should not be null after ready.');
+	});
+	await nodeServer.serve(++port);
+
+	nodeServer.on('server.destroy', server => {
+		t.equal(server.clients.size, 0, 'The amount of clients at start-up should be 0.');
+		t.equal(server.name, 'Server', 'The name of the server should be the same as the Node itself.');
+		t.equal(server.node, nodeServer, 'The node of the server should be the node itself.');
+		t.equal(server.server, null, 'The server should be destroyed and nullified.');
+		t.equal(nodeServer.server, null, 'Node#server should be null after destroy.');
+	});
+
+	nodeServer.server!.disconnect();
+});
 
 test('Socket Double Disconnection', { timeout: 5000 }, async t => {
 	t.plan(2);
