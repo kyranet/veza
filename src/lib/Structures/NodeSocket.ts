@@ -46,7 +46,8 @@ export class NodeSocket extends SocketHandler {
 	 * Disconnect from the socket, this will also reject all messages
 	 */
 	public disconnect() {
-		super.disconnect();
+		if (!super.disconnect()) return false;
+
 		if (this._reconnectionTimeout) {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;

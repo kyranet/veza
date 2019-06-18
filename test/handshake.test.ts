@@ -169,9 +169,30 @@ test('Socket Events', { timeout: 5000 }, async t => {
 	}
 });
 
+// TODO(kyranet): Add `client.*` and `server.*` event tests.
+
+test('Socket Double Disconnection', { timeout: 5000 }, async t => {
+	t.plan(2);
+	const [nodeServer, nodeSocket] = await setup(t, 8004);
+	const server = nodeSocket.get('Server')!;
+
+	try {
+		t.true(server.disconnect(), 'Successful disconnections should return true.');
+		t.false(server.disconnect(), 'A repeated disconnection should return false.');
+	} catch {
+		t.fail('Disconnections from NodeSocket should never throw an error.');
+	}
+
+	try {
+		nodeServer.server!.disconnect();
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
+});
+
 test('Socket Message', { timeout: 5000 }, async t => {
 	t.plan(15);
-	const [nodeServer, nodeSocket] = await setup(t, 8004);
+	const [nodeServer, nodeSocket] = await setup(t, 8005);
 
 	// Test receptive (default) message delivery
 	{
@@ -251,7 +272,7 @@ test('Socket Unknown Server Message Sending (Invalid)', async t => {
 
 test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	t.plan(6);
-	const [nodeServer, nodeSocket] = await setup(t, 8004);
+	const [nodeServer, nodeSocket] = await setup(t, 8006);
 
 	const messages = ['Hello', 'High'];
 	const replies = ['World', 'Five!'];
@@ -278,7 +299,7 @@ test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 
 test('Message Broadcast', { timeout: 5000 }, async t => {
 	t.plan(5);
-	const [nodeServer, nodeSocket] = await setup(t, 8005);
+	const [nodeServer, nodeSocket] = await setup(t, 8007);
 
 	nodeSocket.once('message', message => {
 		t.equal(message.data, 'Foo', 'Message is exactly the one sent');
@@ -305,7 +326,7 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 
 test('Message Timeout', { timeout: 5000 }, async t => {
 	t.plan(5);
-	const [nodeServer, nodeSocket] = await setup(t, 8006);
+	const [nodeServer, nodeSocket] = await setup(t, 8008);
 
 	try {
 		await nodeSocket.sendTo('Server', 'Foo', { timeout: 250 });
@@ -351,7 +372,7 @@ test('Message Timeout', { timeout: 5000 }, async t => {
 
 test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async t => {
 	t.plan(3);
-	const [nodeServer, nodeSocket] = await setup(t, 8006);
+	const [nodeServer, nodeSocket] = await setup(t, 8009);
 
 	nodeServer.on('message', message => {
 		message.reply('Bar');

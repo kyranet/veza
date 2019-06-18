@@ -46,7 +46,8 @@ export class NodeServerClient extends SocketHandler {
 	 * Disconnect from the socket, this will also reject all messages
 	 */
 	public disconnect(): boolean {
-		super.disconnect();
+		if (!super.disconnect()) return false;
+
 		if (this.name) {
 			this.server.clients.delete(this.name);
 			this.node.emit('client.destroy', this);
