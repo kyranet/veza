@@ -698,6 +698,57 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 	nodeSocket.disconnectFrom('Server');
 });
 
+test('Message Broadcast (From Server)', { timeout: 5000 }, async t => {
+	t.plan(9);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	const server = nodeServer.server!;
+
+	nodeSocket.once('message', message => {
+		t.equal(message.data, 'Foo', 'Message is exactly the one sent');
+		t.equal(message.receptive, true, 'Message keeps its receptive value');
+		message.reply('Bar');
+	});
+
+	try {
+		const response = await server.broadcast('Foo');
+		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
+		t.equal(response.length, 1, 'There is only one connected socket, therefore it should be an array with one value.');
+		t.equal(response[0], 'Bar', 'The socket responded with "Bar", therefore the first entry should be the same.');
+	} catch {
+		t.fail('Message broadcast failed');
+	}
+
+	try {
+		const response = await server.broadcast('Foo', { filter: /NothingMatches/ });
+		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
+		t.equal(response.length, 0, 'There is only one connected socket, but the filter does not match any one.');
+	} catch {
+		t.fail('Message broadcast failed');
+	}
+
+	try {
+		// TypeScript ignoring since this is an assertion for JavaScript users
+		// @ts-ignore
+		await server.broadcast('Foo', { filter: 'HelloWorld' });
+	} catch (error) {
+		t.true(error instanceof TypeError, 'The error should be an instance of TypeError.');
+		t.equal(error.message, 'filter must be a RegExp instance.',
+			'An invalid Node#broadcast filter option throws a TypeError explaining what was wrong.');
+	}
+
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
+});
+
+test('Message Broadcast (No Server)', { timeout: 5000 }, async t => {
+	t.plan(2);
+	const nodeSocket = new Node('Socket');
+
+	const response = await nodeSocket.broadcast('Foo');
+	t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
+	t.equal(response.length, 0, 'There is no server, therefore this should always be an empty array.');
+});
+
 test('Message Timeout', { timeout: 5000 }, async t => {
 	t.plan(4);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);

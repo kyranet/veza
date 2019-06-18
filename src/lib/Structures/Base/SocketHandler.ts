@@ -24,7 +24,7 @@ export class SocketHandler extends Base {
 	 */
 	public queue: Queue = new Queue(this);
 
-	public constructor(node: Node, name: string | null, socket: Socket | null = null) {
+	public constructor(node: Node, name: string | null, socket: Socket | null) {
 		super(node, name);
 		this.socket = socket;
 	}
