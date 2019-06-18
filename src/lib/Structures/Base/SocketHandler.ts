@@ -101,11 +101,11 @@ export class SocketHandler extends Base {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
 			if (processed === kInvalidMessage) {
-				if (this.status === SocketStatus.Connecting) {
+				if (this.status === SocketStatus.Ready) {
+					this.node.emit('error', new Error('Failed to process message.'), this);
+				} else {
 					this.node.emit('error', new Error('Failed to process message during connection, calling disconnect.'), this);
 					this.disconnect();
-				} else {
-					this.node.emit('error', new Error('Failed to process message.'), this);
 				}
 			} else {
 				const message = this._handleMessage(processed);

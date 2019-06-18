@@ -16,6 +16,7 @@ export class NodeServerClient extends SocketHandler {
 	}
 
 	public async setup() {
+		this.status = SocketStatus.Connected;
 		this.node.emit('client.connect', this);
 		this.socket!
 			.on('data', this._onData.bind(this))
@@ -62,6 +63,7 @@ export class NodeServerClient extends SocketHandler {
 	}
 
 	private _onClose() {
+		this.status = SocketStatus.Disconnected;
 		this.node.emit('client.disconnect', this);
 		this.disconnect();
 	}

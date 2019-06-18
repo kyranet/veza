@@ -175,13 +175,76 @@ test('Socket Events', { timeout: 5000 }, async t => {
 			t.equal(client.status, SocketStatus.Destroyed, 'When this event fires, the status should be "Destroyed".');
 			t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
 			t.equal(client.queue.node, nodeSocket, 'The client queue node should be the parent Node itself.');
-			t.equal(client.socket, null, 'The socket is destroyed and nullified.');
+			t.equal(client.socket, null, 'The socket should be destroyed and nullified.');
 		});
 		nodeSocket.disconnectFrom('Server');
 	}
 });
 
-// TODO(kyranet): Add `client.*` and `server.*` event tests.
+test('Client Events', { timeout: 5000 }, async t => {
+	t.plan(30);
+
+	const nodeServer = new Node('Server');
+	const nodeSocket = new Node('Socket');
+	await nodeServer.serve(++port);
+
+	// client.connect is called when connecting
+	nodeServer.on('client.connect', client => {
+		t.equal(client.name, null, 'Connect is done before the identify step, it is not available until ready.');
+		t.equal(client.node, nodeServer, 'The client node should be the parent Node itself.');
+		t.equal(client.status, SocketStatus.Connected, 'When this event fires, the status should be "Connected".');
+		t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
+		t.equal(client.queue.node, nodeServer, 'The client queue node should be the parent Node itself.');
+		t.notEqual(client.socket, null, 'The socket must not be null during connection.');
+	});
+
+	// client.identify and client.ready are called before and after setting to the maps
+	nodeServer.on('client.identify', client => {
+		t.equal(client.name, 'Socket', 'Ready is emitted after the identify step, the name should be available.');
+		t.equal(client.node, nodeServer, 'The client node should be the parent Node itself.');
+		t.equal(client.status, SocketStatus.Ready, 'When this event fires, the status should be "Connected".');
+		t.equal(client.queue.size, 0, 'The queue must be empty after connection.');
+		t.equal(client.queue.node, nodeServer, 'The client queue node should be the parent Node itself.');
+		t.notEqual(client.socket, null, 'The socket must not be null after connection.');
+	});
+	nodeServer.on('client.ready', client => {
+		t.equal(client.name, 'Socket', 'Ready is emitted after the identify step, the name should be available.');
+		t.equal(client.node, nodeServer, 'The client node should be the parent Node itself.');
+		t.equal(client.status, SocketStatus.Ready, 'When this event fires, the status should be "Connected".');
+		t.equal(client.queue.size, 0, 'The queue must be empty after connection.');
+		t.equal(client.queue.node, nodeServer, 'The client queue node should be the parent Node itself.');
+		t.notEqual(client.socket, null, 'The socket must not be null after connection.');
+	});
+
+	// Connect the socket to the server
+	await nodeSocket.connectTo(port);
+
+	nodeServer.on('client.disconnect', client => {
+		t.equal(client.name, 'Socket', 'The name should always be available, even after being disconnected.');
+		t.equal(client.node, nodeServer, 'The client node should be the parent Node itself.');
+		t.equal(client.status, SocketStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
+		t.equal(client.queue.size, 0, 'The queue must be empty during a disconnection.');
+		t.equal(client.queue.node, nodeServer, 'The client queue node should be the parent Node itself.');
+		t.notEqual(client.socket, null, 'The socket must not be null during a disconnection.');
+	});
+	nodeServer.on('client.destroy', client => {
+		t.equal(client.name, 'Socket', 'The name should always be available, even after being disconnected.');
+		t.equal(client.node, nodeServer, 'The client node should be the parent Node itself.');
+		t.equal(client.status, SocketStatus.Destroyed, 'When this event fires, the status should be "Destroyed".');
+		t.equal(client.queue.size, 0, 'The queue must be empty during a disconnection.');
+		t.equal(client.queue.node, nodeServer, 'The client queue node should be the parent Node itself.');
+		t.equal(client.socket, null, 'The socket should be destroyed and nullified.');
+		destroy();
+	});
+
+	nodeSocket.disconnectFrom('Server');
+
+	function destroy() {
+		nodeServer.server!.disconnect();
+	}
+});
+
+// TODO(kyranet): Add `server.*` event tests.
 
 test('Socket Double Disconnection', { timeout: 5000 }, async t => {
 	t.plan(2);
