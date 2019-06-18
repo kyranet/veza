@@ -57,17 +57,12 @@ export class NodeServerClient extends SocketHandler {
 	}
 
 	private _onError(error: any) {
-		const { code } = error;
-		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
-			if (this.status !== SocketStatus.Disconnected) return;
-			this.status = SocketStatus.Disconnected;
-			this.node.emit('client.disconnect', this);
-		} else {
-			this.node.emit('error', error, this);
-		}
+		/* istanbul ignore next: Hard to reproduce in Azure. */
+		this.node.emit('error', error, this);
 	}
 
 	private _onClose() {
+		this.node.emit('client.disconnect', this);
 		this.disconnect();
 	}
 

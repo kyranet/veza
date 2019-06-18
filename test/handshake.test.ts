@@ -195,11 +195,7 @@ test('Socket Double Disconnection', { timeout: 5000 }, async t => {
 		t.fail('Disconnections from NodeSocket should never throw an error.');
 	}
 
-	try {
-		nodeServer.server!.disconnect();
-	} catch {
-		t.fail('Disconnection should not error.');
-	}
+	nodeServer.server!.disconnect();
 });
 
 test('Server Double Disconnection', { timeout: 5000 }, async t => {
@@ -268,12 +264,8 @@ test('Socket Connection Retries (Successful Reconnect)', { timeout: 7500 }, asyn
 		});
 		t.pass('Successfully reconnected the server.');
 
-		try {
-			nodeServer.server!.disconnect();
-			nodeSocket.disconnectFrom('Server');
-		} catch {
-			t.fail('Disconnection should not error.');
-		}
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
 	}
 });
 
@@ -307,12 +299,8 @@ test('Socket Connection Retries (Successful Reconnect | Different Name)', { time
 		t.equal(nodeSocket.get('NewServer'), socketServer, 'The socket should be available under the key "NewServer".');
 		t.equal(socketServer.name, 'NewServer', 'The name for the socket should be changed to "NewServer".');
 
-		try {
-			nodeServerSecond.server!.disconnect();
-			nodeSocket.disconnectFrom('NewServer');
-		} catch {
-			t.fail('Disconnection should not error.');
-		}
+		nodeServerSecond.server!.disconnect();
+		nodeSocket.disconnectFrom('NewServer');
 	}
 });
 
@@ -333,6 +321,21 @@ test('Socket Connection Retries (Abrupt Close)', { timeout: 7500 }, async t => {
 		t.false(firedDestroy, 'The socket has been destroyed.');
 		firedDestroy = true;
 	});
+});
+
+test('Server Connection Close', { timeout: 5000 }, async t => {
+	t.plan(1);
+	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined);
+
+	nodeServer.on('client.disconnect', socket => {
+		t.equal(socket.name, 'Socket', 'The name of the disconnected socket should be "Socket".');
+		finish();
+	});
+	nodeSocket.disconnectFrom('Server');
+
+	function finish() {
+		nodeServer.server!.disconnect();
+	}
 });
 
 test('HTTP Socket', { timeout: 5000 }, async t => {
@@ -357,11 +360,7 @@ test('HTTP Socket', { timeout: 5000 }, async t => {
 		t.true(error instanceof Error, 'The error thrown should be an instance of Error.');
 	}
 
-	try {
-		nodeServer.server!.disconnect();
-	} catch {
-		t.fail('Disconnection should not error.');
-	}
+	nodeServer.server!.disconnect();
 });
 
 test('HTTP Server', { timeout: 5000 }, async t => {
@@ -479,12 +478,8 @@ test('NodeServer Socket Retrieval', { timeout: 5000 }, async t => {
 			'An invalid NodeServer#get throws a TypeError explaining what was wrong.');
 	}
 
-	try {
-		nodeServer.server!.disconnect();
-		nodeSocket.disconnectFrom('Server');
-	} catch {
-		t.fail('Disconnection should not error.');
-	}
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
 });
 
 test('Socket Message', { timeout: 5000 }, async t => {
@@ -529,12 +524,8 @@ test('Socket Message', { timeout: 5000 }, async t => {
 	async function finish() {
 		const server = nodeSocket.get('Server')!;
 		const socket = nodeServer.get('Socket')!;
-		try {
-			nodeServer.server!.disconnect();
-			nodeSocket.disconnectFrom('Server');
-		} catch {
-			t.fail('Disconnection should not error.');
-		}
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
 
 		try {
 			await server.send('Foo', { receptive: false });
@@ -593,12 +584,8 @@ test('Server Messages', { timeout: 5000 }, async t => {
 			'Trying to send a message to an unknown socket sends this message.');
 	}
 
-	try {
-		nodeServer.server!.disconnect();
-		nodeSocket.disconnectFrom('Server');
-	} catch {
-		t.fail('Disconnection should not error.');
-	}
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
 });
 
 test('Socket Faulty Message', { timeout: 5000 }, async t => {
@@ -619,12 +606,8 @@ test('Socket Faulty Message', { timeout: 5000 }, async t => {
 	]));
 
 	function finish() {
-		try {
-			nodeServer.server!.disconnect();
-			nodeSocket.disconnectFrom('Server');
-		} catch {
-			t.fail('Disconnection should not error.');
-		}
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
 	}
 });
 
@@ -646,12 +629,8 @@ test('Server Faulty Message', { timeout: 5000 }, async t => {
 	]));
 
 	function finish() {
-		try {
-			nodeServer.server!.disconnect();
-			nodeSocket.disconnectFrom('Server');
-		} catch {
-			t.fail('Disconnection should not error.');
-		}
+		nodeServer.server!.disconnect();
+		nodeSocket.disconnectFrom('Server');
 	}
 });
 
@@ -674,12 +653,8 @@ test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	t.equal(first, 'World');
 	t.equal(second, 'Five!');
 
-	try {
-		nodeServer.server!.disconnect();
-		nodeSocket.disconnectFrom('Server');
-	} catch {
-		t.fail('Disconnection should not error.');
-	}
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
 });
 
 test('Message Broadcast', { timeout: 5000 }, async t => {
@@ -719,12 +694,8 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 			'An invalid Node#broadcast filter option throws a TypeError explaining what was wrong.');
 	}
 
-	try {
-		nodeServer.server!.disconnect();
-		nodeSocket.disconnectFrom('Server');
-	} catch {
-		t.fail('Disconnection should not error.');
-	}
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
 });
 
 test('Message Timeout', { timeout: 5000 }, async t => {
@@ -757,12 +728,8 @@ test('Message Timeout', { timeout: 5000 }, async t => {
 		t.fail('The socket should not error.');
 	}
 
-	try {
-		nodeServer.server!.disconnect();
-		nodeSocket.disconnectFrom('Server');
-	} catch {
-		t.fail('Disconnection should not error.');
-	}
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
 });
 
 test('Abrupt Disconnection (Disconnected Without Clearing Messages)', { timeout: 5000 }, async t => {
@@ -783,11 +750,7 @@ test('Abrupt Disconnection (Disconnected Without Clearing Messages)', { timeout:
 		t.equal(error.message, 'Socket has been disconnected.', 'The error message is thrown from NodeSocket.');
 	}
 
-	try {
-		nodeServer.server!.disconnect();
-	} catch {
-		t.fail('Disconnection should not error.');
-	}
+	nodeServer.server!.disconnect();
 });
 
 test('Duplicated Socket', { timeout: 5000 }, async t => {
@@ -803,13 +766,9 @@ test('Duplicated Socket', { timeout: 5000 }, async t => {
 	await nodeSocketSecond.connectTo(port);
 
 	function finish() {
-		try {
-			nodeServer.server!.disconnect();
-			nodeSocketFirst.disconnectFrom('Server');
-			nodeSocketSecond.disconnectFrom('Server');
-		} catch {
-			t.fail('Disconnection should not error.');
-		}
+		nodeServer.server!.disconnect();
+		nodeSocketFirst.disconnectFrom('Server');
+		nodeSocketSecond.disconnectFrom('Server');
 	}
 });
 
