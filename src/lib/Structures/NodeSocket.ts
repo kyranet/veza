@@ -64,6 +64,7 @@ export class NodeSocket extends SocketHandler {
 
 	private _onConnect() {
 		this.retriesRemaining = this.node.maxRetries;
+		/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 		if (this._reconnectionTimeout) {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
@@ -75,6 +76,7 @@ export class NodeSocket extends SocketHandler {
 		if (this.canReconnect) {
 			if (this._reconnectionTimeout) clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = setTimeout(async () => {
+				/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 				if (this.socket) {
 					--this.retriesRemaining;
 					try {
@@ -98,6 +100,7 @@ export class NodeSocket extends SocketHandler {
 
 	private _onError(error: any) {
 		const { code } = error;
+		/* istanbul ignore next: This is mostly guard code, it's very hard for all cases to be covered. Open to a fix. */
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
 			if (this.status !== SocketStatus.Disconnected) return;
 			this.status = SocketStatus.Disconnected;

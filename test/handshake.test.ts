@@ -235,6 +235,19 @@ test('Socket Connection Retries', { timeout: 7500 }, async t => {
 	});
 });
 
+test('Socket Connection No Retries', { timeout: 5000 }, async t => {
+	t.plan(1);
+	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: 0 });
+	nodeServer.server!.disconnect();
+
+	nodeSocket.on('socket.connecting', () => {
+		t.fail('The socket should not try to connect.');
+	});
+	nodeSocket.on('socket.disconnect', () => {
+		t.pass('The client successfully disconnected.');
+	});
+});
+
 test('Socket Connection Retries (Successful Reconnect)', { timeout: 7500 }, async t => {
 	t.plan(4);
 	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: 3, retryTime: 200 });
@@ -258,6 +271,45 @@ test('Socket Connection Retries (Successful Reconnect)', { timeout: 7500 }, asyn
 		try {
 			nodeServer.server!.disconnect();
 			nodeSocket.disconnectFrom('Server');
+		} catch {
+			t.fail('Disconnection should not error.');
+		}
+	}
+});
+
+test('Socket Connection Retries (Successful Reconnect | Different Name)', { timeout: 7500 }, async t => {
+	t.plan(8);
+	const [nodeServerFirst, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: 3, retryTime: 200 });
+
+	const socketServer = nodeSocket.get('Server')!;
+	t.equal(socketServer.name, 'Server', 'The Server should be "Server".');
+
+	// Disconnect and set up a second server with a different name
+	nodeServerFirst.server!.disconnect();
+	const nodeServerSecond = new Node('NewServer');
+
+	nodeSocket.once('socket.connecting', () => {
+		t.pass('Reconnecting event fired.');
+		next();
+	});
+
+	async function next() {
+		nodeSocket
+			.once('socket.connect', () => t.pass('Socket fired connect'))
+			.once('socket.ready', () => t.pass('Socket fired Ready'));
+		await nodeServerSecond.serve(port);
+		await new Promise(resolve => {
+			nodeServerSecond.once('client.ready', resolve);
+		});
+		t.pass('Successfully reconnected the server.');
+
+		t.equal(nodeSocket.get('Server'), null, 'Since the name of the server has changed, the key "Server" should be null.');
+		t.equal(nodeSocket.get('NewServer'), socketServer, 'The socket should be available under the key "NewServer".');
+		t.equal(socketServer.name, 'NewServer', 'The name for the socket should be changed to "NewServer".');
+
+		try {
+			nodeServerSecond.server!.disconnect();
+			nodeSocket.disconnectFrom('NewServer');
 		} catch {
 			t.fail('Disconnection should not error.');
 		}
