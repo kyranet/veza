@@ -97,42 +97,6 @@ export class SocketHandler extends Base {
 		return true;
 	}
 
-	/**
-	 * Add a new event listener on this client's socket
-	 * @param event The event name
-	 * @param cb The callback to register
-	 * @chainable
-	 */
-	// eslint-disable-next-line promise/prefer-await-to-callbacks
-	public on(event: string, cb: (...args: any[]) => void): this {
-		if (this.socket) this.socket.on(event, cb);
-		return this;
-	}
-
-	/**
-	 * Add a new event listener on this client's socket
-	 * @param event The event name
-	 * @param cb The callback to register
-	 * @chainable
-	 */
-	// eslint-disable-next-line promise/prefer-await-to-callbacks
-	public once(event: string, cb: (...args: any[]) => void): this {
-		if (this.socket) this.socket.once(event, cb);
-		return this;
-	}
-
-	/**
-	 * Remove an event listener on this client's socket
-	 * @param event The event name
-	 * @param cb The callback to unregister
-	 * @chainable
-	 */
-	// eslint-disable-next-line promise/prefer-await-to-callbacks
-	public off(event: string, cb: (...args: any[]) => void): this {
-		if (this.socket) this.socket.off(event, cb);
-		return this;
-	}
-
 	protected _onData(data: Uint8Array) {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
