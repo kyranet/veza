@@ -371,8 +371,6 @@ test('Server Messages', { timeout: 5000 }, async t => {
 test('Socket Faulty Message', { timeout: 5000 }, async t => {
 	t.plan(3);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
-	nodeSocket.on('raw', (_node, buffer) => console.log('Socket', buffer));
-	nodeServer.on('raw', (_node, buffer) => console.log('Server', buffer));
 	nodeServer.on('error', (error, socket) => {
 		t.equal(socket.name, 'Socket');
 		t.true(error instanceof Error, 'The error should be an instance of Error.');
