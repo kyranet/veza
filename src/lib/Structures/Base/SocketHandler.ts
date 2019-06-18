@@ -100,10 +100,13 @@ export class SocketHandler extends Base {
 	protected _onData(data: Uint8Array) {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
-			/* istanbul ignore next: Hard to reproduce in Azure. */
 			if (processed === kInvalidMessage) {
-				this.node.emit('error', new Error('Failed to process message, destroying Socket.'), this);
-				this.disconnect();
+				if (this.status === SocketStatus.Connecting) {
+					this.node.emit('error', new Error('Failed to process message during connection, calling disconnect.'), this);
+					this.disconnect();
+				} else {
+					this.node.emit('error', new Error('Failed to process message.'), this);
+				}
 				break;
 			}
 			const message = this._handleMessage(processed as RawMessage);
