@@ -1,4 +1,4 @@
-import { Node, NodeServerClient } from '../dist/index';
+import { Node, NodeServerClient, NodeOptions } from '../dist/index';
 import { SocketStatus } from '../dist/lib/Util/Constants';
 import * as test from 'tape';
 import { Socket } from 'net';
@@ -216,6 +216,20 @@ test('Server Double Disconnection', { timeout: 5000 }, async t => {
 	} catch {
 		t.fail('Disconnection should not error.');
 	}
+});
+
+test('Socket Connection Retries', { timeout: 7500 }, async t => {
+	t.plan(4);
+	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: 3, retryTime: 0 });
+	nodeServer.server!.disconnect();
+
+	let attempts = nodeSocket.maxRetries;
+	nodeSocket.on('socket.connecting', () => {
+		t.true(--attempts >= 0, 'This should reconnect exactly 3 times.');
+	});
+	nodeSocket.on('socket.disconnect', () => {
+		t.pass('The client successfully disconnected.');
+	});
 });
 
 test('NodeServer Socket Retrieval', async t => {
@@ -567,7 +581,7 @@ test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async t =>
 
 test('Duplicated Socket', async t => {
 	t.plan(1);
-	const [nodeServer, nodeSocketFirst] = await setup(t, ++port);
+	const [nodeServer, nodeSocketFirst] = await setup(t, ++port, undefined);
 	const nodeSocketSecond = new Node('Socket');
 
 	nodeSocketFirst.once('socket.disconnect', () => {
@@ -588,9 +602,9 @@ test('Duplicated Socket', async t => {
 	}
 });
 
-async function setup(t: test.Test, port: number) {
-	const nodeServer = new Node('Server');
-	const nodeSocket = new Node('Socket');
+async function setup(t: test.Test, port: number, serverNodeOptions?: NodeOptions, socketNodeOptions?: NodeOptions) {
+	const nodeServer = new Node('Server', serverNodeOptions);
+	const nodeSocket = new Node('Socket', socketNodeOptions);
 
 	try {
 		// Open server

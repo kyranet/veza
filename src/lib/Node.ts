@@ -37,7 +37,7 @@ export class Node extends EventEmitter {
 	 * @param name The name for this Node
 	 * @param options The options for this Node instance
 	 */
-	public constructor(name: string, { maxRetries = Infinity, retryTime = 200 }: NodeOptions = {}) {
+	public constructor(name: string, { maxRetries = 0, retryTime = 200 }: NodeOptions = {}) {
 		super();
 		this.name = name;
 		this.maxRetries = maxRetries;
@@ -135,6 +135,10 @@ export class Node extends EventEmitter {
 
 export interface Node {
 	/**
+	 * Emitted when connecting
+	 */
+	on(event: 'socket.connecting', listener: SocketConnectingEvent): boolean;
+	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
 	on(event: 'socket.connect', listener: SocketConnectEvent): this;
@@ -191,6 +195,10 @@ export interface Node {
 	 */
 	on(event: 'server.ready', listener: ServerReadyEvent): this;
 
+	/**
+	 * Emitted when connecting
+	 */
+	once(event: 'socket.connecting', listener: SocketConnectingEvent): boolean;
 	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
@@ -249,6 +257,10 @@ export interface Node {
 	once(event: 'server.ready', listener: ServerReadyEvent): this;
 
 	/**
+	 * Emitted when connecting
+	 */
+	off(event: 'socket.connecting', listener: SocketConnectingEvent): boolean;
+	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
 	off(event: 'socket.connect', listener: SocketConnectEvent): this;
@@ -305,6 +317,10 @@ export interface Node {
 	 */
 	off(event: 'server.ready', listener: ServerReadyEvent): this;
 
+	/**
+	 * Emitted when connecting
+	 */
+	emit(event: 'socket.connecting', ...args: Parameters<SocketConnectingEvent>): boolean;
 	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
@@ -366,6 +382,12 @@ export interface Node {
 interface SocketReadyEvent {
 	/**
 	 * @param client The client that has turned ready
+	 */
+	(client: NodeSocket): unknown;
+}
+interface SocketConnectingEvent {
+	/**
+	 * @param client The client that is trying to connect
 	 */
 	(client: NodeSocket): unknown;
 }

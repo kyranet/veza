@@ -18,6 +18,10 @@ export class NodeSocket extends SocketHandler {
 		});
 	}
 
+	private get canReconnect() {
+		return (this.node.retryTime !== -1 || this.node.retryTime !== Infinity) && this.retriesRemaining > 0;
+	}
+
 	/**
 	 * Connect to the socket
 	 * @param options The options to pass to connect
@@ -68,20 +72,18 @@ export class NodeSocket extends SocketHandler {
 	}
 
 	private _onClose(...options: any[]) {
-		if (this.status !== SocketStatus.Disconnected) {
+		if (this.canReconnect) {
+			if (this._reconnectionTimeout) clearTimeout(this._reconnectionTimeout);
+			this._reconnectionTimeout = setTimeout(() => {
+				if (this.socket) {
+					--this.retriesRemaining;
+					this._attemptConnection(...options);
+				}
+			}, this.node.retryTime);
+		} else if (this.status !== SocketStatus.Disconnected) {
 			this.status = SocketStatus.Disconnected;
 			this.node.emit('socket.disconnect', this);
 		}
-		this._reconnectionTimeout = setTimeout(() => {
-			if (this.retriesRemaining === 0) {
-				this.disconnect();
-			} else if (this.socket) {
-				--this.retriesRemaining;
-				this.status = SocketStatus.Connecting;
-				// @ts-ignore
-				this.socket.connect(...options);
-			}
-		}, this.node.retryTime);
 	}
 
 	private _onError(error: any) {
@@ -96,7 +98,6 @@ export class NodeSocket extends SocketHandler {
 	}
 
 	private async _connect(...options: any[]) {
-		this.status = SocketStatus.Connecting;
 		if (!this.socket) this.socket = new Socket();
 		await new Promise((resolve, reject) => {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -117,8 +118,7 @@ export class NodeSocket extends SocketHandler {
 				.on('close', onClose)
 				.on('error', onError);
 
-			// @ts-ignore
-			this.socket!.connect(...options);
+			this._attemptConnection(...options);
 		});
 	}
 
@@ -161,6 +161,14 @@ export class NodeSocket extends SocketHandler {
 				.on('close', onClose)
 				.on('error', onError);
 		});
+	}
+
+	private _attemptConnection(...options: any[]) {
+		this.status = SocketStatus.Connecting;
+		this.node.emit('socket.connecting', this);
+
+		// @ts-ignore
+		this.socket!.connect(...options);
 	}
 
 }
