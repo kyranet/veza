@@ -73,6 +73,7 @@ export class NodeSocket extends SocketHandler {
 	}
 
 	private _onClose(...options: any[]) {
+		/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 		if (this.canReconnect) {
 			if (this._reconnectionTimeout) clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = setTimeout(async () => {
