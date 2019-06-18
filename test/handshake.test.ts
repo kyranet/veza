@@ -2,6 +2,9 @@ import { Node, NodeServerClient } from '../dist/index';
 import { SocketStatus } from '../dist/lib/Util/Constants';
 import * as test from 'tape';
 import { Socket } from 'net';
+import { create } from '../dist/lib/Util/Header';
+
+let port = 8000;
 
 test('Basic Empty Node', t => {
 	t.plan(5);
@@ -18,11 +21,10 @@ test('Basic Server', { timeout: 5000 }, async t => {
 	t.plan(12);
 
 	const node = new Node('Server');
-	const PORT = 8001;
 
 	t.equal(node.server, null, 'The server should be null as this is not serving.');
 	try {
-		await node.serve(PORT);
+		await node.serve(++port);
 	} catch {
 		t.fail('Server should not crash.');
 	}
@@ -35,7 +37,7 @@ test('Basic Server', { timeout: 5000 }, async t => {
 	t.notEqual(node.server!.server, null, 'The internal server should not be null.');
 
 	try {
-		await node.serve(PORT + 1);
+		await node.serve(++port);
 		t.fail('This call should definitely crash.');
 	} catch (error) {
 		t.true(error instanceof Error, 'The error should be an instance of Error.');
@@ -43,7 +45,7 @@ test('Basic Server', { timeout: 5000 }, async t => {
 	}
 
 	try {
-		await node.server!.connect(PORT + 1);
+		await node.server!.connect(++port);
 		t.fail('This call should definitely crash.');
 	} catch (error) {
 		t.true(error instanceof Error, 'The error should be an instance of Error.');
@@ -60,17 +62,16 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 
 	const nodeServer = new Node('Server');
 	const nodeSocket = new Node('Socket');
-	const PORT = 8002;
 
 	// Open server
 	try {
-		await nodeServer.serve(PORT);
+		await nodeServer.serve(++port);
 	} catch {
 		t.fail('Server should not crash.');
 	}
 
 	try {
-		await nodeSocket.connectTo(PORT);
+		await nodeSocket.connectTo(port);
 		t.equal(nodeSocket.servers.size, 1);
 
 		const myServer = nodeSocket.servers.get('Server')!;
@@ -126,8 +127,7 @@ test('Socket Events', { timeout: 5000 }, async t => {
 
 	const nodeServer = new Node('Server');
 	const nodeSocket = new Node('Socket');
-	const PORT = 8003;
-	await nodeServer.serve(PORT);
+	await nodeServer.serve(++port);
 
 	// socket.connect and socket.ready are called when connecting
 	nodeSocket.on('socket.connect', client => {
@@ -147,7 +147,7 @@ test('Socket Events', { timeout: 5000 }, async t => {
 		t.notEqual(client.socket, null, 'The socket must not be null after connection.');
 	});
 
-	await nodeSocket.connectTo(PORT);
+	await nodeSocket.connectTo(port);
 	await new Promise(resolve => {
 		nodeServer.once('client.ready', resolve);
 	});
@@ -182,7 +182,7 @@ test('Socket Events', { timeout: 5000 }, async t => {
 
 test('Socket Double Disconnection', { timeout: 5000 }, async t => {
 	t.plan(2);
-	const [nodeServer, nodeSocket] = await setup(t, 8004);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
 	const server = nodeSocket.get('Server')!;
 
 	try {
@@ -199,9 +199,28 @@ test('Socket Double Disconnection', { timeout: 5000 }, async t => {
 	}
 });
 
+test('Server Double Disconnection', { timeout: 5000 }, async t => {
+	t.plan(2);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	const server = nodeServer.server!;
+
+	try {
+		t.true(server.disconnect(), 'Successful disconnections should return true.');
+		t.false(server.disconnect(), 'A repeated disconnection should return false.');
+	} catch {
+		t.fail('Disconnections from NodeSocket should never throw an error.');
+	}
+
+	try {
+		nodeSocket.disconnectFrom('Server');
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
+});
+
 test('NodeServer Socket Retrieval', async t => {
 	t.plan(8);
-	const [nodeServer, nodeSocket] = await setup(t, 8005);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
 	const server = nodeServer.server!;
 	const socket = nodeServer.get('Socket')! as NodeServerClient;
 
@@ -237,7 +256,7 @@ test('NodeServer Socket Retrieval', async t => {
 
 test('Socket Message', { timeout: 5000 }, async t => {
 	t.plan(15);
-	const [nodeServer, nodeSocket] = await setup(t, 8006);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
 	// Test receptive (default) message delivery
 	{
@@ -317,7 +336,7 @@ test('Socket Unknown Server Message Sending (Invalid)', async t => {
 
 test('Server Messages', { timeout: 5000 }, async t => {
 	t.plan(5);
-	const [nodeServer, nodeSocket] = await setup(t, 8007);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
 	nodeSocket.on('message', message => {
 		t.equal(message.receptive, true, 'The message was sent as receptive.');
@@ -349,9 +368,65 @@ test('Server Messages', { timeout: 5000 }, async t => {
 	}
 });
 
+test('Socket Faulty Message', { timeout: 5000 }, async t => {
+	t.plan(3);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	nodeSocket.on('raw', (_node, buffer) => console.log('Socket', buffer));
+	nodeServer.on('raw', (_node, buffer) => console.log('Server', buffer));
+	nodeServer.on('error', (error, socket) => {
+		t.equal(socket.name, 'Socket');
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'Failed to process message.',
+			'Faulty messages after having connected fire the error event, but does not disconnect.');
+		finish();
+	});
+
+	// Send faulty message
+	nodeSocket.get('Server')!.socket!.write(Buffer.concat([
+		create(false),
+		new Uint8Array([0xFF, 0xFF])
+	]));
+
+	function finish() {
+		try {
+			nodeServer.server!.disconnect();
+			nodeSocket.disconnectFrom('Server');
+		} catch {
+			t.fail('Disconnection should not error.');
+		}
+	}
+});
+
+test('Server Faulty Message', { timeout: 5000 }, async t => {
+	t.plan(3);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	nodeSocket.on('error', (error, socket) => {
+		t.equal(socket.name, 'Server');
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'Failed to process message.',
+			'Faulty messages after having connected fire the error event, but does not disconnect.');
+		finish();
+	});
+
+	// Send faulty message
+	nodeServer.get('Socket')!.socket!.write(Buffer.concat([
+		create(false),
+		new Uint8Array([0xFF, 0xFF])
+	]));
+
+	function finish() {
+		try {
+			nodeServer.server!.disconnect();
+			nodeSocket.disconnectFrom('Server');
+		} catch {
+			t.fail('Disconnection should not error.');
+		}
+	}
+});
+
 test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	t.plan(6);
-	const [nodeServer, nodeSocket] = await setup(t, 8007);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
 	const messages = ['Hello', 'High'];
 	const replies = ['World', 'Five!'];
@@ -378,7 +453,7 @@ test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 
 test('Message Broadcast', { timeout: 5000 }, async t => {
 	t.plan(9);
-	const [nodeServer, nodeSocket] = await setup(t, 8008);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
 	nodeSocket.once('message', message => {
 		t.equal(message.data, 'Foo', 'Message is exactly the one sent');
@@ -423,7 +498,7 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 
 test('Message Timeout', { timeout: 5000 }, async t => {
 	t.plan(5);
-	const [nodeServer, nodeSocket] = await setup(t, 8009);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
 	try {
 		await nodeSocket.sendTo('Server', 'Foo', { timeout: 250 });
@@ -469,7 +544,7 @@ test('Message Timeout', { timeout: 5000 }, async t => {
 
 test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async t => {
 	t.plan(3);
-	const [nodeServer, nodeSocket] = await setup(t, 8010);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
 	nodeServer.on('message', message => {
 		message.reply('Bar');
@@ -489,6 +564,29 @@ test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async t =>
 		nodeServer.server!.disconnect();
 	} catch {
 		t.fail('Disconnection should not error.');
+	}
+});
+
+test('Duplicated Socket', async t => {
+	t.plan(1);
+	const [nodeServer, nodeSocketFirst] = await setup(t, ++port);
+	const nodeSocketSecond = new Node('Socket');
+
+	nodeSocketFirst.once('socket.disconnect', () => {
+		t.pass('The socket has been disconnected.');
+		finish();
+	});
+
+	await nodeSocketSecond.connectTo(port);
+
+	function finish() {
+		try {
+			nodeServer.server!.disconnect();
+			nodeSocketFirst.disconnectFrom('Server');
+			nodeSocketSecond.disconnectFrom('Server');
+		} catch {
+			t.fail('Disconnection should not error.');
+		}
 	}
 });
 

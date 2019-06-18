@@ -54,11 +54,8 @@ export class Queue extends Map<number, QueueEntry> {
 				}
 				yield { id, receptive, data: value };
 			} catch {
-				/* istanbul ignore next: Hard to reproduce in Azure. */
 				this.offset = 0;
-				/* istanbul ignore next: Hard to reproduce in Azure. */
 				yield kInvalidMessage;
-				/* istanbul ignore next: Hard to reproduce in Azure. */
 				break;
 			}
 		}
