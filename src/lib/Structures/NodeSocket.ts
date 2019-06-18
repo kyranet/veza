@@ -74,10 +74,20 @@ export class NodeSocket extends SocketHandler {
 	private _onClose(...options: any[]) {
 		if (this.canReconnect) {
 			if (this._reconnectionTimeout) clearTimeout(this._reconnectionTimeout);
-			this._reconnectionTimeout = setTimeout(() => {
+			this._reconnectionTimeout = setTimeout(async () => {
 				if (this.socket) {
 					--this.retriesRemaining;
-					this._attemptConnection(...options);
+					try {
+						const { name } = this;
+						await this._connect(...options);
+						await this._handshake();
+
+						// If the server was renamed, we might want to delete the previous name
+						if (name && name !== this.name) this.node.servers.delete(name);
+						this.node.servers.set(this.name!, this);
+						this.status = SocketStatus.Ready;
+						this.node.emit('socket.ready', this);
+					} catch {}
 				}
 			}, this.node.retryTime);
 		} else if (this.status !== SocketStatus.Disconnected) {
@@ -167,8 +177,11 @@ export class NodeSocket extends SocketHandler {
 		this.status = SocketStatus.Connecting;
 		this.node.emit('socket.connecting', this);
 
-		// @ts-ignore
-		this.socket!.connect(...options);
+		// It can happen that the user disconnects in the socket.connecting event, so we safe-guard this.
+		if (this.socket) {
+			// @ts-ignore
+			this.socket!.connect(...options);
+		}
 	}
 
 }

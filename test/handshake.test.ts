@@ -17,7 +17,7 @@ test('Basic Empty Node', t => {
 	t.equal(node.servers.size, 0, 'Expected servers to be zero, as it has not connected.');
 });
 
-test('Basic Server', async t => {
+test('Basic Server', { timeout: 5000 }, async t => {
 	t.plan(12);
 
 	const node = new Node('Server');
@@ -57,7 +57,7 @@ test('Basic Server', async t => {
 	t.equal(node.server, null, 'The server should be null as it has disconnected.');
 });
 
-test('Basic Socket', async t => {
+test('Basic Socket', { timeout: 5000 }, async t => {
 	t.plan(19);
 
 	const nodeServer = new Node('Server');
@@ -110,7 +110,7 @@ test('Basic Socket', async t => {
 	}
 });
 
-test('Socket Unknown Server Disconnection (Invalid)', async t => {
+test('Socket Unknown Server Disconnection (Invalid)', { timeout: 5000 }, async t => {
 	t.plan(1);
 
 	const nodeSocket = new Node('Socket');
@@ -122,7 +122,7 @@ test('Socket Unknown Server Disconnection (Invalid)', async t => {
 	}
 });
 
-test('Socket Events', async t => {
+test('Socket Events', { timeout: 5000 }, async t => {
 	t.plan(24);
 
 	const nodeServer = new Node('Server');
@@ -180,7 +180,7 @@ test('Socket Events', async t => {
 
 // TODO(kyranet): Add `client.*` and `server.*` event tests.
 
-test('Socket Double Disconnection', async t => {
+test('Socket Double Disconnection', { timeout: 5000 }, async t => {
 	t.plan(2);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 	const server = nodeSocket.get('Server')!;
@@ -199,7 +199,7 @@ test('Socket Double Disconnection', async t => {
 	}
 });
 
-test('Server Double Disconnection', async t => {
+test('Server Double Disconnection', { timeout: 5000 }, async t => {
 	t.plan(2);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 	const server = nodeServer.server!;
@@ -218,7 +218,7 @@ test('Server Double Disconnection', async t => {
 	}
 });
 
-test('Socket Connection Retries', async t => {
+test('Socket Connection Retries', { timeout: 7500 }, async t => {
 	t.plan(4);
 	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: 3, retryTime: 0 });
 	nodeServer.server!.disconnect();
@@ -232,17 +232,55 @@ test('Socket Connection Retries', async t => {
 	});
 });
 
-test('Socket Connection Retries (Successful Reconnect)', async t => {
-	t.plan(1);
-	t.pass();
+test('Socket Connection Retries (Successful Reconnect)', { timeout: 7500 }, async t => {
+	t.plan(4);
+	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: 3, retryTime: 200 });
+	nodeServer.server!.disconnect();
+
+	nodeSocket.once('socket.connecting', () => {
+		t.pass('Reconnecting event fired.');
+		next();
+	});
+
+	async function next() {
+		nodeSocket
+			.once('socket.connect', () => t.pass('Socket fired connect'))
+			.once('socket.ready', () => t.pass('Socket fired Ready'));
+		await nodeServer.serve(port);
+		await new Promise(resolve => {
+			nodeServer.once('client.ready', resolve);
+		});
+		t.pass('Successfully reconnected the server.');
+
+		try {
+			nodeServer.server!.disconnect();
+			nodeSocket.disconnectFrom('Server');
+		} catch {
+			t.fail('Disconnection should not error.');
+		}
+	}
 });
 
-test('Socket Connection Retries (Abrupt Close)', async t => {
-	t.plan(1);
-	t.pass();
+test('Socket Connection Retries (Abrupt Close)', { timeout: 7500 }, async t => {
+	t.plan(3);
+	const [nodeServer, nodeSocket] = await setup(t, ++port, undefined, { maxRetries: Infinity, retryTime: 200 });
+	nodeServer.server!.disconnect();
+
+	let firedConnecting = false;
+	nodeSocket.on('socket.connecting', () => {
+		t.false(firedConnecting, 'This should fire only once.');
+		firedConnecting = true;
+		t.true(nodeSocket.disconnectFrom('Server'), 'Disconnection should be successful.');
+	});
+
+	let firedDestroy = false;
+	nodeSocket.on('socket.destroy', () => {
+		t.false(firedDestroy, 'The socket has been destroyed.');
+		firedDestroy = true;
+	});
 });
 
-test('NodeServer Socket Retrieval', async t => {
+test('NodeServer Socket Retrieval', { timeout: 5000 }, async t => {
 	t.plan(8);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 	const server = nodeServer.server!;
@@ -278,7 +316,7 @@ test('NodeServer Socket Retrieval', async t => {
 	}
 });
 
-test('Socket Message', async t => {
+test('Socket Message', { timeout: 5000 }, async t => {
 	t.plan(15);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
@@ -345,7 +383,7 @@ test('Socket Message', async t => {
 	}
 });
 
-test('Socket Unknown Server Message Sending (Invalid)', async t => {
+test('Socket Unknown Server Message Sending (Invalid)', { timeout: 5000 }, async t => {
 	t.plan(1);
 
 	const nodeSocket = new Node('Socket');
@@ -358,7 +396,7 @@ test('Socket Unknown Server Message Sending (Invalid)', async t => {
 	}
 });
 
-test('Server Messages', async t => {
+test('Server Messages', { timeout: 5000 }, async t => {
 	t.plan(5);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
@@ -392,7 +430,7 @@ test('Server Messages', async t => {
 	}
 });
 
-test('Socket Faulty Message', async t => {
+test('Socket Faulty Message', { timeout: 5000 }, async t => {
 	t.plan(3);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 	nodeServer.on('error', (error, socket) => {
@@ -419,7 +457,7 @@ test('Socket Faulty Message', async t => {
 	}
 });
 
-test('Server Faulty Message', async t => {
+test('Server Faulty Message', { timeout: 5000 }, async t => {
 	t.plan(3);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 	nodeSocket.on('error', (error, socket) => {
@@ -446,7 +484,7 @@ test('Server Faulty Message', async t => {
 	}
 });
 
-test('Socket Concurrent Messages', async t => {
+test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 	t.plan(6);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
@@ -473,7 +511,7 @@ test('Socket Concurrent Messages', async t => {
 	}
 });
 
-test('Message Broadcast', async t => {
+test('Message Broadcast', { timeout: 5000 }, async t => {
 	t.plan(9);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
@@ -518,7 +556,7 @@ test('Message Broadcast', async t => {
 	}
 });
 
-test('Message Timeout', async t => {
+test('Message Timeout', { timeout: 5000 }, async t => {
 	t.plan(5);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
@@ -564,7 +602,7 @@ test('Message Timeout', async t => {
 	}
 });
 
-test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async t => {
+test('Abrupt Disconnection (Disconnected Without Clearing Messages)', { timeout: 5000 }, async t => {
 	t.plan(3);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
 
@@ -589,7 +627,7 @@ test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async t =>
 	}
 });
 
-test('Duplicated Socket', async t => {
+test('Duplicated Socket', { timeout: 5000 }, async t => {
 	t.plan(1);
 	const [nodeServer, nodeSocketFirst] = await setup(t, ++port, undefined);
 	const nodeSocketSecond = new Node('Socket');
