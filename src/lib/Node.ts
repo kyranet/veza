@@ -19,6 +19,15 @@ export class Node extends EventEmitter {
 	public maxRetries: number;
 
 	/**
+	 * The time between connection retries
+	 */
+	public retryTime: number;
+
+	/**
+	 * The time in milliseconds for which handshakes should reject with a timeout if no data was received.
+	 */
+	public handshakeTimeout: number;
+	/**
 	 * The server for this Node, if serving
 	 */
 	public server!: NodeServer | null;
@@ -28,18 +37,15 @@ export class Node extends EventEmitter {
 	 */
 	public readonly servers!: Map<string, NodeSocket>;
 
-	/**
-	 * The time between connection retries
-	 */
-	public retryTime: number;
 
 	/**
 	 * @param name The name for this Node
 	 * @param options The options for this Node instance
 	 */
-	public constructor(name: string, { maxRetries = 0, retryTime = 200 }: NodeOptions = {}) {
+	public constructor(name: string, { handshakeTimeout = 10000, maxRetries = 0, retryTime = 200 }: NodeOptions = {}) {
 		super();
 		this.name = name;
+		this.handshakeTimeout = handshakeTimeout;
 		this.maxRetries = maxRetries;
 		this.retryTime = retryTime;
 		Object.defineProperties(this, {
@@ -473,6 +479,7 @@ interface ServerReadyEvent {
 }
 
 export interface NodeOptions {
+	handshakeTimeout?: number;
 	maxRetries?: number;
 	retryTime?: number;
 }

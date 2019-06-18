@@ -136,6 +136,17 @@ export class NodeSocket extends SocketHandler {
 		this.status = SocketStatus.Connected;
 		this.node.emit('socket.connect', this);
 		await new Promise((resolve, reject) => {
+			let timeout: NodeJS.Timeout;
+			if (this.node.handshakeTimeout !== -1 || this.node.handshakeTimeout !== Infinity) {
+				timeout = setTimeout(() => {
+					// eslint-disable-next-line @typescript-eslint/no-use-before-define
+					onError(new Error('Connection Timed Out.'));
+					this.socket!.destroy();
+					this.socket!.removeAllListeners();
+					this.socket = null;
+				}, this.node.handshakeTimeout);
+			}
+
 			const onData = (message: Uint8Array) => {
 				try {
 					const name = deserialize(message, 7);
@@ -163,6 +174,7 @@ export class NodeSocket extends SocketHandler {
 				this.socket!.off('data', onData);
 				this.socket!.off('close', onClose);
 				this.socket!.off('error', onError);
+				if (timeout) clearTimeout(timeout);
 				return value;
 			};
 

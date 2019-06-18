@@ -3,6 +3,8 @@ import { SocketStatus } from '../dist/lib/Util/Constants';
 import * as test from 'tape';
 import { Socket } from 'net';
 import { create } from '../dist/lib/Util/Header';
+import { get, createServer } from 'http';
+import { URL } from 'url';
 
 let port = 8000;
 
@@ -277,6 +279,61 @@ test('Socket Connection Retries (Abrupt Close)', { timeout: 7500 }, async t => {
 	nodeSocket.on('socket.destroy', () => {
 		t.false(firedDestroy, 'The socket has been destroyed.');
 		firedDestroy = true;
+	});
+});
+
+test('HTTP Socket', { timeout: 5000 }, async t => {
+	t.plan(3);
+	const nodeServer = new Node('Server');
+	await nodeServer.serve(++port);
+
+	nodeServer.on('error', error => {
+		t.true(error instanceof Error, 'The error thrown should be an instance of Error.');
+		t.equal(error.message, 'Failed to process message during connection, calling disconnect.',
+			'Should be an automatic disconnection error.');
+	});
+
+	try {
+		await new Promise((resolve, reject) => {
+			get(new URL(`http://localhost:${port}`), resolve)
+				.on('close', resolve)
+				.on('error', reject);
+		});
+		t.fail('This should not be called.');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error thrown should be an instance of Error.');
+	}
+
+	try {
+		nodeServer.server!.disconnect();
+	} catch {
+		t.fail('Disconnection should not error.');
+	}
+});
+
+test('HTTP Server', { timeout: 5000 }, async t => {
+	t.plan(5);
+	const nodeSocket = new Node('Socket', { handshakeTimeout: 250 });
+	const server = createServer(() => {
+		t.fail('This should not be called - in Veza, the server sends the message, and the socket replies.');
+	});
+	server
+		.on('connection', () => t.pass('A connection should be able to be made.'))
+		.on('close', () => t.pass('A connection should be closed.'));
+
+	await new Promise(resolve => server.listen(++port, resolve));
+
+	try {
+		await nodeSocket.connectTo(port);
+		t.fail('The connection should not be successful.');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error thrown should be an instance of Error.');
+		t.equal(error.message, 'Connection Timed Out.',
+			'Servers like HTTP ones do not send a message upon connection, so a server that does not send anything is expected to time out.');
+	}
+
+	server.close(error => {
+		t.equal(error, undefined, 'There should not be an error with closing the server.');
 	});
 });
 
