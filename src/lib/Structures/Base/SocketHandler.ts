@@ -54,7 +54,7 @@ export class SocketHandler extends Base {
 
 				const timer = timeout !== Infinity && timeout !== -1
 					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					? setTimeout(() => send(reject, true, new Error('TIMEOUT_ERROR')), timeout)
+					? setTimeout(() => send(reject, true, new Error('Timed out.')), timeout)
 					: null;
 				const send = (fn: Function, fromTimer: boolean, response: any) => {
 					if (timer && !fromTimer) clearTimeout(timer);
@@ -67,8 +67,11 @@ export class SocketHandler extends Base {
 					reject: send.bind(null, reject, false)
 				});
 			} catch (error) {
+				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
 				const entry = this.queue.get(id);
+				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
 				if (entry) entry.reject(error);
+				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
 				else reject(error);
 			}
 		});
@@ -133,6 +136,7 @@ export class SocketHandler extends Base {
 	protected _onData(data: Uint8Array) {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
+			/* istanbul ignore next: Hard to reproduce in Azure. */
 			if (processed === kInvalidMessage) {
 				this.node.emit('error', new Error('Failed to process message, destroying Socket.'), this);
 				this.disconnect();
