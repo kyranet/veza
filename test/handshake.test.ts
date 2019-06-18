@@ -223,7 +223,8 @@ test('NodeServer Socket Retrieval', async t => {
 		t.fail('This should not run, as the previous statement throws');
 	} catch (error) {
 		t.true(error instanceof TypeError, 'The error should be an instance of TypeError.');
-		t.equal(error.message, 'Expected a string, NodeServerClient, or Socket.', 'An invalid NodeServer#get returns a TypeError explaining the types.');
+		t.equal(error.message, 'Expected a string, NodeServerClient, or Socket.',
+			'An invalid NodeServer#get throws a TypeError explaining what was wrong.');
 	}
 
 	try {
@@ -376,7 +377,7 @@ test('Socket Concurrent Messages', { timeout: 5000 }, async t => {
 });
 
 test('Message Broadcast', { timeout: 5000 }, async t => {
-	t.plan(7);
+	t.plan(9);
 	const [nodeServer, nodeSocket] = await setup(t, 8008);
 
 	nodeSocket.once('message', message => {
@@ -390,16 +391,26 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
 		t.equal(response.length, 1, 'There is only one connected socket, therefore it should be an array with one value.');
 		t.equal(response[0], 'Bar', 'The socket responded with "Bar", therefore the first entry should be the same.');
-	} catch (e) {
+	} catch {
 		t.fail('Message broadcast failed');
 	}
 
 	try {
-		const response = await nodeServer.broadcast('Foo', { filter: /NothingMatches/, timeout: 250 });
+		const response = await nodeServer.broadcast('Foo', { filter: /NothingMatches/ });
 		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
 		t.equal(response.length, 0, 'There is only one connected socket, but the filter does not match any one.');
-	} catch (e) {
+	} catch {
 		t.fail('Message broadcast failed');
+	}
+
+	try {
+		// TypeScript ignoring since this is an assertion for JavaScript users
+		// @ts-ignore
+		await nodeServer.broadcast('Foo', { filter: 'HelloWorld' });
+	} catch (error) {
+		t.true(error instanceof TypeError, 'The error should be an instance of TypeError.');
+		t.equal(error.message, 'filter must be a RegExp instance.',
+			'An invalid Node#broadcast filter option throws a TypeError explaining what was wrong.');
 	}
 
 	try {
