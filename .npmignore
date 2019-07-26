@@ -27,6 +27,7 @@ docs/
 examples/
 test/
 static/
+.eslintignore
 .eslintrc.json
 .gitattributes
 .gitignore
