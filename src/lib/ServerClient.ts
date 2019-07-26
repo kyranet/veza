@@ -1,23 +1,19 @@
-import { SocketHandler } from './Base/SocketHandler';
-import { SocketStatus } from '../Util/Constants';
-import { NodeServer } from './NodeServer';
-import { Node } from '../Node';
+import { SocketHandler } from './Structures/Base/SocketHandler';
+import { SocketStatus } from './Util/Constants';
 import { Socket } from 'net';
+import { Server } from './Server';
 
-export class NodeServerClient extends SocketHandler {
+export class ServerClient extends SocketHandler {
 
-	public readonly server!: NodeServer;
+	public readonly server: Server;
 
-	public constructor(node: Node, server: NodeServer, socket: Socket) {
-		super(node, null, socket);
-		Object.defineProperties(this, {
-			server: { value: server }
-		});
+	public constructor(server: Server, socket: Socket) {
+		super(null, socket);
+		this.server = server;
 	}
 
 	public async setup() {
 		this.status = SocketStatus.Connected;
-		this.node.emit('client.connect', this);
 		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('error', this._onError.bind(this))
@@ -27,7 +23,6 @@ export class NodeServerClient extends SocketHandler {
 			const sName = await this.send(this.server.name);
 			this.status = SocketStatus.Ready;
 			this.name = sName;
-			this.node.emit('client.identify', this);
 
 			// Disconnect if a previous socket existed.
 			const existing = this.server.clients.get(sName);
@@ -37,7 +32,7 @@ export class NodeServerClient extends SocketHandler {
 
 			// Add this socket to the clients.
 			this.server.clients.set(sName, this);
-			this.node.emit('client.ready', this);
+			this.server.emit('connect', this);
 		} catch {
 			this.disconnect();
 		}
@@ -51,7 +46,6 @@ export class NodeServerClient extends SocketHandler {
 
 		if (this.name) {
 			this.server.clients.delete(this.name);
-			this.node.emit('client.destroy', this);
 		}
 
 		return true;
@@ -59,15 +53,13 @@ export class NodeServerClient extends SocketHandler {
 
 	private _onError(error: any) {
 		/* istanbul ignore next: Hard to reproduce in Azure. */
-		this.node.emit('error', error, this);
+		this.server.emit('error', error);
 	}
 
 	private _onClose() {
 		this.status = SocketStatus.Disconnected;
-		this.node.emit('client.disconnect', this);
+		this.server.emit('disconnect', this);
 		this.disconnect();
 	}
 
 }
-
-export default NodeServerClient;

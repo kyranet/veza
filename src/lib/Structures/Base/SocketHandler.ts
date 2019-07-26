@@ -24,8 +24,8 @@ export class SocketHandler extends Base {
 	 */
 	public queue: Queue = new Queue(this);
 
-	public constructor(node: Node, name: string | null, socket: Socket | null) {
-		super(node, name);
+	public constructor(name: string | null, socket: Socket | null) {
+		super(name);
 		this.socket = socket;
 	}
 
@@ -36,9 +36,7 @@ export class SocketHandler extends Base {
 	 */
 	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}): Promise<any> {
 		if (!this.socket) {
-			return Promise.reject(
-				new Error('This NodeSocket is not connected to a socket.')
-			);
+			return Promise.reject(new Error('This NodeSocket is not connected to a socket.'));
 		}
 
 		return new Promise((resolve, reject) => {
@@ -100,7 +98,7 @@ export class SocketHandler extends Base {
 	}
 
 	protected _onData(data: Uint8Array) {
-		this.node.emit('raw', this, data);
+		this.server.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
 			if (processed === kInvalidMessage) {
 				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */

@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { NodeSocket } from './Structures/NodeSocket';
 import { NodeServer } from './Structures/NodeServer';
-import { NodeServerClient } from './Structures/NodeServerClient';
+import { NodeServerClient } from './ServerClient';
 import { NodeMessage } from './Structures/NodeMessage';
 import { ListenOptions, SocketConnectOpts, Socket } from 'net';
 import { SocketHandler } from './Structures/Base/SocketHandler';
@@ -97,38 +97,6 @@ export class Node extends EventEmitter {
 	}
 
 	/**
-	 * Broadcast a message to all connected sockets from this server
-	 * @param data The data to send to other sockets
-	 * @param options The options for this broadcast
-	 */
-	public broadcast(data: any, options: BroadcastOptions = {}) {
-		return this.server
-			? this.server.broadcast(data, options)
-			: Promise.resolve([]);
-	}
-
-	/**
-	 * Create a server for this Node instance.
-	 * @param options The options to pass to net.Server#listen
-	 */
-	public async serve(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): Promise<this>;
-	public async serve(port?: number, hostname?: string, listeningListener?: () => void): Promise<this>;
-	public async serve(port?: number, backlog?: number, listeningListener?: () => void): Promise<this>;
-	public async serve(port?: number, listeningListener?: () => void): Promise<this>;
-	public async serve(path: string, backlog?: number, listeningListener?: () => void): Promise<this>;
-	public async serve(path: string, listeningListener?: () => void): Promise<this>;
-	public async serve(options: ListenOptions, listeningListener?: () => void): Promise<this>;
-	public async serve(handle: any, backlog?: number, listeningListener?: () => void): Promise<this>;
-	public async serve(handle: any, listeningListener?: () => void): Promise<this>;
-	public async serve(...options: any[]): Promise<this> {
-		if (this.server) throw new Error('There is already a server.');
-
-		this.server = new NodeServer(this);
-		await this.server.connect(...options);
-		return this;
-	}
-
-	/**
 	 * Get a socket by its name
 	 * @param name The name of the socket
 	 */
@@ -143,7 +111,7 @@ export interface Node {
 	/**
 	 * Emitted when connecting
 	 */
-	on(event: 'socket.connecting', listener: SocketConnectingEvent): boolean;
+	on(event: 'socket.connecting', listener: SocketConnectingEvent): this;
 	/**
 	 * Emitted on a successful connection to a Socket.
 	 */
@@ -192,14 +160,6 @@ export interface Node {
 	 * Emitted when a Node receives a message.
 	 */
 	on(event: 'raw', listener: RawEvent): this;
-	/**
-	 * Emitted when a server destroys.
-	 */
-	on(event: 'server.destroy', listener: ServerDestroyEvent): this;
-	/**
-	 * Emitted when a server is ready.
-	 */
-	on(event: 'server.ready', listener: ServerReadyEvent): this;
 
 	/**
 	 * Emitted when connecting
@@ -471,12 +431,7 @@ interface ServerDestroyEvent {
 	 */
 	(server: NodeServer): unknown;
 }
-interface ServerReadyEvent {
-	/**
-	 * @param server The server that has turned ready
-	 */
-	(server: NodeServer): unknown;
-}
+
 
 export interface NodeOptions {
 	handshakeTimeout?: number;

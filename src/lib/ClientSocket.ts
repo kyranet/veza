@@ -1,18 +1,19 @@
-import { SocketHandler } from './Base/SocketHandler';
-import { SocketStatus } from '../Util/Constants';
+import { SocketHandler } from './Structures/Base/SocketHandler';
+import { SocketStatus } from './Util/Constants';
 import { Socket, SocketConnectOpts } from 'net';
-import { Node } from '../Node';
 import { deserialize, serialize } from 'binarytf';
-import { createFromID, readID } from '../Util/Header';
+import { createFromID, readID } from './Util/Header';
+import { Client } from './Client';
 
-export class NodeSocket extends SocketHandler {
+class ClientSocket extends SocketHandler {
 
+	private maximumRetries: number;
 	private retriesRemaining: number;
-	private _reconnectionTimeout!: NodeJS.Timer | null;
+	private reconnectionTimeout!: NodeJS.Timer | null;
 
-	public constructor(node: Node, name: string | null, socket = null) {
-		super(node, name, socket);
-		this.retriesRemaining = node.maxRetries === -1 ? Infinity : node.maxRetries;
+	public constructor(client: Client, name: string | null) {
+		super(name, socket);
+		this._retriesRemaining = node.maxRetries === -1 ? Infinity : node.maxRetries;
 
 		Object.defineProperties(this, {
 			_reconnectionTimeout: { value: null, writable: true }
@@ -20,7 +21,7 @@ export class NodeSocket extends SocketHandler {
 	}
 
 	private get canReconnect() {
-		return this.node.retryTime !== -1 && this.retriesRemaining > 0;
+		return this.node.retryTime !== -1 && this._retriesRemaining > 0;
 	}
 
 	/**
@@ -64,7 +65,7 @@ export class NodeSocket extends SocketHandler {
 	}
 
 	private _onConnect() {
-		this.retriesRemaining = this.node.maxRetries;
+		this._retriesRemaining = this.node.maxRetries;
 		/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 		if (this._reconnectionTimeout) {
 			clearTimeout(this._reconnectionTimeout);
@@ -80,7 +81,7 @@ export class NodeSocket extends SocketHandler {
 			this._reconnectionTimeout = setTimeout(async () => {
 				/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 				if (this.socket) {
-					--this.retriesRemaining;
+					--this._retriesRemaining;
 					try {
 						const { name } = this;
 						await this._connect(...options);
@@ -202,3 +203,5 @@ export class NodeSocket extends SocketHandler {
 	}
 
 }
+
+export { ClientSocket as Socket };
