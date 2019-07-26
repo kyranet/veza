@@ -10,8 +10,8 @@ const TIMES = 10000;
 
 const node = new Node('concurrent')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
-	.on('client.disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
-	.on('client.ready', async client => {
+	.on('socket.disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('socket.ready', async client => {
 		console.log(`[IPC] Connected to: ${client.name}`);
 		console.log(`[IPC] Attempting to send and receive ${TIMES} messages...`);
 		let failed = 0;
@@ -39,5 +39,5 @@ const node = new Node('concurrent')
 	});
 
 // Connect to hello
-node.connectTo('hello', 8001)
+node.connectTo(8001)
 	.catch(error => console.error('[IPC] Disconnected!', error));

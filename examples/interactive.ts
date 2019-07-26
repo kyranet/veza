@@ -5,8 +5,8 @@ import { Node } from '../src/index';
 
 const node = new Node('interactive')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
-	.on('client.disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
-	.on('client.ready', client => console.log(`[IPC] Connected to: ${client.name}`))
+	.on('socket.disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('socket.ready', client => console.log(`[IPC] Connected to: ${client.name}`))
 	.on('message', message => {
 		console.log(`Received data from ${message.client.name}:`, message);
 		if (message.data === 'Hello') {
@@ -16,7 +16,7 @@ const node = new Node('interactive')
 	});
 
 // Connect to hello
-node.connectTo('hello', 8001)
+node.connectTo(8001)
 	.catch(() => console.log('Disconnected!'));
 
 import { createInterface } from 'readline';
