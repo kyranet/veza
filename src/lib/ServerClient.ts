@@ -1,7 +1,8 @@
-import { SocketHandler } from './Structures/Base/SocketHandler';
+import { SocketHandler, RawMessage } from './Structures/Base/SocketHandler';
 import { SocketStatus } from './Util/Constants';
 import { Socket } from 'net';
 import { Server } from './Server';
+import { NodeMessage } from './Structures/NodeMessage';
 
 export class ServerClient extends SocketHandler {
 
@@ -21,6 +22,11 @@ export class ServerClient extends SocketHandler {
 
 		try {
 			const sName = await this.send(this.server.name);
+
+			// sName must never be anything that is not a string
+			if (typeof sName !== 'string') {
+				return this.disconnect();
+			}
 			this.status = SocketStatus.Ready;
 			this.name = sName;
 
@@ -49,6 +55,16 @@ export class ServerClient extends SocketHandler {
 		}
 
 		return true;
+	}
+
+	protected _onData(data: Uint8Array) {
+		console.log(data);
+		// TODO(kyranet): Finish this
+	}
+
+	protected _handleMessage(message: RawMessage): NodeMessage | null {
+		console.log(message);
+		return null;
 	}
 
 	private _onError(error: any) {

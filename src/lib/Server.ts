@@ -1,6 +1,6 @@
 import { Server, Socket, ListenOptions } from 'net';
 import { ServerClient } from './ServerClient';
-import { BroadcastOptions, SendOptions } from './Node';
+import { BroadcastOptions, SendOptions } from './Util/Shared';
 import { EventEmitter } from 'events';
 
 class NodeServer extends EventEmitter {
@@ -36,6 +36,19 @@ class NodeServer extends EventEmitter {
 	}
 
 	/**
+	 * Send a message to a connected socket
+	 * @param name The label name of the socket to send the message to
+	 * @param data The data to send to the socket
+	 * @param options The options for this message
+	 */
+	public sendTo(name: string | ServerClient, data: any, options?: SendOptions): Promise<any> {
+		const nodeSocket = this.get(name);
+		return nodeSocket
+			? nodeSocket.send(data, options)
+			: Promise.reject(new Error('Failed to send to the socket: It is not connected to this server.'));
+	}
+
+	/**
 	 * Broadcast a message to all connected sockets from this server
 	 * @param data The data to send to other sockets
 	 * @param options The options for this broadcast
@@ -54,32 +67,19 @@ class NodeServer extends EventEmitter {
 	}
 
 	/**
-	 * Send a message to a connected socket
-	 * @param name The label name of the socket to send the message to
-	 * @param data The data to send to the socket
-	 * @param options The options for this message
-	 */
-	public sendTo(name: string | ServerClient, data: any, options?: SendOptions): Promise<any> {
-		const nodeSocket = this.get(name);
-		return nodeSocket
-			? nodeSocket.send(data, options)
-			: Promise.reject(new Error('Failed to send to the socket: It is not connected to this Node.'));
-	}
-
-	/**
 	 * Create a server for this Node instance.
 	 * @param options The options to pass to net.Server#listen
 	 */
-	public async connect(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): Promise<void>;
-	public async connect(port?: number, hostname?: string, listeningListener?: () => void): Promise<void>;
-	public async connect(port?: number, backlog?: number, listeningListener?: () => void): Promise<void>;
-	public async connect(port?: number, listeningListener?: () => void): Promise<void>;
-	public async connect(path: string, backlog?: number, listeningListener?: () => void): Promise<void>;
-	public async connect(path: string, listeningListener?: () => void): Promise<void>;
-	public async connect(options: ListenOptions, listeningListener?: () => void): Promise<void>;
-	public async connect(handle: any, backlog?: number, listeningListener?: () => void): Promise<void>;
-	public async connect(handle: any, listeningListener?: () => void): Promise<void>;
-	public async connect(...options: any[]): Promise<void> {
+	public async open(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): Promise<void>;
+	public async open(port?: number, hostname?: string, listeningListener?: () => void): Promise<void>;
+	public async open(port?: number, backlog?: number, listeningListener?: () => void): Promise<void>;
+	public async open(port?: number, listeningListener?: () => void): Promise<void>;
+	public async open(path: string, backlog?: number, listeningListener?: () => void): Promise<void>;
+	public async open(path: string, listeningListener?: () => void): Promise<void>;
+	public async open(options: ListenOptions, listeningListener?: () => void): Promise<void>;
+	public async open(handle: any, backlog?: number, listeningListener?: () => void): Promise<void>;
+	public async open(handle: any, listeningListener?: () => void): Promise<void>;
+	public async open(...options: any[]): Promise<void> {
 		await new Promise((resolve, reject) => {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			const onListening = () => resolve(cleanup(this));
@@ -112,7 +112,7 @@ class NodeServer extends EventEmitter {
 	/**
 	 * Disconnect the server and rejects all current messages
 	 */
-	public disconnect(): boolean {
+	public close(): boolean {
 		this.server.close();
 		this.emit('close');
 		for (const socket of this.clients.values()) {
@@ -132,7 +132,7 @@ class NodeServer extends EventEmitter {
 	}
 
 	private _onClose() {
-		this.disconnect();
+		this.close();
 	}
 
 }

@@ -1,13 +1,14 @@
-import { kInvalidMessage, SocketStatus } from '../../Util/Constants';
+import { SocketStatus } from '../../Util/Constants';
 import { NodeMessage } from '../NodeMessage';
 import { Queue } from '../Queue';
-import { Base } from './Base';
-import { Node, SendOptions } from '../../Node';
 import { Socket } from 'net';
 import { create, read } from '../../Util/Header';
 import { serialize } from 'binarytf';
+import { SendOptions } from '../../Util/Shared';
 
-export class SocketHandler extends Base {
+export abstract class SocketHandler {
+
+	public name: string | null;
 
 	/**
 	 * The socket that connects Veza to the network
@@ -17,15 +18,15 @@ export class SocketHandler extends Base {
 	/**
 	 * The status of this client
 	 */
-	public status: SocketStatus = SocketStatus.Connecting;
+	public status = SocketStatus.Connecting;
 
 	/**
 	 * The incoming message queue for this handler
 	 */
-	public queue: Queue = new Queue(this);
+	public queue = new Queue();
 
 	public constructor(name: string | null, socket: Socket | null) {
-		super(name);
+		this.name = name;
 		this.socket = socket;
 	}
 
@@ -34,7 +35,7 @@ export class SocketHandler extends Base {
 	 * @param data The data to send to the socket
 	 * @param options The options for this message
 	 */
-	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}): Promise<any> {
+	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}) {
 		if (!this.socket) {
 			return Promise.reject(new Error('This NodeSocket is not connected to a socket.'));
 		}
@@ -97,38 +98,40 @@ export class SocketHandler extends Base {
 		return true;
 	}
 
-	protected _onData(data: Uint8Array) {
-		this.server.emit('raw', this, data);
-		for (const processed of this.queue.process(data)) {
-			if (processed === kInvalidMessage) {
-				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
-				if (this.status === SocketStatus.Ready) {
-					this.node.emit('error', new Error('Failed to process message.'), this);
-				} else {
-					this.node.emit('error', new Error('Failed to process message during connection, calling disconnect.'), this);
-					this.disconnect();
-				}
-			} else {
-				const message = this._handleMessage(processed);
-				if (message) this.node.emit('message', message);
-			}
-		}
-	}
+	protected abstract _onData(data: Uint8Array): void;
+	// protected _onData(data: Uint8Array) {
+	// 	this.server.emit('raw', this, data);
+	// 	for (const processed of this.queue.process(data)) {
+	// 		if (processed === kInvalidMessage) {
+	// 			/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
+	// 			if (this.status === SocketStatus.Ready) {
+	// 				this.node.emit('error', new Error('Failed to process message.'), this);
+	// 			} else {
+	// 				this.node.emit('error', new Error('Failed to process message during connection, calling disconnect.'), this);
+	// 				this.disconnect();
+	// 			}
+	// 		} else {
+	// 			const message = this._handleMessage(processed);
+	// 			if (message) this.node.emit('message', message);
+	// 		}
+	// 	}
+	// }
 
-	protected _handleMessage({ id, receptive, data }: RawMessage) {
-		// Response message
-		const queueData = this.queue.get(id);
-		if (queueData) {
-			queueData.resolve(data);
-			return null;
-		}
+	protected abstract _handleMessage(message: RawMessage): NodeMessage | null;
+	// protected _handleMessage({ id, receptive, data }: RawMessage) {
+	// 	// Response message
+	// 	const queueData = this.queue.get(id);
+	// 	if (queueData) {
+	// 		queueData.resolve(data);
+	// 		return null;
+	// 	}
 
-		return new NodeMessage(this, id, receptive, data).freeze();
-	}
+	// 	return new NodeMessage(this, id, receptive, data).freeze();
+	// }
 
 }
 
-interface RawMessage {
+export interface RawMessage {
 	id: number;
 	receptive: boolean;
 	data: any;

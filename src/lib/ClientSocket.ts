@@ -1,19 +1,21 @@
-import { SocketHandler } from './Structures/Base/SocketHandler';
+import { SocketHandler, RawMessage } from './Structures/Base/SocketHandler';
 import { SocketStatus } from './Util/Constants';
 import { Socket, SocketConnectOpts } from 'net';
 import { deserialize, serialize } from 'binarytf';
 import { createFromID, readID } from './Util/Header';
 import { Client } from './Client';
+import { NodeMessage } from './Structures/NodeMessage';
 
-class ClientSocket extends SocketHandler {
+export class ClientSocket extends SocketHandler {
 
-	private maximumRetries: number;
-	private retriesRemaining: number;
-	private reconnectionTimeout!: NodeJS.Timer | null;
+	public readonly client: Client;
+	public retriesRemaining: number;
+	private _reconnectionTimeout!: NodeJS.Timer | null;
 
 	public constructor(client: Client, name: string | null) {
-		super(name, socket);
-		this._retriesRemaining = node.maxRetries === -1 ? Infinity : node.maxRetries;
+		super(name, null);
+		this.client = client;
+		this.retriesRemaining = client.maximumRetries === -1 ? Infinity : client.maximumRetries;
 
 		Object.defineProperties(this, {
 			_reconnectionTimeout: { value: null, writable: true }
@@ -21,7 +23,7 @@ class ClientSocket extends SocketHandler {
 	}
 
 	private get canReconnect() {
-		return this.node.retryTime !== -1 && this._retriesRemaining > 0;
+		return this.client.retryTime !== -1 && this.retriesRemaining > 0;
 	}
 
 	/**
@@ -36,9 +38,9 @@ class ClientSocket extends SocketHandler {
 		await this._connect(...options);
 		await this._handshake();
 
-		this.node.servers.set(this.name!, this);
+		this.client.servers.set(this.name!, this);
 		this.status = SocketStatus.Ready;
-		this.node.emit('socket.ready', this);
+		this.client.emit('socket.ready', this);
 		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('connect', this._onConnect.bind(this))
@@ -59,19 +61,29 @@ class ClientSocket extends SocketHandler {
 			this._reconnectionTimeout = null;
 		}
 
-		this.node.servers.delete(this.name!);
-		this.node.emit('socket.destroy', this);
+		this.client.servers.delete(this.name!);
+		this.client.emit('socket.destroy', this);
 		return true;
 	}
 
+	protected _onData(data: Uint8Array) {
+		console.log(data);
+		// TODO(kyranet): Finish this
+	}
+
+	protected _handleMessage(message: RawMessage): NodeMessage | null {
+		console.log(message);
+		return null;
+	}
+
 	private _onConnect() {
-		this._retriesRemaining = this.node.maxRetries;
+		this.retriesRemaining = this.client.maximumRetries;
 		/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 		if (this._reconnectionTimeout) {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
 		}
-		this.node.emit('socket.connect', this);
+		this.client.emit('socket.connect', this);
 	}
 
 	private _onClose(...options: any[]) {
@@ -81,23 +93,23 @@ class ClientSocket extends SocketHandler {
 			this._reconnectionTimeout = setTimeout(async () => {
 				/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 				if (this.socket) {
-					--this._retriesRemaining;
+					--this.retriesRemaining;
 					try {
 						const { name } = this;
 						await this._connect(...options);
 						await this._handshake();
 
 						// If the server was renamed, we might want to delete the previous name
-						if (name && name !== this.name) this.node.servers.delete(name);
-						this.node.servers.set(this.name!, this);
+						if (name && name !== this.name) this.client.servers.delete(name);
+						this.client.servers.set(this.name!, this);
 						this.status = SocketStatus.Ready;
-						this.node.emit('socket.ready', this);
+						this.client.emit('socket.ready', this);
 					} catch {}
 				}
-			}, this.node.retryTime);
+			}, this.client.retryTime);
 		} else if (this.status !== SocketStatus.Disconnected) {
 			this.status = SocketStatus.Disconnected;
-			this.node.emit('socket.disconnect', this);
+			this.client.emit('socket.disconnect', this);
 		}
 	}
 
@@ -107,9 +119,9 @@ class ClientSocket extends SocketHandler {
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
 			if (this.status !== SocketStatus.Disconnected) return;
 			this.status = SocketStatus.Disconnected;
-			this.node.emit('socket.disconnect', this);
+			this.client.emit('socket.disconnect', this);
 		} else {
-			this.node.emit('error', error, this);
+			this.client.emit('error', error, this);
 		}
 	}
 
@@ -140,17 +152,17 @@ class ClientSocket extends SocketHandler {
 
 	private async _handshake() {
 		this.status = SocketStatus.Connected;
-		this.node.emit('socket.connect', this);
+		this.client.emit('socket.connect', this);
 		await new Promise((resolve, reject) => {
 			let timeout: NodeJS.Timeout;
-			if (this.node.handshakeTimeout !== -1) {
+			if (this.client.handshakeTimeout !== -1) {
 				timeout = setTimeout(() => {
 					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					onError(new Error('Connection Timed Out.'));
 					this.socket!.destroy();
 					this.socket!.removeAllListeners();
 					this.socket = null;
-				}, this.node.handshakeTimeout);
+				}, this.client.handshakeTimeout);
 			}
 
 			const onData = (message: Uint8Array) => {
@@ -161,7 +173,7 @@ class ClientSocket extends SocketHandler {
 
 						// Reply with the name of the node, using the header id and concatenating with the
 						// serialized name afterwards.
-						this.socket!.write(createFromID(readID(message), false, serialize(this.node.name)));
+						this.socket!.write(createFromID(readID(message), false, serialize(this.client.name)));
 						// eslint-disable-next-line @typescript-eslint/no-use-before-define
 						return resolve(cleanup());
 					}
@@ -193,7 +205,7 @@ class ClientSocket extends SocketHandler {
 
 	private _attemptConnection(...options: any[]) {
 		this.status = SocketStatus.Connecting;
-		this.node.emit('socket.connecting', this);
+		this.client.emit('socket.connecting', this);
 
 		// It can happen that the user disconnects in the socket.connecting event, so we safe-guard this.
 		if (this.socket) {
@@ -203,5 +215,3 @@ class ClientSocket extends SocketHandler {
 	}
 
 }
-
-export { ClientSocket as Socket };
