@@ -510,7 +510,7 @@ test('HTTP Server (Malicious Forged Handshake)', { timeout: 5000 }, async t => {
 			const serialized = serialize(420);
 			const message = new Uint8Array(11 + serialized.byteLength);
 			message[6] = 1;
-			message.set(serialized, 7);
+			message.set(serialized, 11);
 			socket.write(message);
 		});
 
