@@ -49,3 +49,10 @@ jobs:
           codeCoverageTool: 'cobertura'
           summaryFileLocation: $(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml
         displayName: 'Publish Coverage Results'
+  - template: docs.yml@templates
+    parameters:
+      ghRef: 'github.com/kyranet/veza'
+      targetBranch: 'gh-pages'
+      masterOnly: 'true'
+      dependsOn:
+        - Build
