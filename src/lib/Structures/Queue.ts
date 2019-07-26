@@ -38,14 +38,21 @@ export class Queue extends Map<number, QueueEntry> {
 		while (buffer) {
 			// If the header separator was not found, it may be due to an impartial message
 			/* istanbul ignore next: This is hard to reproduce in Azure, it needs the buffer to overflow and split. */
-			if (buffer.length - this.offset <= 7) {
+			if (buffer.length - this.offset <= 11) {
 				this._rest = buffer;
 				break;
 			}
 
-			const { id, receptive } = read(buffer.subarray(this.offset, this.offset + 7));
+			const { id, receptive, byteLength } = read(buffer.subarray(this.offset, this.offset + 11));
+
+			// If the message is longer than it can read, buffer the content for later
+			if (byteLength > buffer.byteLength) {
+				this._rest = buffer;
+				break;
+			}
+
 			try {
-				const { value, offset } = deserializeWithMetadata(buffer, this.offset + 7);
+				const { value, offset } = deserializeWithMetadata(buffer, this.offset + 11);
 				if (offset === -1) {
 					this.offset = 0;
 					buffer = null;
