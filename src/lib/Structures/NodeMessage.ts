@@ -48,10 +48,7 @@ export class NodeMessage {
 	 */
 	public reply(content: unknown): void {
 		if (this.receptive) {
-			this.client.socket!.write(Buffer.concat([
-				createFromID(this.id, false),
-				serialize(content)
-			]));
+			this.client.socket!.write(createFromID(this.id, false, serialize(content)));
 		}
 	}
 

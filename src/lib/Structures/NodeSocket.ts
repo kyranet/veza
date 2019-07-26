@@ -3,6 +3,7 @@ import { SocketStatus } from '../Util/Constants';
 import { Socket, SocketConnectOpts } from 'net';
 import { Node } from '../Node';
 import { deserialize, serialize } from 'binarytf';
+import { createFromID, readID } from '../Util/Header';
 
 export class NodeSocket extends SocketHandler {
 
@@ -153,17 +154,13 @@ export class NodeSocket extends SocketHandler {
 
 			const onData = (message: Uint8Array) => {
 				try {
-					const name = deserialize(message, 7);
+					const name = deserialize(message, 11);
 					if (typeof name === 'string') {
 						this.name = name;
 
 						// Reply with the name of the node, using the header id and concatenating with the
 						// serialized name afterwards.
-						this.socket!.write(Buffer.concat([
-							message.subarray(0, 6),
-							new Uint8Array([0]),
-							serialize(this.node.name)
-						]));
+						this.socket!.write(createFromID(readID(message), false, serialize(this.node.name)));
 						// eslint-disable-next-line @typescript-eslint/no-use-before-define
 						return resolve(cleanup());
 					}

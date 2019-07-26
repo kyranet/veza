@@ -6,6 +6,7 @@ import { create } from '../dist/lib/Util/Header';
 import { get, createServer } from 'http';
 import { serialize } from 'binarytf';
 import { URL } from 'url';
+import { readFileSync } from 'fs';
 
 let port = 8000;
 
@@ -28,8 +29,8 @@ test('Basic Server', { timeout: 5000 }, async t => {
 	t.equal(node.server, null, 'The server should be null as this is not serving.');
 	try {
 		await node.serve(++port);
-	} catch {
-		t.fail('Server should not crash.');
+	} catch (error) {
+		t.error(error, 'Server should not crash.');
 	}
 
 	// Connected
@@ -69,8 +70,8 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 	// Open server
 	try {
 		await nodeServer.serve(++port);
-	} catch {
-		t.fail('Server should not crash.');
+	} catch (error) {
+		t.error(error, 'Server should not crash.');
 	}
 
 	try {
@@ -98,8 +99,8 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 		t.equal(mySocket.status, SocketStatus.Ready, 'The socket should have a status of ready.');
 		t.equal(nodeServer.get('Socket'), mySocket, 'Node#get should return the same instance.');
 		t.equal(nodeServer.get(mySocket), mySocket, 'When passing a NodeSocket, Node#get should return it.');
-	} catch {
-		t.fail('This port should always exist.');
+	} catch (error) {
+		t.error(error, 'Connection should not error.');
 	}
 
 	t.equal(nodeServer.get('Unknown'), null, 'Node#get should return null on unknown nodes.');
@@ -108,8 +109,8 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 	try {
 		t.true(nodeServer.server!.disconnect(), 'Successful disconnections should return true.');
 		t.true(nodeSocket.disconnectFrom('Server'), 'Successful disconnections should return true.');
-	} catch {
-		t.fail('Disconnection should not error.');
+	} catch (error) {
+		t.error(error, 'Disconnection should not error.');
 	}
 });
 
@@ -275,8 +276,8 @@ test('Socket Double Disconnection', { timeout: 5000 }, async t => {
 	try {
 		t.true(server.disconnect(), 'Successful disconnections should return true.');
 		t.false(server.disconnect(), 'A repeated disconnection should return false.');
-	} catch {
-		t.fail('Disconnections from NodeSocket should never throw an error.');
+	} catch (error) {
+		t.error(error, 'Disconnections from NodeSocket should never throw an error.');
 	}
 
 	nodeServer.server!.disconnect();
@@ -290,14 +291,14 @@ test('Server Double Disconnection', { timeout: 5000 }, async t => {
 	try {
 		t.true(server.disconnect(), 'Successful disconnections should return true.');
 		t.false(server.disconnect(), 'A repeated disconnection should return false.');
-	} catch {
-		t.fail('Disconnections from NodeSocket should never throw an error.');
+	} catch (error) {
+		t.error(error, 'Disconnections from NodeSocket should never throw an error.');
 	}
 
 	try {
 		nodeSocket.disconnectFrom('Server');
-	} catch {
-		t.fail('Disconnection should not error.');
+	} catch (error) {
+		t.error(error, 'Disconnection should not error.');
 	}
 });
 
@@ -423,15 +424,9 @@ test('Server Connection Close', { timeout: 5000 }, async t => {
 });
 
 test('HTTP Socket', { timeout: 5000 }, async t => {
-	t.plan(3);
+	t.plan(1);
 	const nodeServer = new Node('Server');
 	await nodeServer.serve(++port);
-
-	nodeServer.on('error', error => {
-		t.true(error instanceof Error, 'The error thrown should be an instance of Error.');
-		t.equal(error.message, 'Failed to process message during connection, calling disconnect.',
-			'Should be an automatic disconnection error.');
-	});
 
 	try {
 		await new Promise((resolve, reject) => {
@@ -512,10 +507,11 @@ test('HTTP Server (Malicious Forged Handshake)', { timeout: 5000 }, async t => {
 		.on('close', () => t.pass('A connection should be closed.'))
 		.on('connection', socket => {
 			t.pass('A connection should be able to be made.');
-			socket.write(Buffer.concat([
-				new Uint8Array([0, 0, 0, 0, 0, 0, 1]),
-				serialize(420)
-			]));
+			const serialized = serialize(420);
+			const message = new Uint8Array(11 + serialized.byteLength);
+			message[6] = 1;
+			message.set(serialized, 11);
+			socket.write(message);
 		});
 
 	await new Promise(resolve => server.listen(++port, resolve));
@@ -655,8 +651,81 @@ test('Server Messages', { timeout: 5000 }, async t => {
 	try {
 		const response = await nodeServer.server!.sendTo('Socket', 'Foo', { timeout: 250 });
 		t.equal(response, 'Bar');
-	} catch {
-		t.fail('This should not fail.');
+	} catch (error) {
+		t.error(error, 'This should not fail.');
+	}
+
+	try {
+		await nodeServer.server!.sendTo('Unknown', 'Hello');
+		t.fail('This should not run, as the previous statement throws');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'Failed to send to the socket: It is not connected to this Node.',
+			'Trying to send a message to an unknown socket sends this message.');
+	}
+
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
+});
+
+test('Server Message (Large Buffer)', { timeout: 5000 }, async t => {
+	t.plan(5);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	const buffer = readFileSync('./static/logo.png');
+
+	nodeSocket.on('message', message => {
+		t.equal(message.receptive, true, 'The message was sent as receptive.');
+		t.same(message.data, buffer, 'The message should match with the value.');
+		message.reply(message.data.byteLength);
+	});
+
+	try {
+		const response = await nodeServer.server!.sendTo('Socket', buffer, { timeout: 250 });
+		t.equal(response, buffer.byteLength);
+	} catch (error) {
+		t.error(error, 'This should not fail.');
+	}
+
+	try {
+		await nodeServer.server!.sendTo('Unknown', 'Hello');
+		t.fail('This should not run, as the previous statement throws');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'Failed to send to the socket: It is not connected to this Node.',
+			'Trying to send a message to an unknown socket sends this message.');
+	}
+
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
+});
+
+test('Server Message (Multiple Large Buffer)', { timeout: 5000 }, async t => {
+	t.plan(8);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	const bufferLogo = readFileSync('./static/logo.png');
+	const bufferTest = readFileSync('./test/test.png');
+
+	let receivedFirst = false;
+	nodeSocket.on('message', message => {
+		t.equal(message.receptive, true, 'The message was sent as receptive.');
+		if (receivedFirst) {
+			t.same(message.data, bufferTest, 'The message should match with the value.');
+		} else {
+			t.same(message.data, bufferLogo, 'The message should match with the value.');
+			receivedFirst = true;
+		}
+		message.reply(message.data.byteLength);
+	});
+
+	try {
+		const [responseLogo, responseTest] = await Promise.all([
+			nodeServer.server!.sendTo('Socket', bufferLogo, { timeout: 250 }),
+			nodeServer.server!.sendTo('Socket', bufferTest, { timeout: 250 })
+		]);
+		t.equal(responseLogo, bufferLogo.byteLength);
+		t.equal(responseTest, bufferTest.byteLength);
+	} catch (error) {
+		t.error(error, 'This should not fail.');
 	}
 
 	try {
@@ -684,10 +753,7 @@ test('Socket Faulty Message', { timeout: 5000 }, async t => {
 	});
 
 	// Send faulty message
-	nodeSocket.get('Server')!.socket!.write(Buffer.concat([
-		create(false),
-		new Uint8Array([0xFF, 0xFF])
-	]));
+	nodeSocket.get('Server')!.socket!.write(create(false, new Uint8Array([0xFF, 0xFF])));
 
 	function finish() {
 		nodeServer.server!.disconnect();
@@ -707,10 +773,7 @@ test('Server Faulty Message', { timeout: 5000 }, async t => {
 	});
 
 	// Send faulty message
-	nodeServer.get('Socket')!.socket!.write(Buffer.concat([
-		create(false),
-		new Uint8Array([0xFF, 0xFF])
-	]));
+	nodeServer.get('Socket')!.socket!.write(create(false, new Uint8Array([0xFF, 0xFF])));
 
 	function finish() {
 		nodeServer.server!.disconnect();
@@ -756,16 +819,16 @@ test('Message Broadcast', { timeout: 5000 }, async t => {
 		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
 		t.equal(response.length, 1, 'There is only one connected socket, therefore it should be an array with one value.');
 		t.equal(response[0], 'Bar', 'The socket responded with "Bar", therefore the first entry should be the same.');
-	} catch {
-		t.fail('Message broadcast failed');
+	} catch (error) {
+		t.error(error, 'Message broadcast failed');
 	}
 
 	try {
 		const response = await nodeServer.broadcast('Foo', { filter: /NothingMatches/ });
 		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
 		t.equal(response.length, 0, 'There is only one connected socket, but the filter does not match any one.');
-	} catch {
-		t.fail('Message broadcast failed');
+	} catch (error) {
+		t.error(error, 'Message broadcast failed');
 	}
 
 	try {
@@ -798,16 +861,16 @@ test('Message Broadcast (From Server)', { timeout: 5000 }, async t => {
 		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
 		t.equal(response.length, 1, 'There is only one connected socket, therefore it should be an array with one value.');
 		t.equal(response[0], 'Bar', 'The socket responded with "Bar", therefore the first entry should be the same.');
-	} catch {
-		t.fail('Message broadcast failed');
+	} catch (error) {
+		t.error(error, 'Message broadcast failed');
 	}
 
 	try {
 		const response = await server.broadcast('Foo', { filter: /NothingMatches/ });
 		t.true(Array.isArray(response), 'The response for a broadcast must always be an array.');
 		t.equal(response.length, 0, 'There is only one connected socket, but the filter does not match any one.');
-	} catch {
-		t.fail('Message broadcast failed');
+	} catch (error) {
+		t.error(error, 'Message broadcast failed');
 	}
 
 	try {
@@ -851,16 +914,16 @@ test('Message Timeout', { timeout: 5000 }, async t => {
 	try {
 		const response = await nodeSocket.sendTo('Server', 'Foo', { timeout: 250 });
 		t.equal(response, 'Bar', 'The server replied with "Bar", so this should be "Bar".');
-	} catch {
-		t.fail('The socket should not error.');
+	} catch (error) {
+		t.error(error, 'The socket should not error.');
 	}
 
 	try {
 		// Timeout -1 means no timeout
 		const response = await nodeSocket.sendTo('Server', 'Foo', { timeout: -1 });
 		t.equal(response, 'Bar', 'The server replied with "Bar", so this should be "Bar".');
-	} catch {
-		t.fail('The socket should not error.');
+	} catch (error) {
+		t.error(error, 'The socket should not error.');
 	}
 
 	nodeServer.server!.disconnect();

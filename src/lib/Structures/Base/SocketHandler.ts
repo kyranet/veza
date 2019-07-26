@@ -42,10 +42,12 @@ export class SocketHandler extends Base {
 		}
 
 		return new Promise((resolve, reject) => {
-			const header = create(receptive);
-			const { id } = read(header);
+			let id: number;
 			try {
-				this.socket!.write(Buffer.concat([header, serialize(data)]));
+				const serialized = serialize(data);
+				const message = create(receptive, serialized);
+				id = read(message).id;
+				this.socket!.write(message);
 
 				if (!receptive) {
 					resolve(undefined);
@@ -68,7 +70,7 @@ export class SocketHandler extends Base {
 				});
 			} catch (error) {
 				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
-				const entry = this.queue.get(id);
+				const entry = this.queue.get(id!);
 				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
 				if (entry) entry.reject(error);
 				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
@@ -101,6 +103,7 @@ export class SocketHandler extends Base {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
 			if (processed === kInvalidMessage) {
+				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
 				if (this.status === SocketStatus.Ready) {
 					this.node.emit('error', new Error('Failed to process message.'), this);
 				} else {
