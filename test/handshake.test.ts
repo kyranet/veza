@@ -6,6 +6,7 @@ import { create } from '../dist/lib/Util/Header';
 import { get, createServer } from 'http';
 import { serialize } from 'binarytf';
 import { URL } from 'url';
+import { readFileSync } from 'fs';
 
 let port = 8000;
 
@@ -649,6 +650,79 @@ test('Server Messages', { timeout: 5000 }, async t => {
 	try {
 		const response = await nodeServer.server!.sendTo('Socket', 'Foo', { timeout: 250 });
 		t.equal(response, 'Bar');
+	} catch (error) {
+		t.error(error, 'This should not fail.');
+	}
+
+	try {
+		await nodeServer.server!.sendTo('Unknown', 'Hello');
+		t.fail('This should not run, as the previous statement throws');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'Failed to send to the socket: It is not connected to this Node.',
+			'Trying to send a message to an unknown socket sends this message.');
+	}
+
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
+});
+
+test('Server Message (Large Buffer)', { timeout: 5000 }, async t => {
+	t.plan(5);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	const buffer = readFileSync('./static/logo.png');
+
+	nodeSocket.on('message', message => {
+		t.equal(message.receptive, true, 'The message was sent as receptive.');
+		t.same(message.data, buffer, 'The message should match with the value.');
+		message.reply(message.data.byteLength);
+	});
+
+	try {
+		const response = await nodeServer.server!.sendTo('Socket', buffer, { timeout: 250 });
+		t.equal(response, buffer.byteLength);
+	} catch (error) {
+		t.error(error, 'This should not fail.');
+	}
+
+	try {
+		await nodeServer.server!.sendTo('Unknown', 'Hello');
+		t.fail('This should not run, as the previous statement throws');
+	} catch (error) {
+		t.true(error instanceof Error, 'The error should be an instance of Error.');
+		t.equal(error.message, 'Failed to send to the socket: It is not connected to this Node.',
+			'Trying to send a message to an unknown socket sends this message.');
+	}
+
+	nodeServer.server!.disconnect();
+	nodeSocket.disconnectFrom('Server');
+});
+
+test('Server Message (Multiple Large Buffer)', { timeout: 5000 }, async t => {
+	t.plan(8);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	const bufferLogo = readFileSync('./static/logo.png');
+	const bufferTest = readFileSync('./test/test.png');
+
+	let receivedFirst = false;
+	nodeSocket.on('message', message => {
+		t.equal(message.receptive, true, 'The message was sent as receptive.');
+		if (receivedFirst) {
+			t.same(message.data, bufferTest, 'The message should match with the value.');
+		} else {
+			t.same(message.data, bufferLogo, 'The message should match with the value.');
+			receivedFirst = true;
+		}
+		message.reply(message.data.byteLength);
+	});
+
+	try {
+		const [responseLogo, responseTest] = await Promise.all([
+			nodeServer.server!.sendTo('Socket', bufferLogo, { timeout: 250 }),
+			nodeServer.server!.sendTo('Socket', bufferTest, { timeout: 250 })
+		]);
+		t.equal(responseLogo, bufferLogo.byteLength);
+		t.equal(responseTest, bufferTest.byteLength);
 	} catch (error) {
 		t.error(error, 'This should not fail.');
 	}
