@@ -103,6 +103,7 @@ export class SocketHandler extends Base {
 		this.node.emit('raw', this, data);
 		for (const processed of this.queue.process(data)) {
 			if (processed === kInvalidMessage) {
+				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
 				if (this.status === SocketStatus.Ready) {
 					this.node.emit('error', new Error('Failed to process message.'), this);
 				} else {

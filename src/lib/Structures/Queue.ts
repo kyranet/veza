@@ -29,7 +29,6 @@ export class Queue extends Map<number, QueueEntry> {
 	 * Returns a new Iterator object that parses each value for this queue.
 	 */
 	public *process(buffer: Uint8Array | null) {
-		/* istanbul ignore next: This is hard to reproduce in Azure, it needs the buffer to overflow and split. */
 		if (this._rest) {
 			buffer = Buffer.concat([this._rest, buffer!]);
 			this._rest = null;
@@ -37,7 +36,6 @@ export class Queue extends Map<number, QueueEntry> {
 
 		while (buffer) {
 			// If the header separator was not found, it may be due to an impartial message
-			/* istanbul ignore next: This is hard to reproduce in Azure, it needs the buffer to overflow and split. */
 			if (buffer.length - this.offset <= 11) {
 				this._rest = buffer;
 				break;
@@ -61,7 +59,6 @@ export class Queue extends Map<number, QueueEntry> {
 				}
 				yield { id, receptive, data: value };
 			} catch {
-				// TODO(kyranet): This should try buffer glues
 				this.offset = 0;
 				yield kInvalidMessage;
 				break;
