@@ -507,10 +507,11 @@ test('HTTP Server (Malicious Forged Handshake)', { timeout: 5000 }, async t => {
 		.on('close', () => t.pass('A connection should be closed.'))
 		.on('connection', socket => {
 			t.pass('A connection should be able to be made.');
-			socket.write(Buffer.concat([
-				new Uint8Array([0, 0, 0, 0, 0, 0, 1]),
-				serialize(420)
-			]));
+			const serialized = serialize(420);
+			const message = new Uint8Array(11 + serialized.byteLength);
+			message[6] = 1;
+			message.set(serialized, 7);
+			socket.write(message);
 		});
 
 	await new Promise(resolve => server.listen(++port, resolve));
