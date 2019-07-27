@@ -37,7 +37,7 @@ export abstract class SocketHandler {
 	 */
 	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}) {
 		if (!this.socket) {
-			return Promise.reject(new Error('This NodeSocket is not connected to a socket.'));
+			return Promise.reject(new Error('Cannot send a message to a missing socket.'));
 		}
 
 		return new Promise((resolve, reject) => {
@@ -98,36 +98,18 @@ export abstract class SocketHandler {
 		return true;
 	}
 
+	protected _handleMessage(message: RawMessage) {
+		// Response message
+		const queueData = this.queue.get(message.id);
+		if (queueData) {
+			queueData.resolve(message.data);
+			return null;
+		}
+
+		return new NodeMessage(this, message.id, message.receptive, message.data).freeze();
+	}
+
 	protected abstract _onData(data: Uint8Array): void;
-	// protected _onData(data: Uint8Array) {
-	// 	this.server.emit('raw', this, data);
-	// 	for (const processed of this.queue.process(data)) {
-	// 		if (processed === kInvalidMessage) {
-	// 			/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
-	// 			if (this.status === SocketStatus.Ready) {
-	// 				this.node.emit('error', new Error('Failed to process message.'), this);
-	// 			} else {
-	// 				this.node.emit('error', new Error('Failed to process message during connection, calling disconnect.'), this);
-	// 				this.disconnect();
-	// 			}
-	// 		} else {
-	// 			const message = this._handleMessage(processed);
-	// 			if (message) this.node.emit('message', message);
-	// 		}
-	// 	}
-	// }
-
-	protected abstract _handleMessage(message: RawMessage): NodeMessage | null;
-	// protected _handleMessage({ id, receptive, data }: RawMessage) {
-	// 	// Response message
-	// 	const queueData = this.queue.get(id);
-	// 	if (queueData) {
-	// 		queueData.resolve(data);
-	// 		return null;
-	// 	}
-
-	// 	return new NodeMessage(this, id, receptive, data).freeze();
-	// }
 
 }
 

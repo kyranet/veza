@@ -5,6 +5,7 @@ import { deserialize, serialize } from 'binarytf';
 import { createFromID, readID } from './Util/Header';
 import { Client } from './Client';
 import { NodeMessage } from './Structures/NodeMessage';
+import { makeError } from './Structures/MessageError';
 
 export class ClientSocket extends SocketHandler {
 
@@ -40,7 +41,7 @@ export class ClientSocket extends SocketHandler {
 
 		this.client.servers.set(this.name!, this);
 		this.status = SocketStatus.Ready;
-		this.client.emit('socket.ready', this);
+		this.client.emit('ready', this);
 		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('connect', this._onConnect.bind(this))
@@ -62,13 +63,20 @@ export class ClientSocket extends SocketHandler {
 		}
 
 		this.client.servers.delete(this.name!);
-		this.client.emit('socket.destroy', this);
+		this.client.emit('disconnect', this);
 		return true;
 	}
 
 	protected _onData(data: Uint8Array) {
-		console.log(data);
-		// TODO(kyranet): Finish this
+		this.client.emit('raw', data, this);
+		for (const processed of this.queue.process(data)) {
+			if (processed.id === null) {
+				this.client.emit('error', makeError('Failed to parse message', processed.data), this);
+			} else {
+				const message = this._handleMessage(processed);
+				if (message) this.client.emit('message', message, this);
+			}
+		}
 	}
 
 	protected _handleMessage(message: RawMessage): NodeMessage | null {
@@ -83,7 +91,7 @@ export class ClientSocket extends SocketHandler {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
 		}
-		this.client.emit('socket.connect', this);
+		this.client.emit('connect', this);
 	}
 
 	private _onClose(...options: any[]) {
@@ -103,13 +111,13 @@ export class ClientSocket extends SocketHandler {
 						if (name && name !== this.name) this.client.servers.delete(name);
 						this.client.servers.set(this.name!, this);
 						this.status = SocketStatus.Ready;
-						this.client.emit('socket.ready', this);
+						this.client.emit('ready', this);
 					} catch {}
 				}
 			}, this.client.retryTime);
 		} else if (this.status !== SocketStatus.Disconnected) {
 			this.status = SocketStatus.Disconnected;
-			this.client.emit('socket.disconnect', this);
+			this.client.emit('disconnect', this);
 		}
 	}
 
@@ -119,7 +127,7 @@ export class ClientSocket extends SocketHandler {
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
 			if (this.status !== SocketStatus.Disconnected) return;
 			this.status = SocketStatus.Disconnected;
-			this.client.emit('socket.disconnect', this);
+			this.client.emit('disconnect', this);
 		} else {
 			this.client.emit('error', error, this);
 		}
@@ -152,7 +160,7 @@ export class ClientSocket extends SocketHandler {
 
 	private async _handshake() {
 		this.status = SocketStatus.Connected;
-		this.client.emit('socket.connect', this);
+		this.client.emit('connect', this);
 		await new Promise((resolve, reject) => {
 			let timeout: NodeJS.Timeout;
 			if (this.client.handshakeTimeout !== -1) {
@@ -205,7 +213,7 @@ export class ClientSocket extends SocketHandler {
 
 	private _attemptConnection(...options: any[]) {
 		this.status = SocketStatus.Connecting;
-		this.client.emit('socket.connecting', this);
+		this.client.emit('connecting', this);
 
 		// It can happen that the user disconnects in the socket.connecting event, so we safe-guard this.
 		if (this.socket) {

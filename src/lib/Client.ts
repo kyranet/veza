@@ -2,6 +2,7 @@ import { SocketConnectOpts } from 'net';
 import { EventEmitter } from 'events';
 import { ClientSocket } from './ClientSocket';
 import { SendOptions } from './Util/Shared';
+import { NodeMessage } from './Structures/NodeMessage';
 
 interface NodeClientOptions {
 	maximumRetries?: number;
@@ -82,6 +83,122 @@ class NodeClient extends EventEmitter {
 
 }
 
-interface NodeClient {}
+interface NodeClient {
+	/**
+	 * Emitted when the client receives data from any of the connected servers.
+	 */
+	on(event: 'raw', listener: (data: Uint8Array, client: ClientSocket) => void): this;
+	/**
+	 * Emitted when an error occurs.
+	 */
+	on(event: 'error', listener: (error: Error, client: ClientSocket | null) => void): this;
+	/**
+	 * Emitted a connection to a server is in progress.
+	 */
+	on(event: 'connecting', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is made and set up.
+	 */
+	on(event: 'connect', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is ready to be used.
+	 */
+	on(event: 'ready', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is closed.
+	 */
+	on(event: 'disconnect', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when the client receives a message from any of the connected servers.
+	 */
+	on(event: 'message', listener: (message: NodeMessage, client: ClientSocket) => void): this;
+
+	/**
+	 * Emitted when the client receives data from any of the connected servers.
+	 */
+	once(event: 'raw', listener: (data: Uint8Array, client: ClientSocket) => void): this;
+	/**
+	 * Emitted when an error occurs.
+	 */
+	once(event: 'error', listener: (error: Error, client: ClientSocket | null) => void): this;
+	/**
+	 * Emitted a connection to a server is in progress.
+	 */
+	once(event: 'connecting', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is made and set up.
+	 */
+	once(event: 'connect', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is ready to be used.
+	 */
+	once(event: 'ready', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is closed.
+	 */
+	once(event: 'disconnect', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when the client receives a message from any of the connected servers.
+	 */
+	once(event: 'message', listener: (message: NodeMessage, client: ClientSocket) => void): this;
+
+	/**
+	 * Emitted when the client receives data from any of the connected servers.
+	 */
+	off(event: 'raw', listener: (data: Uint8Array, client: ClientSocket) => void): this;
+	/**
+	 * Emitted when an error occurs.
+	 */
+	off(event: 'error', listener: (error: Error, client: ClientSocket | null) => void): this;
+	/**
+	 * Emitted a connection to a server is in progress.
+	 */
+	off(event: 'connecting', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is made and set up.
+	 */
+	off(event: 'connect', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is ready to be used.
+	 */
+	off(event: 'ready', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when a connection to a server is closed.
+	 */
+	off(event: 'disconnect', listener: (client: ClientSocket) => void): this;
+	/**
+	 * Emitted when the client receives a message from any of the connected servers.
+	 */
+	off(event: 'message', listener: (message: NodeMessage, client: ClientSocket) => void): this;
+
+	/**
+	 * Emits raw data received from the underlying socket.
+	 */
+	emit(event: 'raw', data: Uint8Array, client: ClientSocket): boolean;
+	/**
+	 * Emitted when an error occurs.
+	 */
+	emit(event: 'error', error: Error, client: ClientSocket): boolean;
+	/**
+	 * Emits a connecting event.
+	 */
+	emit(event: 'connecting', client: ClientSocket): boolean;
+	/**
+	 * Emits a client error event.
+	 */
+	emit(event: 'connect', client: ClientSocket): boolean;
+	/**
+	 * Emitted when a connection to a server is ready to be used.
+	 */
+	emit(event: 'ready', client: ClientSocket): boolean;
+	/**
+	 * Emits a disconnection from a server.
+	 */
+	emit(event: 'disconnect', client: ClientSocket): boolean;
+	/**
+	 * Emits a parsed NodeMessage instance ready for usage.
+	 */
+	emit(event: 'message', message: NodeMessage, client: ClientSocket): boolean;
+}
 
 export { NodeClient as Client };

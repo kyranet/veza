@@ -1,4 +1,3 @@
-import { kInvalidMessage } from '../Util/Constants';
 import { read } from '../Util/Header';
 import { deserializeWithMetadata } from 'binarytf';
 
@@ -41,9 +40,9 @@ export class Queue extends Map<number, QueueEntry> {
 					this.offset = offset;
 				}
 				yield { id, receptive, data: value };
-			} catch {
+			} catch (error) {
 				this.offset = 0;
-				yield kInvalidMessage;
+				yield { id: null, receptive: false, data: error };
 				break;
 			}
 		}

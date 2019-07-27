@@ -1,8 +1,8 @@
-import { SocketHandler, RawMessage } from './Structures/Base/SocketHandler';
+import { SocketHandler } from './Structures/Base/SocketHandler';
 import { SocketStatus } from './Util/Constants';
 import { Socket } from 'net';
 import { Server } from './Server';
-import { NodeMessage } from './Structures/NodeMessage';
+import { makeError } from './Structures/MessageError';
 
 export class ServerClient extends SocketHandler {
 
@@ -58,18 +58,26 @@ export class ServerClient extends SocketHandler {
 	}
 
 	protected _onData(data: Uint8Array) {
-		console.log(data);
-		// TODO(kyranet): Finish this
-	}
-
-	protected _handleMessage(message: RawMessage): NodeMessage | null {
-		console.log(message);
-		return null;
+		this.server.emit('raw', data, this);
+		for (const processed of this.queue.process(data)) {
+			if (processed.id === null) {
+				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
+				if (this.status === SocketStatus.Ready) {
+					this.server.emit('error', makeError('Failed to parse message', processed.data), this);
+				} else {
+					this.server.emit('error', makeError('Failed to process message during connection, calling disconnect', processed.data), this);
+					this.disconnect();
+				}
+			} else {
+				const message = this._handleMessage(processed);
+				if (message) this.server.emit('message', message, this);
+			}
+		}
 	}
 
 	private _onError(error: any) {
 		/* istanbul ignore next: Hard to reproduce in Azure. */
-		this.server.emit('error', error);
+		this.server.emit('error', error, this);
 	}
 
 	private _onClose() {
