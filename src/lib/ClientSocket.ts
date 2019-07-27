@@ -87,6 +87,7 @@ export class ClientSocket extends SocketHandler {
 		}
 		this.status = SocketStatus.Connected;
 		this.client.emit('connect', this);
+		if (this.name) this.client.emit('ready', this);
 	}
 
 	private _onClose(...options: any[]) {
@@ -129,20 +130,21 @@ export class ClientSocket extends SocketHandler {
 	}
 
 	private async _connect(...options: any[]) {
-		if (!this.socket) this.socket = new Socket();
+		if (this.socket) this.socket.destroy();
+		this.socket = new Socket();
 		await new Promise((resolve, reject) => {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onConnect = () => resolve(cleanup(this));
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onClose = () => reject(cleanup(this));
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onError = (error: any) => reject(cleanup(error));
-			const cleanup = (value: any) => {
-				this.socket!.off('connect', onConnect);
-				this.socket!.off('close', onClose);
-				this.socket!.off('error', onError);
-				return value;
+			const onConnect = () => {
+				this._emitConnect();
+				resolve(cleanup(this.socket!, this));
 			};
+			const onClose = () => reject(cleanup(this.socket!, this));
+			const onError = (error: any) => reject(cleanup(this.socket!, error));
+			function cleanup(socket: Socket, value: any) {
+				socket.off('connect', onConnect);
+				socket.off('close', onClose);
+				socket.off('error', onError);
+				return value;
+			}
 
 			this.socket!
 				.on('connect', onConnect)
@@ -154,8 +156,6 @@ export class ClientSocket extends SocketHandler {
 	}
 
 	private async _handshake() {
-		this.status = SocketStatus.Connected;
-		this.client.emit('connect', this);
 		await new Promise((resolve, reject) => {
 			let timeout: NodeJS.Timeout;
 			if (this.client.handshakeTimeout !== -1) {
@@ -214,6 +214,13 @@ export class ClientSocket extends SocketHandler {
 		if (this.socket) {
 			// @ts-ignore
 			this.socket!.connect(...options);
+		}
+	}
+
+	private _emitConnect() {
+		if (this.status !== SocketStatus.Connected) {
+			this.status = SocketStatus.Connected;
+			this.client.emit('connect', this);
 		}
 	}
 

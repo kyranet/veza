@@ -18,7 +18,7 @@ class NodeClient extends EventEmitter {
 	public handshakeTimeout: number;
 	public servers = new Map<string, ClientSocket>();
 
-	public constructor(name: string, { maximumRetries = Infinity, retryTime = 30000, handshakeTimeout = 10000 }: NodeClientOptions = {}) {
+	public constructor(name: string, { maximumRetries = Infinity, retryTime = 1000, handshakeTimeout = 10000 }: NodeClientOptions = {}) {
 		super();
 		this.name = name;
 		this.retryTime = retryTime;

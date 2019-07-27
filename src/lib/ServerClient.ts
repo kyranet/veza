@@ -81,9 +81,9 @@ export class ServerClient extends SocketHandler {
 	}
 
 	private _onClose() {
-		this.status = SocketStatus.Disconnected;
-		this.server.emit('disconnect', this);
+		if (this.status === SocketStatus.Disconnected) return;
 		this.disconnect();
+		this.server.emit('disconnect', this);
 	}
 
 }
