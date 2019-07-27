@@ -93,7 +93,7 @@ export abstract class SocketHandler {
 			for (const element of this.queue.values()) element.reject(rejectError);
 		}
 
-		this.status = SocketStatus.Destroyed;
+		this.status = SocketStatus.Disconnected;
 
 		return true;
 	}

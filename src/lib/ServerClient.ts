@@ -14,7 +14,7 @@ export class ServerClient extends SocketHandler {
 	}
 
 	public async setup() {
-		this.status = SocketStatus.Connected;
+		this.status = SocketStatus.Connecting;
 		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('error', this._onError.bind(this))
@@ -27,7 +27,7 @@ export class ServerClient extends SocketHandler {
 			if (typeof sName !== 'string') {
 				return this.disconnect();
 			}
-			this.status = SocketStatus.Ready;
+			this.status = SocketStatus.Connected;
 			this.name = sName;
 
 			// Disconnect if a previous socket existed.
@@ -62,7 +62,7 @@ export class ServerClient extends SocketHandler {
 		for (const processed of this.queue.process(data)) {
 			if (processed.id === null) {
 				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
-				if (this.status === SocketStatus.Ready) {
+				if (this.status === SocketStatus.Connected) {
 					this.server.emit('error', makeError('Failed to parse message', processed.data), this);
 				} else {
 					this.server.emit('error', makeError('Failed to process message during connection, calling disconnect', processed.data), this);

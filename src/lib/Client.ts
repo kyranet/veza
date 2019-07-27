@@ -4,7 +4,7 @@ import { ClientSocket } from './ClientSocket';
 import { SendOptions } from './Util/Shared';
 import { NodeMessage } from './Structures/NodeMessage';
 
-interface NodeClientOptions {
+export interface NodeClientOptions {
 	maximumRetries?: number;
 	retryTime?: number;
 	handshakeTimeout?: number;

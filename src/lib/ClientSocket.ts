@@ -1,10 +1,9 @@
-import { SocketHandler, RawMessage } from './Structures/Base/SocketHandler';
+import { SocketHandler } from './Structures/Base/SocketHandler';
 import { SocketStatus } from './Util/Constants';
 import { Socket, SocketConnectOpts } from 'net';
 import { deserialize, serialize } from 'binarytf';
 import { createFromID, readID } from './Util/Header';
 import { Client } from './Client';
-import { NodeMessage } from './Structures/NodeMessage';
 import { makeError } from './Structures/MessageError';
 
 export class ClientSocket extends SocketHandler {
@@ -79,11 +78,6 @@ export class ClientSocket extends SocketHandler {
 		}
 	}
 
-	protected _handleMessage(message: RawMessage): NodeMessage | null {
-		console.log(message);
-		return null;
-	}
-
 	private _onConnect() {
 		this.retriesRemaining = this.client.maximumRetries;
 		/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
@@ -91,6 +85,7 @@ export class ClientSocket extends SocketHandler {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
 		}
+		this.status = SocketStatus.Connected;
 		this.client.emit('connect', this);
 	}
 

@@ -4,11 +4,19 @@ import { BroadcastOptions, SendOptions } from './Util/Shared';
 import { EventEmitter } from 'events';
 import { NodeMessage } from './Structures/NodeMessage';
 
+enum ServerStatus {
+	Opening,
+	Opened,
+	Closing,
+	Closed
+}
+
 class NodeServer extends EventEmitter {
 
 	public server: Server;
 	public readonly name: string;
 	public readonly clients: Map<string, ServerClient> = new Map();
+	public status = ServerStatus.Closed;
 
 	public constructor(name: string, connectionListener?: (socket: Socket) => void);
 	public constructor(name: string, options?: { allowHalfOpen?: boolean; pauseOnConnect?: boolean }, connectionListener?: (socket: Socket) => void);
@@ -81,18 +89,20 @@ class NodeServer extends EventEmitter {
 	public async open(handle: any, backlog?: number, listeningListener?: () => void): Promise<void>;
 	public async open(handle: any, listeningListener?: () => void): Promise<void>;
 	public async open(...options: any[]): Promise<void> {
+		this.status = ServerStatus.Opening;
 		await new Promise((resolve, reject) => {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onListening = () => resolve(cleanup(this));
+			const onListening = () => resolve(cleanup(this, ServerStatus.Opened));
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onClose = () => reject(cleanup(this));
+			const onClose = () => reject(cleanup(this, ServerStatus.Closed));
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
-			const onError = (error: any) => reject(cleanup(error));
+			const onError = (error: any) => reject(cleanup(error, ServerStatus.Closed));
 
-			const cleanup = (value: any) => {
+			const cleanup = (value: any, status: ServerStatus) => {
 				this.server.off('listening', onListening);
 				this.server.off('close', onClose);
 				this.server.off('error', onError);
+				this.status = status;
 				return value;
 			};
 			this.server
@@ -113,13 +123,26 @@ class NodeServer extends EventEmitter {
 	/**
 	 * Disconnect the server and rejects all current messages
 	 */
-	public close(): boolean {
-		this.server.close();
-		this.emit('close');
+	public async close() {
+		// If it's closing or closed, do nothing
+		if (this.status === ServerStatus.Closing || this.status === ServerStatus.Closed) return false;
+		this.status = ServerStatus.Closing;
+
+		// Disconnect all sockets
 		for (const socket of this.clients.values()) {
 			socket.disconnect();
 		}
-
+		await new Promise((resolve, reject) => {
+			this.server.close(error => {
+				if (error) {
+					reject(error);
+				} else {
+					this.status = ServerStatus.Closed;
+					resolve();
+				}
+			});
+		});
+		this.emit('close');
 		return true;
 	}
 
