@@ -37,7 +37,7 @@ class NodeClient extends EventEmitter {
 	public connectTo(path: string, connectionListener?: () => void): Promise<ClientSocket>;
 	public connectTo(...options: any[]) {
 		// @ts-ignore
-		return new ClientSocket(this, null).connect(...options);
+		return new ClientSocket(this).connect(...options);
 	}
 
 	/**
