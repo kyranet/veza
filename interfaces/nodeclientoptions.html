@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SendOptions | veza</title>
+	<title>NodeClientOptions | veza</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="sendoptions.html">SendOptions</a>
+					<a href="nodeclientoptions.html">NodeClientOptions</a>
 				</li>
 			</ul>
-			<h1>Interface SendOptions</h1>
+			<h1>Interface NodeClientOptions</h1>
 		</div>
 	</div>
 </header>
@@ -68,12 +68,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SendOptions</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<a href="broadcastoptions.html" class="tsd-signature-type">BroadcastOptions</a>
-							</li>
-						</ul>
+						<span class="target">NodeClientOptions</span>
 					</li>
 				</ul>
 			</section>
@@ -84,8 +79,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendoptions.html#receptive" class="tsd-kind-icon">receptive</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendoptions.html#timeout" class="tsd-kind-icon">timeout</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="nodeclientoptions.html#handshaketimeout" class="tsd-kind-icon">handshake<wbr>Timeout</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="nodeclientoptions.html#maximumretries" class="tsd-kind-icon">maximum<wbr>Retries</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="nodeclientoptions.html#retrytime" class="tsd-kind-icon">retry<wbr>Time</a></li>
 							</ul>
 						</section>
 					</div>
@@ -94,22 +90,32 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="receptive" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> receptive</h3>
-					<div class="tsd-signature tsd-kind-icon">receptive<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+					<a name="handshaketimeout" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> handshake<wbr>Timeout</h3>
+					<div class="tsd-signature tsd-kind-icon">handshake<wbr>Timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/d19ec58/src/lib/Util/Shared.ts#L5">lib/Util/Shared.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/d19ec58/src/lib/Client.ts#L10">lib/Client.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="timeout" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> timeout</h3>
-					<div class="tsd-signature tsd-kind-icon">timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+					<a name="maximumretries" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> maximum<wbr>Retries</h3>
+					<div class="tsd-signature tsd-kind-icon">maximum<wbr>Retries<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/d19ec58/src/lib/Util/Shared.ts#L6">lib/Util/Shared.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/d19ec58/src/lib/Client.ts#L8">lib/Client.ts:8</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="retrytime" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> retry<wbr>Time</h3>
+					<div class="tsd-signature tsd-kind-icon">retry<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/d19ec58/src/lib/Client.ts#L9">lib/Client.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -155,27 +161,30 @@
 					<li class=" tsd-kind-interface">
 						<a href="networkerror.html" class="tsd-kind-icon">Network<wbr>Error</a>
 					</li>
-					<li class=" tsd-kind-interface">
-						<a href="nodeclientoptions.html" class="tsd-kind-icon">Node<wbr>Client<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="rawmessage.html" class="tsd-kind-icon">Raw<wbr>Message</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="sendoptions.html" class="tsd-kind-icon">Send<wbr>Options</a>
+						<a href="nodeclientoptions.html" class="tsd-kind-icon">Node<wbr>Client<wbr>Options</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="sendoptions.html#receptive" class="tsd-kind-icon">receptive</a>
+								<a href="nodeclientoptions.html#handshaketimeout" class="tsd-kind-icon">handshake<wbr>Timeout</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="sendoptions.html#timeout" class="tsd-kind-icon">timeout</a>
+								<a href="nodeclientoptions.html#maximumretries" class="tsd-kind-icon">maximum<wbr>Retries</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="nodeclientoptions.html#retrytime" class="tsd-kind-icon">retry<wbr>Time</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface">
+						<a href="rawmessage.html" class="tsd-kind-icon">Raw<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="sendoptions.html" class="tsd-kind-icon">Send<wbr>Options</a>
+					</li>
 					<li class=" tsd-kind-variable">
 						<a href="../globals.html#vclose" class="tsd-kind-icon">VCLOSE</a>
 					</li>

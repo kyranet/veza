@@ -100,7 +100,7 @@
 					<div class="tsd-signature tsd-kind-icon">filter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RegExp</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/9bff27d/src/lib/Node.ts#L493">lib/Node.ts:493</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/d19ec58/src/lib/Util/Shared.ts#L10">lib/Util/Shared.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -111,7 +111,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="sendoptions.html">SendOptions</a>.<a href="sendoptions.html#receptive">receptive</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/9bff27d/src/lib/Node.ts#L488">lib/Node.ts:488</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/d19ec58/src/lib/Util/Shared.ts#L5">lib/Util/Shared.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -122,7 +122,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="sendoptions.html">SendOptions</a>.<a href="sendoptions.html#timeout">timeout</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/9bff27d/src/lib/Node.ts#L489">lib/Node.ts:489</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/d19ec58/src/lib/Util/Shared.ts#L6">lib/Util/Shared.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -139,28 +139,25 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-enum">
-						<a href="../enums/socketstatus.html" class="tsd-kind-icon">Socket<wbr>Status</a>
+						<a href="../enums/clientsocketstatus.html" class="tsd-kind-icon">Client<wbr>Socket<wbr>Status</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="../enums/serverclientstatus.html" class="tsd-kind-icon">Server<wbr>Client<wbr>Status</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="../classes/base.html" class="tsd-kind-icon">Base</a>
+						<a href="../classes/clientsocket.html" class="tsd-kind-icon">Client<wbr>Socket</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="../classes/node.html" class="tsd-kind-icon">Node</a>
+						<a href="../classes/messageerror.html" class="tsd-kind-icon">Message<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="../classes/nodemessage.html" class="tsd-kind-icon">Node<wbr>Message</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="../classes/nodeserver.html" class="tsd-kind-icon">Node<wbr>Server</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="../classes/nodeserverclient.html" class="tsd-kind-icon">Node<wbr>Server<wbr>Client</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="../classes/nodesocket.html" class="tsd-kind-icon">Node<wbr>Socket</a>
-					</li>
-					<li class=" tsd-kind-class">
 						<a href="../classes/queue.html" class="tsd-kind-icon">Queue</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="../classes/serverclient.html" class="tsd-kind-icon">Server<wbr>Client</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="../classes/sockethandler.html" class="tsd-kind-icon">Socket<wbr>Handler</a>
@@ -184,19 +181,31 @@
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-interface">
-						<a href="nodeoptions.html" class="tsd-kind-icon">Node<wbr>Options</a>
+						<a href="networkerror.html" class="tsd-kind-icon">Network<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="nodeclientoptions.html" class="tsd-kind-icon">Node<wbr>Client<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="rawmessage.html" class="tsd-kind-icon">Raw<wbr>Message</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="sendoptions.html" class="tsd-kind-icon">Send<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="../globals.html#kinvalidmessage" class="tsd-kind-icon">k<wbr>Invalid<wbr>Message</a>
+						<a href="../globals.html#vclose" class="tsd-kind-icon">VCLOSE</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="../globals.html#vclose_signal" class="tsd-kind-icon">VCLOSE_<wbr>SIGNAL</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../globals.html#create" class="tsd-kind-icon">create</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../globals.html#createfromid" class="tsd-kind-icon">create<wbr>FromID</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../globals.html#makeerror" class="tsd-kind-icon">make<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../globals.html#read" class="tsd-kind-icon">read</a>
@@ -212,6 +221,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../globals.html#readincrement" class="tsd-kind-icon">read<wbr>Increment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="../globals.html#receivedvclose" class="tsd-kind-icon">receivedVClose</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="../globals.html#write32at" class="tsd-kind-icon">write32<wbr>At</a>
