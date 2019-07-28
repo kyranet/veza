@@ -262,7 +262,7 @@ test('Socket Connection Retries (Successful Reconnect)', { timeout: 7500 }, asyn
 	}
 });
 
-test.skip('Socket Connection Retries (Successful Reconnect | Different Name)', { timeout: 7500 }, async t => {
+test('Socket Connection Retries (Successful Reconnect | Different Name)', { timeout: 7500 }, async t => {
 	t.plan(8);
 	const [nodeServerFirst, nodeSocket] = await setup(t, ++port, { maximumRetries: 3, retryTime: 200 });
 
@@ -270,15 +270,11 @@ test.skip('Socket Connection Retries (Successful Reconnect | Different Name)', {
 	t.equal(socketServer.name, 'Server', 'The Server should be "Server".');
 
 	// Disconnect and set up a second server with a different name
-	nodeServerFirst.close();
+	await nodeServerFirst.close();
 	const nodeServerSecond = new Server('NewServer');
 
-	nodeSocket.once('connecting', () => {
+	nodeSocket.once('connecting', async () => {
 		t.pass('Reconnecting event fired.');
-		next();
-	});
-
-	async function next() {
 		nodeSocket
 			.once('connect', () => t.pass('Socket fired connect'))
 			.once('ready', () => t.pass('Socket fired Ready'));
@@ -292,12 +288,12 @@ test.skip('Socket Connection Retries (Successful Reconnect | Different Name)', {
 		t.equal(nodeSocket.get('NewServer'), socketServer, 'The socket should be available under the key "NewServer".');
 		t.equal(socketServer.name, 'NewServer', 'The name for the socket should be changed to "NewServer".');
 
-		nodeServerSecond.close();
+		await nodeServerSecond.close();
 		nodeSocket.disconnectFrom('NewServer');
-	}
+	});
 });
 
-test.skip('Socket Connection Retries (Abrupt Close)', { timeout: 7500 }, async t => {
+test('Socket Connection Retries (Abrupt Close)', { timeout: 7500 }, async t => {
 	t.plan(3);
 	const [nodeServer, nodeSocket] = await setup(t, ++port, { maximumRetries: -1, retryTime: 200 });
 	await nodeServer.close();
@@ -838,7 +834,6 @@ test('Duplicated Socket', { timeout: 5000 }, async t => {
 	nodeSocketFirst.once('disconnect', async () => {
 		t.pass('The socket has been disconnected.');
 		await nodeServer.close();
-		nodeSocketFirst.disconnectFrom('Server');
 		nodeSocketSecond.disconnectFrom('Server');
 	});
 

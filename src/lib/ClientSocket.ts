@@ -32,7 +32,7 @@ export class ClientSocket extends SocketHandler {
 	}
 
 	private get canReconnect() {
-		return this.client.retryTime !== -1 && this.retriesRemaining > 0;
+		return this.client.retryTime !== -1 && this.retriesRemaining > 0 && this.status !== ClientSocketStatus.Disconnected;
 	}
 
 	/**
@@ -43,7 +43,7 @@ export class ClientSocket extends SocketHandler {
 	public async connect(port: number, host: string, connectionListener?: () => void): Promise<this>;
 	public async connect(port: number, connectionListener?: () => void): Promise<this>;
 	public async connect(path: string, connectionListener?: () => void): Promise<this>;
-	public async connect(...options: any[]): Promise<this> {
+	public async connect(...options: [any, any?, any?]): Promise<this> {
 		await this._connect(...options);
 		await this._handshake();
 
@@ -65,14 +65,6 @@ export class ClientSocket extends SocketHandler {
 	public disconnect() {
 		if (this.status === ClientSocketStatus.Disconnected) return false;
 
-		this.socket.destroy();
-		this.socket.removeAllListeners();
-
-		if (this.queue.size) {
-			const rejectError = new Error('Socket has been disconnected.');
-			for (const element of this.queue.values()) element.reject(rejectError);
-		}
-
 		if (this._reconnectionTimeout) {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
@@ -80,6 +72,13 @@ export class ClientSocket extends SocketHandler {
 
 		this.status = ClientSocketStatus.Disconnected;
 		this.client.servers.delete(this.name!);
+		this.socket.destroy();
+
+		if (this.queue.size) {
+			const rejectError = new Error('Socket has been disconnected.');
+			for (const element of this.queue.values()) element.reject(rejectError);
+		}
+
 		this.client.emit('disconnect', this);
 		return true;
 	}
@@ -111,33 +110,35 @@ export class ClientSocket extends SocketHandler {
 		if (this.name) this.client.emit('ready', this);
 	}
 
-	private _onClose(...options: any[]) {
+	private _onClose(...options: [any, any?, any?]) {
 		/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 		if (!this._expectClosing && this.canReconnect) {
-			if (this._reconnectionTimeout) clearTimeout(this._reconnectionTimeout);
-			this._reconnectionTimeout = setTimeout(async () => {
-				/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
-				if (this.status !== ClientSocketStatus.Disconnected) {
-					--this.retriesRemaining;
-					try {
-						const { name } = this;
-						await this._connect(...options);
-						await this._handshake();
-
-						// If the server was renamed, we might want to delete the previous name
-						if (name && name !== this.name) this.client.servers.delete(name);
-						this.client.servers.set(this.name!, this);
-						this.status = ClientSocketStatus.Ready;
-						this.client.emit('ready', this);
-					} catch {
-						this._onClose(...options);
-					}
-				}
-			}, this.client.retryTime);
+			this._reconnect(...options);
 		} else if (this.status !== ClientSocketStatus.Disconnected) {
+			if (this.name) this.client.servers.delete(this.name);
 			this.status = ClientSocketStatus.Disconnected;
 			this.client.emit('disconnect', this);
 		}
+	}
+
+	private _reconnect(...options: [any, any?, any?]) {
+		if (this._reconnectionTimeout) clearTimeout(this._reconnectionTimeout);
+		this._reconnectionTimeout = setTimeout(async () => {
+			/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
+			if (this.status !== ClientSocketStatus.Disconnected) {
+				--this.retriesRemaining;
+				try {
+					await this._connect(...options);
+					await this._handshake();
+
+					this.client.servers.set(this.name!, this);
+					this.status = ClientSocketStatus.Ready;
+					this.client.emit('ready', this);
+				} catch {
+					this._onClose(...options);
+				}
+			}
+		}, this.client.retryTime);
 	}
 
 	private _onError(error: any) {
@@ -147,12 +148,12 @@ export class ClientSocket extends SocketHandler {
 			if (this.status !== ClientSocketStatus.Disconnected) return;
 			this.status = ClientSocketStatus.Disconnected;
 			this.client.emit('disconnect', this);
-		} else {
+		} else if (this.status !== ClientSocketStatus.Disconnected) {
 			this.client.emit('error', error, this);
 		}
 	}
 
-	private async _connect(...options: any[]) {
+	private async _connect(...options: [any, any?, any?]) {
 		await new Promise((resolve, reject) => {
 			const onConnect = () => {
 				this._emitConnect();
@@ -184,7 +185,6 @@ export class ClientSocket extends SocketHandler {
 					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					onError(new Error('Connection Timed Out.'));
 					this.socket!.destroy();
-					this.socket!.removeAllListeners();
 				}, this.client.handshakeTimeout);
 			}
 
@@ -192,7 +192,9 @@ export class ClientSocket extends SocketHandler {
 				try {
 					const name = deserialize(message, 11);
 					if (typeof name === 'string') {
+						const previous = this.name;
 						this.name = name;
+						if (previous && previous !== name) this.client.servers.delete(previous);
 
 						// Reply with the name of the node, using the header id and concatenating with the
 						// serialized name afterwards.
@@ -204,7 +206,6 @@ export class ClientSocket extends SocketHandler {
 				// eslint-disable-next-line @typescript-eslint/no-use-before-define
 				onError(new Error('Unexpected response from the server.'));
 				this.socket!.destroy();
-				this.socket!.removeAllListeners();
 			};
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			const onClose = () => reject(cleanup(this));
@@ -225,12 +226,10 @@ export class ClientSocket extends SocketHandler {
 		});
 	}
 
-	private _attemptConnection(...options: any[]) {
+	private _attemptConnection(...options: [any, any?, any?]) {
 		this.status = ClientSocketStatus.Connecting;
-		this.client.emit('connecting', this);
-
-		// @ts-ignore
 		this.socket!.connect(...options);
+		this.client.emit('connecting', this);
 	}
 
 	private _emitConnect() {
