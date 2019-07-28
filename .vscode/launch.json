@@ -11,7 +11,7 @@
 			"program": "${workspaceFolder}/test/suite.ts",
 			"preLaunchTask": "tsc: build - tsconfig.json",
 			"outFiles": [
-				"${workspaceFolder}/test/**/*.js"
+				"${workspaceFolder}/test/*.js"
 			]
 		}
 	]

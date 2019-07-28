@@ -1,5 +1,4 @@
 import { SocketHandler } from './Base/SocketHandler';
-import { Node } from '../Node';
 import { createFromID } from '../Util/Header';
 import { serialize } from 'binarytf';
 
@@ -33,13 +32,6 @@ export class NodeMessage {
 		});
 
 		this.data = data;
-	}
-
-	/**
-	 * The Node instance that manages this process' veza node
-	 */
-	public get node(): Node {
-		return this.client.node;
 	}
 
 	/**

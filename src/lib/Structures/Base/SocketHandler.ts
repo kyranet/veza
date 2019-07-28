@@ -1,31 +1,26 @@
-import { kInvalidMessage, SocketStatus } from '../../Util/Constants';
 import { NodeMessage } from '../NodeMessage';
 import { Queue } from '../Queue';
-import { Base } from './Base';
-import { Node, SendOptions } from '../../Node';
 import { Socket } from 'net';
 import { create, read } from '../../Util/Header';
 import { serialize } from 'binarytf';
+import { SendOptions } from '../../Util/Shared';
 
-export class SocketHandler extends Base {
+export abstract class SocketHandler {
+
+	public name: string | null;
 
 	/**
 	 * The socket that connects Veza to the network
 	 */
-	public socket: Socket | null;
-
-	/**
-	 * The status of this client
-	 */
-	public status: SocketStatus = SocketStatus.Connecting;
+	public socket: Socket;
 
 	/**
 	 * The incoming message queue for this handler
 	 */
-	public queue: Queue = new Queue(this);
+	public queue = new Queue();
 
-	public constructor(node: Node, name: string | null, socket: Socket | null) {
-		super(node, name);
+	public constructor(name: string | null, socket: Socket) {
+		this.name = name;
 		this.socket = socket;
 	}
 
@@ -34,11 +29,9 @@ export class SocketHandler extends Base {
 	 * @param data The data to send to the socket
 	 * @param options The options for this message
 	 */
-	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}): Promise<any> {
-		if (!this.socket) {
-			return Promise.reject(
-				new Error('This NodeSocket is not connected to a socket.')
-			);
+	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}) {
+		if (this.socket.destroyed) {
+			return Promise.reject(new Error('Cannot send a message to a missing socket.'));
 		}
 
 		return new Promise((resolve, reject) => {
@@ -79,58 +72,22 @@ export class SocketHandler extends Base {
 		});
 	}
 
-	/**
-	 * Disconnect from the socket, this will also reject all messages
-	 */
-	public disconnect() {
-		if (!this.socket) return false;
-
-		this.socket.destroy();
-		this.socket.removeAllListeners();
-		this.socket = null;
-
-		if (this.queue.size) {
-			const rejectError = new Error('Socket has been disconnected.');
-			for (const element of this.queue.values()) element.reject(rejectError);
-		}
-
-		this.status = SocketStatus.Destroyed;
-
-		return true;
-	}
-
-	protected _onData(data: Uint8Array) {
-		this.node.emit('raw', this, data);
-		for (const processed of this.queue.process(data)) {
-			if (processed === kInvalidMessage) {
-				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
-				if (this.status === SocketStatus.Ready) {
-					this.node.emit('error', new Error('Failed to process message.'), this);
-				} else {
-					this.node.emit('error', new Error('Failed to process message during connection, calling disconnect.'), this);
-					this.disconnect();
-				}
-			} else {
-				const message = this._handleMessage(processed);
-				if (message) this.node.emit('message', message);
-			}
-		}
-	}
-
-	protected _handleMessage({ id, receptive, data }: RawMessage) {
+	protected _handleMessage(message: RawMessage) {
 		// Response message
-		const queueData = this.queue.get(id);
+		const queueData = this.queue.get(message.id);
 		if (queueData) {
-			queueData.resolve(data);
+			queueData.resolve(message.data);
 			return null;
 		}
 
-		return new NodeMessage(this, id, receptive, data).freeze();
+		return new NodeMessage(this, message.id, message.receptive, message.data).freeze();
 	}
+
+	protected abstract _onData(data: Uint8Array): void;
 
 }
 
-interface RawMessage {
+export interface RawMessage {
 	id: number;
 	receptive: boolean;
 	data: any;

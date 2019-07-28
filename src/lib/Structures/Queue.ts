@@ -1,29 +1,10 @@
-import { kInvalidMessage } from '../Util/Constants';
-import { NodeSocket } from './NodeSocket';
-import { Node } from '../Node';
 import { read } from '../Util/Header';
 import { deserializeWithMetadata } from 'binarytf';
 
 export class Queue extends Map<number, QueueEntry> {
 
 	private offset: number = 0;
-	private nodeSocket!: NodeSocket;
-	private _rest!: Uint8Array | null;
-
-	public constructor(nodeSocket: any) {
-		super();
-		Object.defineProperties(this, {
-			nodeSocket: { value: nodeSocket },
-			_rest: { value: null, writable: true }
-		});
-	}
-
-	/**
-	 * The Node that manages this instance
-	 */
-	public get node(): Node {
-		return this.nodeSocket.node;
-	}
+	private _rest: Uint8Array | null = null;
 
 	/**
 	 * Returns a new Iterator object that parses each value for this queue.
@@ -59,9 +40,9 @@ export class Queue extends Map<number, QueueEntry> {
 					this.offset = offset;
 				}
 				yield { id, receptive, data: value };
-			} catch {
+			} catch (error) {
 				this.offset = 0;
-				yield kInvalidMessage;
+				yield { id: null, receptive: false, data: error };
 				break;
 			}
 		}
