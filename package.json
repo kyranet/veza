@@ -13,8 +13,8 @@
     "coverage": "yarn nyc --require ts-node/register --require source-map-support/register tape test/suite.ts | yarn tap-nyc",
     "coverage:report": "yarn nyc report --reporter=cobertura",
     "lint": "eslint --ext ts src examples --fix",
-    "build": "tsc.cmd -p .",
-    "build:test": "tsc.cmd -p test",
+    "build": "tsc -p .",
+    "build:test": "tsc -p test",
     "docs": "typedoc --excludeNotExported --exclude ./src/utils/**/*.ts --mode file --out ./dist/ ./src/"
   },
   "repository": {
