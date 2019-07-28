@@ -12,6 +12,7 @@ export class MessageError extends Error {
 }
 
 export function makeError(prefix: string, error: Error) {
+	/* istanbul ignore else: Safe guard for edge cases. */
 	if (error instanceof DeserializerError) return new MessageError(prefix, error);
 	return new Error(`${prefix}: ${error.message}`);
 }

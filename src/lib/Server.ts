@@ -134,6 +134,7 @@ class NodeServer extends EventEmitter {
 		}
 		await new Promise((resolve, reject) => {
 			this.server.close(error => {
+				/* istanbul ignore next: Hard to reproduce, it is a safe guard. */
 				if (error) {
 					reject(error);
 				} else {

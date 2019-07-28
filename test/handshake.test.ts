@@ -430,6 +430,32 @@ test('HTTP Server (Malicious Forged Handshake)', { timeout: 5000 }, async t => {
 	});
 });
 
+test('ClientSocket Socket Retrieval', { timeout: 5000 }, async t => {
+	t.plan(6);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+	const server = nodeSocket.get('Server')!;
+
+	t.equal(nodeSocket.get('Server'), server, 'The socket is called "Server", and got found.');
+	t.equal(nodeSocket.get(server), server, 'Retrieving the NodeServerClient instance itself should return it.');
+
+	t.true(nodeSocket.has('Server'), 'The socket "Server" is connected to this server.');
+	t.false(nodeSocket.has('Foo'), 'The socket "Foo" is not connected to this server.');
+
+	try {
+		// TypeScript ignoring since this is an assertion for JavaScript users
+		// @ts-ignore
+		nodeSocket.get(0);
+		t.fail('This should not run, as the previous statement throws');
+	} catch (error) {
+		t.true(error instanceof TypeError, 'The error should be an instance of TypeError.');
+		t.equal(error.message, 'Expected a string or a ClientSocket instance.',
+			'An invalid NodeServer#get throws a TypeError explaining what was wrong.');
+	}
+
+	await nodeServer.close();
+	nodeSocket.disconnectFrom('Server');
+});
+
 test('NodeServer Socket Retrieval', { timeout: 5000 }, async t => {
 	t.plan(6);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);

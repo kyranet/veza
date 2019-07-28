@@ -107,7 +107,7 @@ export class ClientSocket extends SocketHandler {
 		}
 		this.status = ClientSocketStatus.Connected;
 		this.client.emit('connect', this);
-		if (this.name) this.client.emit('ready', this);
+		this.client.emit('ready', this);
 	}
 
 	private _onClose(...options: [any, any?, any?]) {

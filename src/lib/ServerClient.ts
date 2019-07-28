@@ -99,7 +99,6 @@ export class ServerClient extends SocketHandler {
 	}
 
 	private _onClose() {
-		if (this.status === ServerClientStatus.Disconnected) return;
 		this.disconnect();
 	}
 
