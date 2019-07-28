@@ -1,9 +1,13 @@
 # Security
 
+## General Statement
+
 Veza is a minimal protocol made on top of the `IPC` and `TCP` protocols (see [PROTOCOL][]), it lacks of cryptography and
 security like [TLS][] when using the `TCP` protocol.
 
-In most operating systems, ports are exposed not only in localhost, but also outside the server, this can mean a large
+## Ports
+
+In most operating systems, ports are exposed not only in `localhost`, but also outside the server, this can mean a large
 security hole if Veza handles sensitive information between processes and/or microservices.
 
 If your Veza server is only supposed to run only in its local machine, we strongly suggest using a **[Firewall][]** like
@@ -23,17 +27,38 @@ use `sudo`.
 
 Inside containers like [Docker][] or equivalents, this can be unnecessary, since the ports are not exposed by default.
 
-However, if your Veza server connects with other machines, this changes a little more ─ you can whitelist the other
-machines' IPs with `iptables` (besides `localhost` itself) or implement **an additional handshake**.
+For Windows users, SpiceWorks has a [nice guide][WindowsFirewall] about this process.
+
+## Handshakes
+
+If your Veza server connects with other machines, this changes a little more ─ you can whitelist the other machines' IPs
+with `iptables` (besides `localhost` itself) or implement **an additional handshake**.
 
 Additional handshakes can be made by sending a message from the Server to the Client (or vice versa) and compare certain
 values, for example an unique key. This approach may take security approaches such as encrypting the "authenticate"
 payload with a special key and adding a timer to avoid [man-in-the-middle attacks][ManInTheMiddle], as they usually have
 latency implications.
 
+## Messages
+
+There are many techniques that can be used to enhance security between Veza nodes on the public network, involving a
+little cryptography with it. Some of the most common techniques can include:
+
+- Send the content and a [MD5][] hash of it, this is exposes the contents but can protect nodes from malicious contents
+or requests ─ if the content does not generate the same hash as the from the message, the message is invalid. This
+approach is very simple but also very efective.
+- [Public-key cryptography][PublicKeyCryptography], this approach is one of the fundamental security ingredients in
+modern [cryptosystems][], applications and protocols assuring the confidentiality, authenticity and non-repudiability of
+electronic communications and data storage, it is more complex than the previous approach but does not expose the
+messages contents.
+
 [PROTOCOL]: ./PROTOCOL.md
 [TLS]: https://en.wikipedia.org/wiki/Transport_Layer_Security
 [Firewall]: https://en.wikipedia.org/wiki/Firewall_(computing)
 [sudoer]: https://help.ubuntu.com/community/Sudoers
 [Docker]: https://www.docker.com/
+[WindowsFirewall]: https://community.spiceworks.com/how_to/159244-block-or-allow-tcp-ip-port-in-windows-firewall
 [ManInTheMiddle]: https://en.wikipedia.org/wiki/Man-in-the-middle_attack
+[MD5]: https://en.wikipedia.org/wiki/MD5
+[PublicKeyCryptography]: https://en.wikipedia.org/wiki/Public-key_cryptography
+[cryptosystems]: https://en.wikipedia.org/wiki/Cryptosystem
