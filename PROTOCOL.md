@@ -6,7 +6,9 @@ this protocol works and how must be implemented.
 ## Structure
 
 The structure is divided in two key components: the `Server` and the `Client`, the server `open`s a `IPC`/`TCP` server
-and may `close` it eventually, while a `Client` can connect to and disconnect from them.
+and may `close` it eventually, while a `Client` can connect to and disconnect from them, whether Veza uses `IPC` or
+`IPC` is based on where the server is opened to, typically if a numeric port or an IP is passed, it will use `TCP`, and
+`IPC` when a path to a socket file is passed instead.
 
 Furthermore each `Client` has a collection of `ClientSocket`s, which are each server's sockets, and each `Server` has a
 collection of `ServerClient`s, which are each client's sockets.
@@ -16,22 +18,24 @@ Assuming the server runs on `TCP` with the port `8002`, the connection would be 
 ```java
 ┌────────┐                              ┌────────┐
 │ Server │         ClientSocket         │ Client │
-├────────┤ ←─────────────────────────── ├────────┤
+├────────┤ ←--------------------------- ├────────┤
 │  8002  │         ServerClient         │  8002  │
-└────────┘ ───────────────────────────→ └────────┘
+└────────┘ ---------------------------→ └────────┘
 ```
+
+> `ClientSocket` allows Client to send messages to Server, and `ServerClient` allows Server to send messages to Client.
 
 However, multiple clients can connect to a server just fine.
 
 ```java
 ┌────────┐      ┌────────┐      ┌────────┐
 │ Client │  CS  │ Server │  CS  │ Client │
-├────────┤ ───→ ├────────┤ ←─── ├────────┤
+├────────┤ ---→ ├────────┤ ←--- ├────────┤
 │  8002  │  SC  │  8002  │  SC  │  8002  │
-└────────┘ ←─── └────────┘ ───→ └────────┘
-                  ↑    │
-               CS │    │ SC
-                  │    ↓
+└────────┘ ←--- └────────┘ ---→ └────────┘
+                  ↑    |
+               CS |    | SC
+                  |    ↓
                 ┌────────┐
                 │ Client │
                 ├────────┤
@@ -39,11 +43,13 @@ However, multiple clients can connect to a server just fine.
                 └────────┘
 ```
 
+> `CS` and `SC` refer to `ClientSocket` and `ServerClient`, respectively.
+
 ## Communication
 
 Veza uses binary-encoded messages to communicate between all sockets, to do so, it uses [Binary Term Format][binarytf]
-to encode messages into binary before sending them, and all the communication happens in `ClientSocket` and in
-`ServerClient` exclusively, since they define a socket connection.
+to encode messages before sending them, and all the communication happens in `ClientSocket` and in `ServerClient`
+exclusively, since they define a socket connection.
 
 Each socket is a [duplex][] connection, so they have both a message sender and a receiver. The composition of messages
 using the Veza protocol is the following:
@@ -89,7 +95,7 @@ all `Server`s connected to it may send messages to it using `master` as its name
 ┌────────┐                              ┌────────┐
 │ Server │                              │ Client │
 ├────────┤        TCP Connection        ├────────┤
-│ master │ ←──────────────────────────→ │ socket │
+│ master │ ←--------------------------→ │ socket │
 │  8002  │                              │  8002  │
 └────────┘                              └────────┘
 
@@ -97,7 +103,7 @@ all `Server`s connected to it may send messages to it using `master` as its name
 // name ('socket') to the server.
 ┌────────┐                              ┌────────┐
 │ Server │           "socket"           │ Client │
-├────────┤ ←─────────────────────────── ├────────┤
+├────────┤ ←--------------------------- ├────────┤
 │ master │                              │ socket │
 │  8002  │                              │  8002  │
 ├────────┤                              ├────────┤
@@ -111,7 +117,7 @@ all `Server`s connected to it may send messages to it using `master` as its name
 ├────────┤                              ├────────┤
 │ master │                              │ socket │
 │  8002  │           "master"           │  8002  │
-├────────┤ ───────────────────────────→ ├────────┤
+├────────┤ ---------------------------→ ├────────┤
 │ socket │                              │ ?????? │
 └────────┘                              └────────┘
 
