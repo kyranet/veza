@@ -31,6 +31,7 @@ export class ServerClient extends SocketHandler {
 			const sName = await this.send(this.server.name);
 
 			// sName must never be anything that is not a string
+			/* istanbul ignore next: Will do other day. */
 			if (typeof sName !== 'string') {
 				return this.disconnect();
 			}
