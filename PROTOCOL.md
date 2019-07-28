@@ -99,25 +99,25 @@ all `Server`s connected to it may send messages to it using `master` as its name
 │  8002  │                              │  8002  │
 └────────┘                              └────────┘
 
-// Once the connection has stablished, send its
-// name ('socket') to the server.
+// Once the connection has stablished, the server
+// will send its name ('master') to the client.
 ┌────────┐                              ┌────────┐
-│ Server │           "socket"           │ Client │
-├────────┤ ←--------------------------- ├────────┤
+│ Server │           "master"           │ Client │
+├────────┤ ---------------------------→ ├────────┤
 │ master │                              │ socket │
 │  8002  │                              │  8002  │
 ├────────┤                              ├────────┤
 │ ?????? │                              │ ?????? │
 └────────┘                              └────────┘
 
-// The server must reply with its name ('master')
-// to the client.
+// The client must reply with its name ('socket')
+// to the server.
 ┌────────┐                              ┌────────┐
 │ Server │                              │ Client │
 ├────────┤                              ├────────┤
 │ master │                              │ socket │
-│  8002  │           "master"           │  8002  │
-├────────┤ ---------------------------→ ├────────┤
+│  8002  │           "socket"           │  8002  │
+├────────┤ ←--------------------------- ├────────┤
 │ socket │                              │ ?????? │
 └────────┘                              └────────┘
 
