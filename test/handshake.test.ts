@@ -1,5 +1,4 @@
-import { Server, Client, NodeClientOptions } from '../dist/index';
-import { SocketStatus } from '../dist/lib/Util/Constants';
+import { Server, Client, NodeClientOptions, ServerClientStatus, ClientSocketStatus } from '../dist/index';
 import * as test from 'tape';
 import { create } from '../dist/lib/Util/Header';
 import { get, createServer } from 'http';
@@ -57,7 +56,7 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 		t.notEqual(myServer, undefined, 'The node should exist.');
 		t.notEqual(myServer.socket, null, 'The socket should not be null.');
 		t.equal(myServer.name, 'Server', 'The name of the node must be the name of the server.');
-		t.equal(myServer.status, SocketStatus.Ready, 'The socket should have a status of ready.');
+		t.equal(myServer.status, ClientSocketStatus.Ready, 'The socket should have a status of ready.');
 		t.equal(nodeSocket.get('Server'), myServer, 'Node#get should return the same instance.');
 		t.equal(nodeSocket.get(myServer), myServer, 'When passing a NodeSocket, Node#get should return it.');
 
@@ -69,7 +68,7 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 		t.notEqual(mySocket, undefined, 'The node should exist.');
 		t.notEqual(mySocket.socket, null, 'The socket should not be null.');
 		t.equal(mySocket.name, 'Socket', 'The name of the node must be the name of the socket that connected to this server.');
-		t.equal(mySocket.status, SocketStatus.Connected, 'The socket should have a status of ready.');
+		t.equal(mySocket.status, ServerClientStatus.Connected, 'The socket should have a status of ready.');
 		t.equal(nodeServer.get('Socket'), mySocket, 'Node#get should return the same instance.');
 		t.equal(nodeServer.get(mySocket), mySocket, 'When passing a NodeSocket, Node#get should return it.');
 	} catch (error) {
@@ -109,13 +108,13 @@ test('Socket Events', { timeout: 5000 }, async t => {
 	// socket.connect and socket.ready are called when connecting
 	nodeSocket.on('connect', client => {
 		t.equal(client.name, null, 'Connect is done before the identify step, it is not available until ready.');
-		t.equal(client.status, SocketStatus.Connected, 'When this event fires, the status should be "Connected".');
+		t.equal(client.status, ClientSocketStatus.Connected, 'When this event fires, the status should be "Connected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
 		t.notEqual(client.socket, null, 'The socket must not be null during connection.');
 	});
 	nodeSocket.on('ready', client => {
 		t.equal(client.name, 'Server', 'Ready is emitted after the identify step, the name should be available.');
-		t.equal(client.status, SocketStatus.Ready, 'When this event fires, the status should be "Ready".');
+		t.equal(client.status, ClientSocketStatus.Ready, 'When this event fires, the status should be "Ready".');
 		t.equal(client.queue.size, 0, 'The queue must be empty after connection.');
 		t.notEqual(client.socket, null, 'The socket must not be null after connection.');
 	});
@@ -128,7 +127,7 @@ test('Socket Events', { timeout: 5000 }, async t => {
 	// Test a server outage
 	nodeSocket.on('disconnect', client => {
 		t.equal(client.name, 'Server', 'The name should always be available, even after being disconnected.');
-		t.equal(client.status, SocketStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
+		t.equal(client.status, ClientSocketStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty during a disconnection.');
 	});
 	await nodeServer.close();
@@ -144,7 +143,7 @@ test('Client Events', { timeout: 5000 }, async t => {
 	// client.connect is called when connecting
 	nodeServer.on('connect', client => {
 		t.equal(client.name, 'Socket', 'Connect is done after the identify step, the name should be available.');
-		t.equal(client.status, SocketStatus.Connected, 'When this event fires, the status should be "Connected".');
+		t.equal(client.status, ServerClientStatus.Connected, 'When this event fires, the status should be "Connected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
 	});
 
@@ -152,7 +151,7 @@ test('Client Events', { timeout: 5000 }, async t => {
 	await nodeSocket.connectTo(port);
 	nodeServer.on('disconnect', async client => {
 		t.equal(client.name, 'Socket', 'The name should always be available, even after being disconnected.');
-		t.equal(client.status, SocketStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
+		t.equal(client.status, ServerClientStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty during a disconnection.');
 		await nodeServer.close();
 	});
@@ -211,7 +210,7 @@ test('Server Double Disconnection', { timeout: 5000 }, async t => {
 	}
 });
 
-test.skip('Socket Connection Retries', { timeout: 7500 }, async t => {
+test('Socket Connection Retries', { timeout: 7500 }, async t => {
 	t.plan(4);
 	const [nodeServer, nodeSocket] = await setup(t, ++port, { maximumRetries: 3, retryTime: 0 });
 	await nodeServer.close();
@@ -263,7 +262,7 @@ test('Socket Connection Retries (Successful Reconnect)', { timeout: 7500 }, asyn
 	}
 });
 
-test('Socket Connection Retries (Successful Reconnect | Different Name)', { timeout: 7500 }, async t => {
+test.skip('Socket Connection Retries (Successful Reconnect | Different Name)', { timeout: 7500 }, async t => {
 	t.plan(8);
 	const [nodeServerFirst, nodeSocket] = await setup(t, ++port, { maximumRetries: 3, retryTime: 200 });
 
@@ -298,7 +297,7 @@ test('Socket Connection Retries (Successful Reconnect | Different Name)', { time
 	}
 });
 
-test('Socket Connection Retries (Abrupt Close)', { timeout: 7500 }, async t => {
+test.skip('Socket Connection Retries (Abrupt Close)', { timeout: 7500 }, async t => {
 	t.plan(3);
 	const [nodeServer, nodeSocket] = await setup(t, ++port, { maximumRetries: -1, retryTime: 200 });
 	await nodeServer.close();
@@ -831,19 +830,10 @@ test('Abrupt Disconnection (Disconnected Without Clearing Messages)', { timeout:
 	await nodeServer.close();
 });
 
-test.skip('Duplicated Socket', { timeout: 5000 }, async t => {
+test('Duplicated Socket', { timeout: 5000 }, async t => {
 	t.plan(1);
 	const [nodeServer, nodeSocketFirst] = await setup(t, ++port, undefined);
 	const nodeSocketSecond = new Client('Socket');
-
-	nodeSocketFirst
-		.on('connecting', c => console.log('First Connecting...', c.name))
-		.on('connect', c => console.log('First Connected:', c.name))
-		.on('disconnect', c => console.log('First Disconnected:', c.name));
-	nodeSocketSecond
-		.on('connecting', c => console.log('Second Connecting...', c.name))
-		.on('connect', c => console.log('Second Connected:', c.name))
-		.on('disconnect', c => console.log('Second Disconnected:', c.name));
 
 	nodeSocketFirst.once('disconnect', async () => {
 		t.pass('The socket has been disconnected.');

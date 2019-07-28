@@ -1,4 +1,3 @@
-import { SocketStatus } from '../../Util/Constants';
 import { NodeMessage } from '../NodeMessage';
 import { Queue } from '../Queue';
 import { Socket } from 'net';
@@ -13,19 +12,14 @@ export abstract class SocketHandler {
 	/**
 	 * The socket that connects Veza to the network
 	 */
-	public socket: Socket | null;
-
-	/**
-	 * The status of this client
-	 */
-	public status = SocketStatus.Connecting;
+	public socket: Socket;
 
 	/**
 	 * The incoming message queue for this handler
 	 */
 	public queue = new Queue();
 
-	public constructor(name: string | null, socket: Socket | null) {
+	public constructor(name: string | null, socket: Socket) {
 		this.name = name;
 		this.socket = socket;
 	}
@@ -36,7 +30,7 @@ export abstract class SocketHandler {
 	 * @param options The options for this message
 	 */
 	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}) {
-		if (!this.socket) {
+		if (this.socket.destroyed) {
 			return Promise.reject(new Error('Cannot send a message to a missing socket.'));
 		}
 
@@ -76,26 +70,6 @@ export abstract class SocketHandler {
 				else reject(error);
 			}
 		});
-	}
-
-	/**
-	 * Disconnect from the socket, this will also reject all messages
-	 */
-	public disconnect() {
-		if (!this.socket) return false;
-
-		this.socket.destroy();
-		this.socket.removeAllListeners();
-		this.socket = null;
-
-		if (this.queue.size) {
-			const rejectError = new Error('Socket has been disconnected.');
-			for (const element of this.queue.values()) element.reject(rejectError);
-		}
-
-		this.status = SocketStatus.Disconnected;
-
-		return true;
 	}
 
 	protected _handleMessage(message: RawMessage) {

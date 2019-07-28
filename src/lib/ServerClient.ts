@@ -1,12 +1,19 @@
 import { SocketHandler } from './Structures/Base/SocketHandler';
-import { SocketStatus } from './Util/Constants';
 import { Socket } from 'net';
 import { Server } from './Server';
 import { makeError } from './Structures/MessageError';
+import { NetworkError, VCLOSE } from './Util/Shared';
+
+export enum ServerClientStatus {
+	Connected,
+	Connecting,
+	Disconnected
+}
 
 export class ServerClient extends SocketHandler {
 
 	public readonly server: Server;
+	public status = ServerClientStatus.Disconnected;
 
 	public constructor(server: Server, socket: Socket) {
 		super(null, socket);
@@ -14,7 +21,7 @@ export class ServerClient extends SocketHandler {
 	}
 
 	public async setup() {
-		this.status = SocketStatus.Connecting;
+		this.status = ServerClientStatus.Connecting;
 		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('error', this._onError.bind(this))
@@ -27,13 +34,13 @@ export class ServerClient extends SocketHandler {
 			if (typeof sName !== 'string') {
 				return this.disconnect();
 			}
-			this.status = SocketStatus.Connected;
+			this.status = ServerClientStatus.Connected;
 			this.name = sName;
 
 			// Disconnect if a previous socket existed.
 			const existing = this.server.clients.get(sName);
 			if (existing) {
-				existing.disconnect();
+				existing.disconnect(true);
 			}
 
 			// Add this socket to the clients.
@@ -47,12 +54,23 @@ export class ServerClient extends SocketHandler {
 	/**
 	 * Disconnect from the socket, this will also reject all messages
 	 */
-	public disconnect(): boolean {
-		if (!super.disconnect()) return false;
+	public disconnect(close?: boolean) {
+		if (this.status === ServerClientStatus.Disconnected) return false;
 
+		if (close) this.socket.end(VCLOSE);
+		this.socket.destroy();
+		if (this.queue.size) {
+			const rejectError = new Error('Socket has been disconnected.');
+			for (const element of this.queue.values()) element.reject(rejectError);
+		}
+
+		this.status = ServerClientStatus.Disconnected;
 		if (this.name) {
 			this.server.clients.delete(this.name);
 		}
+
+		this.socket.removeAllListeners();
+		this.server.emit('disconnect', this);
 
 		return true;
 	}
@@ -62,7 +80,7 @@ export class ServerClient extends SocketHandler {
 		for (const processed of this.queue.process(data)) {
 			if (processed.id === null) {
 				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
-				if (this.status === SocketStatus.Connected) {
+				if (this.status === ServerClientStatus.Connected) {
 					this.server.emit('error', makeError('Failed to parse message', processed.data), this);
 				} else {
 					this.server.emit('error', makeError('Failed to process message during connection, calling disconnect', processed.data), this);
@@ -75,15 +93,14 @@ export class ServerClient extends SocketHandler {
 		}
 	}
 
-	private _onError(error: any) {
+	private _onError(error: NetworkError) {
 		/* istanbul ignore next: Hard to reproduce in Azure. */
 		this.server.emit('error', error, this);
 	}
 
 	private _onClose() {
-		if (this.status === SocketStatus.Disconnected) return;
+		if (this.status === ServerClientStatus.Disconnected) return;
 		this.disconnect();
-		this.server.emit('disconnect', this);
 	}
 
 }

@@ -1,7 +1,7 @@
 import { SocketConnectOpts } from 'net';
 import { EventEmitter } from 'events';
 import { ClientSocket } from './ClientSocket';
-import { SendOptions } from './Util/Shared';
+import { SendOptions, NetworkError } from './Util/Shared';
 import { NodeMessage } from './Structures/NodeMessage';
 
 export interface NodeClientOptions {
@@ -91,7 +91,7 @@ interface NodeClient {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	on(event: 'error', listener: (error: Error, client: ClientSocket | null) => void): this;
+	on(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket | null) => void): this;
 	/**
 	 * Emitted a connection to a server is in progress.
 	 */
@@ -120,7 +120,7 @@ interface NodeClient {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	once(event: 'error', listener: (error: Error, client: ClientSocket | null) => void): this;
+	once(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket | null) => void): this;
 	/**
 	 * Emitted a connection to a server is in progress.
 	 */
@@ -149,7 +149,7 @@ interface NodeClient {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	off(event: 'error', listener: (error: Error, client: ClientSocket | null) => void): this;
+	off(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket | null) => void): this;
 	/**
 	 * Emitted a connection to a server is in progress.
 	 */
@@ -178,7 +178,7 @@ interface NodeClient {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	emit(event: 'error', error: Error, client: ClientSocket): boolean;
+	emit(event: 'error', error: Error | NetworkError, client: ClientSocket): boolean;
 	/**
 	 * Emits a connecting event.
 	 */

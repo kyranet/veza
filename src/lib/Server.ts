@@ -1,6 +1,6 @@
 import { Server, Socket, ListenOptions } from 'net';
 import { ServerClient } from './ServerClient';
-import { BroadcastOptions, SendOptions } from './Util/Shared';
+import { BroadcastOptions, SendOptions, NetworkError } from './Util/Shared';
 import { EventEmitter } from 'events';
 import { NodeMessage } from './Structures/NodeMessage';
 
@@ -123,14 +123,14 @@ class NodeServer extends EventEmitter {
 	/**
 	 * Disconnect the server and rejects all current messages
 	 */
-	public async close() {
+	public async close(closeSockets?: boolean) {
 		// If it's closing or closed, do nothing
 		if (this.status === ServerStatus.Closing || this.status === ServerStatus.Closed) return false;
 		this.status = ServerStatus.Closing;
 
 		// Disconnect all sockets
 		for (const socket of this.clients.values()) {
-			socket.disconnect();
+			socket.disconnect(closeSockets);
 		}
 		await new Promise((resolve, reject) => {
 			this.server.close(error => {
@@ -177,7 +177,7 @@ interface NodeServer {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	on(event: 'error', listener: (error: Error, client: ServerClient | null) => void): this;
+	on(event: 'error', listener: (error: Error | NetworkError, client: ServerClient | null) => void): this;
 	/**
 	 * Emitted when a new connection is made and set up.
 	 */
@@ -206,7 +206,7 @@ interface NodeServer {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	once(event: 'error', listener: (error: Error, client: ServerClient | null) => void): this;
+	once(event: 'error', listener: (error: Error | NetworkError, client: ServerClient | null) => void): this;
 	/**
 	 * Emitted when a new connection is made and set up.
 	 */
@@ -239,7 +239,7 @@ interface NodeServer {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	off(event: 'error', listener: (error: Error, client: ServerClient | null) => void): this;
+	off(event: 'error', listener: (error: Error | NetworkError, client: ServerClient | null) => void): this;
 	/**
 	 * Emitted when a new connection is made and set up.
 	 */
@@ -268,7 +268,7 @@ interface NodeServer {
 	/**
 	 * Emits a server error event.
 	 */
-	emit(event: 'error', error: Error, client: ServerClient | null): boolean;
+	emit(event: 'error', error: Error | NetworkError, client: ServerClient | null): boolean;
 	/**
 	 * Emits a connection made and set up to the server.
 	 */
