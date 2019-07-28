@@ -2,7 +2,7 @@
   "extends": "bamboo",
   "rules": {
     "no-useless-constructor": 0,
-	  "@typescript-eslint/unified-signatures": 0
+    "@typescript-eslint/unified-signatures": 0
   },
   "globals": {
     "BigInt": true
