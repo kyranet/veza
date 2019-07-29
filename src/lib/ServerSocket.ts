@@ -10,7 +10,7 @@ export enum ServerClientStatus {
 	Disconnected
 }
 
-export class ServerClient extends SocketHandler {
+export class ServerSocket extends SocketHandler {
 
 	public readonly server: Server;
 	public status = ServerClientStatus.Disconnected;

@@ -1,5 +1,5 @@
 import { Server, Socket, ListenOptions } from 'net';
-import { ServerClient } from './ServerClient';
+import { ServerSocket } from './ServerSocket';
 import { BroadcastOptions, SendOptions, NetworkError } from './Util/Shared';
 import { EventEmitter } from 'events';
 import { NodeMessage } from './Structures/NodeMessage';
@@ -15,7 +15,7 @@ class NodeServer extends EventEmitter {
 
 	public server: Server;
 	public readonly name: string;
-	public readonly clients: Map<string, ServerClient> = new Map();
+	public readonly clients: Map<string, ServerSocket> = new Map();
 	public status = ServerStatus.Closed;
 
 	public constructor(name: string, connectionListener?: (socket: Socket) => void);
@@ -30,9 +30,9 @@ class NodeServer extends EventEmitter {
 	 * Get a NodeSocket by its name or Socket
 	 * @param name The NodeSocket to get
 	 */
-	public get(name: string | ServerClient) {
+	public get(name: string | ServerSocket) {
 		if (typeof name === 'string') return this.clients.get(name) || null;
-		if (name instanceof ServerClient) return name;
+		if (name instanceof ServerSocket) return name;
 		throw new TypeError('Expected a string or a ServerClient instance.');
 	}
 
@@ -40,7 +40,7 @@ class NodeServer extends EventEmitter {
 	 * Check if a NodeSocket exists by its name of Socket
 	 * @param name The NodeSocket to get
 	 */
-	public has(name: string | ServerClient) {
+	public has(name: string | ServerSocket) {
 		return Boolean(this.get(name));
 	}
 
@@ -50,7 +50,7 @@ class NodeServer extends EventEmitter {
 	 * @param data The data to send to the socket
 	 * @param options The options for this message
 	 */
-	public sendTo(name: string | ServerClient, data: any, options?: SendOptions): Promise<any> {
+	public sendTo(name: string | ServerSocket, data: any, options?: SendOptions): Promise<any> {
 		const nodeSocket = this.get(name);
 		return nodeSocket
 			? nodeSocket.send(data, options)
@@ -150,7 +150,7 @@ class NodeServer extends EventEmitter {
 	}
 
 	private _onConnection(socket: Socket) {
-		new ServerClient(this, socket).setup();
+		new ServerSocket(this, socket).setup();
 	}
 
 	private _onError(error: Error) {
@@ -168,7 +168,7 @@ interface NodeServer {
 	/**
 	 * Emitted when the server receives data.
 	 */
-	on(event: 'raw', listener: (data: Uint8Array, client: ServerClient) => void): this;
+	on(event: 'raw', listener: (data: Uint8Array, client: ServerSocket) => void): this;
 	/**
 	 * Emitted when the server opens.
 	 */
@@ -180,24 +180,24 @@ interface NodeServer {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	on(event: 'error', listener: (error: Error | NetworkError, client: ServerClient | null) => void): this;
+	on(event: 'error', listener: (error: Error | NetworkError, client: ServerSocket | null) => void): this;
 	/**
 	 * Emitted when a new connection is made and set up.
 	 */
-	on(event: 'connect', listener: (client: ServerClient) => void): this;
+	on(event: 'connect', listener: (client: ServerSocket) => void): this;
 	/**
 	 * Emitted when a client disconnects from the server.
 	 */
-	on(event: 'disconnect', listener: (client: ServerClient) => void): this;
+	on(event: 'disconnect', listener: (client: ServerSocket) => void): this;
 	/**
 	 * Emitted when the server receives and parsed a message.
 	 */
-	on(event: 'message', listener: (message: NodeMessage, client: ServerClient) => void): this;
+	on(event: 'message', listener: (message: NodeMessage, client: ServerSocket) => void): this;
 
 	/**
 	 * Emitted when the server receives data.
 	 */
-	once(event: 'raw', listener: (data: Uint8Array, client: ServerClient) => void): this;
+	once(event: 'raw', listener: (data: Uint8Array, client: ServerSocket) => void): this;
 	/**
 	 * Emitted when the server opens.
 	 */
@@ -209,15 +209,15 @@ interface NodeServer {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	once(event: 'error', listener: (error: Error | NetworkError, client: ServerClient | null) => void): this;
+	once(event: 'error', listener: (error: Error | NetworkError, client: ServerSocket | null) => void): this;
 	/**
 	 * Emitted when a new connection is made and set up.
 	 */
-	once(event: 'connect', listener: (client: ServerClient) => void): this;
+	once(event: 'connect', listener: (client: ServerSocket) => void): this;
 	/**
 	 * Emitted when a client disconnects from the server.
 	 */
-	once(event: 'disconnect', listener: (client: ServerClient) => void): this;
+	once(event: 'disconnect', listener: (client: ServerSocket) => void): this;
 	/**
 	 * Emitted once when a server is ready.
 	 */
@@ -225,12 +225,12 @@ interface NodeServer {
 	/**
 	 * Emitted when the server receives and parsed a message.
 	 */
-	once(event: 'message', listener: (message: NodeMessage, client: ServerClient) => void): this;
+	once(event: 'message', listener: (message: NodeMessage, client: ServerSocket) => void): this;
 
 	/**
 	 * Emitted when the server receives data.
 	 */
-	off(event: 'raw', listener: (data: Uint8Array, client: ServerClient) => void): this;
+	off(event: 'raw', listener: (data: Uint8Array, client: ServerSocket) => void): this;
 	/**
 	 * Emitted when the server opens.
 	 */
@@ -242,24 +242,24 @@ interface NodeServer {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	off(event: 'error', listener: (error: Error | NetworkError, client: ServerClient | null) => void): this;
+	off(event: 'error', listener: (error: Error | NetworkError, client: ServerSocket | null) => void): this;
 	/**
 	 * Emitted when a new connection is made and set up.
 	 */
-	off(event: 'connect', listener: (client: ServerClient) => void): this;
+	off(event: 'connect', listener: (client: ServerSocket) => void): this;
 	/**
 	 * Emitted when a client disconnects from the server.
 	 */
-	off(event: 'disconnect', listener: (client: ServerClient) => void): this;
+	off(event: 'disconnect', listener: (client: ServerSocket) => void): this;
 	/**
 	 * Emitted when the server receives and parsed a message.
 	 */
-	off(event: 'message', listener: (message: NodeMessage, client: ServerClient) => void): this;
+	off(event: 'message', listener: (message: NodeMessage, client: ServerSocket) => void): this;
 
 	/**
 	 * Emits raw data received from the underlying socket.
 	 */
-	emit(event: 'raw', data: Uint8Array, client: ServerClient): boolean;
+	emit(event: 'raw', data: Uint8Array, client: ServerSocket): boolean;
 	/**
 	 * Emits a server open event.
 	 */
@@ -271,19 +271,19 @@ interface NodeServer {
 	/**
 	 * Emits a server error event.
 	 */
-	emit(event: 'error', error: Error | NetworkError, client: ServerClient | null): boolean;
+	emit(event: 'error', error: Error | NetworkError, client: ServerSocket | null): boolean;
 	/**
 	 * Emits a connection made and set up to the server.
 	 */
-	emit(event: 'connect', client: ServerClient): boolean;
+	emit(event: 'connect', client: ServerSocket): boolean;
 	/**
 	 * Emits a disconnection of a client from the server.
 	 */
-	emit(event: 'disconnect', client: ServerClient): boolean;
+	emit(event: 'disconnect', client: ServerSocket): boolean;
 	/**
 	 * Emits a parsed NodeMessage instance ready for usage.
 	 */
-	emit(event: 'message', message: NodeMessage, client: ServerClient): boolean;
+	emit(event: 'message', message: NodeMessage, client: ServerSocket): boolean;
 }
 
 export { NodeServer as Server };
