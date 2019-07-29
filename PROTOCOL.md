@@ -10,8 +10,9 @@ and may `close` it eventually, while a `Client` can connect to and disconnect fr
 `IPC` is based on where the server is opened to, typically if a numeric port or an IP is passed, it will use `TCP`, and
 `IPC` when a path to a socket file is passed instead.
 
-Furthermore each `Client` has a collection of `ClientSocket`s, which are each server's sockets, and each `Server` has a
-collection of `ServerClient`s, which are each client's sockets.
+Furthermore each `Client` has a collection of sockets used to send messages to the servers it's connected to, named
+`ClientSocket`s, and each `Server` has a collection of sockets used to send messages to the clients connected to it,
+named `ServerSocket`.
 
 Assuming the server runs on `TCP` with the port `8002`, the connection would be something like the following:
 
@@ -19,11 +20,11 @@ Assuming the server runs on `TCP` with the port `8002`, the connection would be 
 ┌────────┐                              ┌────────┐
 │ Server │         ClientSocket         │ Client │
 ├────────┤ ←--------------------------- ├────────┤
-│  8002  │         ServerClient         │  8002  │
+│  8002  │         ServerSocket         │  8002  │
 └────────┘ ---------------------------→ └────────┘
 ```
 
-> `ClientSocket` allows Client to send messages to Server, and `ServerClient` allows Server to send messages to Client.
+> `ClientSocket` allows Client to send messages to Server, and `ServerSocket` allows Server to send messages to Client.
 
 However, multiple clients can connect to a server just fine.
 
@@ -31,10 +32,10 @@ However, multiple clients can connect to a server just fine.
 ┌────────┐      ┌────────┐      ┌────────┐
 │ Client │  CS  │ Server │  CS  │ Client │
 ├────────┤ ---→ ├────────┤ ←--- ├────────┤
-│  8002  │  SC  │  8002  │  SC  │  8002  │
+│  8002  │  SS  │  8002  │  SS  │  8002  │
 └────────┘ ←--- └────────┘ ---→ └────────┘
                   ↑    |
-               CS |    | SC
+               CS |    | SS
                   |    ↓
                 ┌────────┐
                 │ Client │
@@ -43,12 +44,12 @@ However, multiple clients can connect to a server just fine.
                 └────────┘
 ```
 
-> `CS` and `SC` refer to `ClientSocket` and `ServerClient`, respectively.
+> `CS` and `SS` refer to `ClientSocket` and `ServerSocket`, respectively.
 
 ## Communication
 
 Veza uses binary-encoded messages to communicate between all sockets, to do so, it uses [Binary Term Format][binarytf]
-to encode messages before sending them, and all the communication happens in `ClientSocket` and in `ServerClient`
+to encode messages before sending them, and all the communication happens in `ClientSocket` and in `ServerSocket`
 exclusively, since they define a socket connection.
 
 Each socket is a [duplex][] connection, so they have both a message sender and a receiver. The composition of messages
