@@ -79,16 +79,16 @@ class NodeServer extends EventEmitter {
 	 * Create a server for this Node instance.
 	 * @param options The options to pass to net.Server#listen
 	 */
-	public async open(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): Promise<void>;
-	public async open(port?: number, hostname?: string, listeningListener?: () => void): Promise<void>;
-	public async open(port?: number, backlog?: number, listeningListener?: () => void): Promise<void>;
-	public async open(port?: number, listeningListener?: () => void): Promise<void>;
-	public async open(path: string, backlog?: number, listeningListener?: () => void): Promise<void>;
-	public async open(path: string, listeningListener?: () => void): Promise<void>;
-	public async open(options: ListenOptions, listeningListener?: () => void): Promise<void>;
-	public async open(handle: any, backlog?: number, listeningListener?: () => void): Promise<void>;
-	public async open(handle: any, listeningListener?: () => void): Promise<void>;
-	public async open(...options: any[]): Promise<void> {
+	public async listen(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): Promise<this>;
+	public async listen(port?: number, hostname?: string, listeningListener?: () => void): Promise<this>;
+	public async listen(port?: number, backlog?: number, listeningListener?: () => void): Promise<this>;
+	public async listen(port?: number, listeningListener?: () => void): Promise<this>;
+	public async listen(path: string, backlog?: number, listeningListener?: () => void): Promise<this>;
+	public async listen(path: string, listeningListener?: () => void): Promise<this>;
+	public async listen(options: ListenOptions, listeningListener?: () => void): Promise<this>;
+	public async listen(handle: any, backlog?: number, listeningListener?: () => void): Promise<this>;
+	public async listen(handle: any, listeningListener?: () => void): Promise<this>;
+	public async listen(...options: any[]): Promise<this> {
 		this.status = ServerStatus.Opening;
 		await new Promise((resolve, reject) => {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -118,6 +118,8 @@ class NodeServer extends EventEmitter {
 			.on('connection', this._onConnection.bind(this))
 			.on('error', this._onError.bind(this))
 			.on('close', this._onClose.bind(this));
+
+		return this;
 	}
 
 	/**
