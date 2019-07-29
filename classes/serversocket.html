@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SocketHandler | veza</title>
+	<title>ServerSocket | veza</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="sockethandler.html">SocketHandler</a>
+					<a href="serversocket.html">ServerSocket</a>
 				</li>
 			</ul>
-			<h1>Class SocketHandler</h1>
+			<h1>Class ServerSocket</h1>
 		</div>
 	</div>
 </header>
@@ -68,13 +68,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SocketHandler</span>
+						<a href="sockethandler.html" class="tsd-signature-type">SocketHandler</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<a href="serversocket.html" class="tsd-signature-type">ServerSocket</a>
-							</li>
-							<li>
-								<a href="clientsocket.html" class="tsd-signature-type">ClientSocket</a>
+								<span class="target">ServerSocket</span>
 							</li>
 						</ul>
 					</li>
@@ -87,23 +84,29 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="sockethandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="serversocket.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sockethandler.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sockethandler.html#queue" class="tsd-kind-icon">queue</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sockethandler.html#socket" class="tsd-kind-icon">socket</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="serversocket.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="serversocket.html#queue" class="tsd-kind-icon">queue</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="serversocket.html#server" class="tsd-kind-icon">server</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="serversocket.html#socket" class="tsd-kind-icon">socket</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="serversocket.html#status" class="tsd-kind-icon">status</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="sockethandler.html#_handlemessage" class="tsd-kind-icon">_handle<wbr>Message</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="sockethandler.html#_ondata" class="tsd-kind-icon">_on<wbr>Data</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="sockethandler.html#send" class="tsd-kind-icon">send</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="serversocket.html#_handlemessage" class="tsd-kind-icon">_handle<wbr>Message</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="serversocket.html#_onclose" class="tsd-kind-icon">_on<wbr>Close</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected"><a href="serversocket.html#_ondata" class="tsd-kind-icon">_on<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="serversocket.html#_onerror" class="tsd-kind-icon">_on<wbr>Error</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="serversocket.html#disconnect" class="tsd-kind-icon">disconnect</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="serversocket.html#send" class="tsd-kind-icon">send</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="serversocket.html#setup" class="tsd-kind-icon">setup</a></li>
 							</ul>
 						</section>
 					</div>
@@ -111,50 +114,53 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Socket<wbr>Handler<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, socket<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Socket</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sockethandler.html" class="tsd-signature-type">SocketHandler</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Server<wbr>Socket<span class="tsd-signature-symbol">(</span>server<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Server</span>, socket<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Socket</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="serversocket.html" class="tsd-signature-type">ServerSocket</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Overrides <a href="sockethandler.html">SocketHandler</a>.<a href="sockethandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/Structures/Base/SocketHandler.ts#L20">lib/Structures/Base/SocketHandler.ts:20</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/ServerSocket.ts#L16">lib/ServerSocket.ts:16</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>server: <span class="tsd-signature-type">Server</span></h5>
 								</li>
 								<li>
 									<h5>socket: <span class="tsd-signature-type">Socket</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="sockethandler.html" class="tsd-signature-type">SocketHandler</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="serversocket.html" class="tsd-signature-type">ServerSocket</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="sockethandler.html">SocketHandler</a>.<a href="sockethandler.html#name">name</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/Structures/Base/SocketHandler.ts#L10">lib/Structures/Base/SocketHandler.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="queue" class="tsd-anchor"></a>
 					<h3>queue</h3>
 					<div class="tsd-signature tsd-kind-icon">queue<span class="tsd-signature-symbol">:</span> <a href="queue.html" class="tsd-signature-type">Queue</a><span class="tsd-signature-symbol"> =&nbsp;new Queue()</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="sockethandler.html">SocketHandler</a>.<a href="sockethandler.html#queue">queue</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/Structures/Base/SocketHandler.ts#L20">lib/Structures/Base/SocketHandler.ts:20</a></li>
 						</ul>
@@ -166,10 +172,21 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="server" class="tsd-anchor"></a>
+					<h3>server</h3>
+					<div class="tsd-signature tsd-kind-icon">server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Server</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/ServerSocket.ts#L15">lib/ServerSocket.ts:15</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="socket" class="tsd-anchor"></a>
 					<h3>socket</h3>
 					<div class="tsd-signature tsd-kind-icon">socket<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Socket</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="sockethandler.html">SocketHandler</a>.<a href="sockethandler.html#socket">socket</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/Structures/Base/SocketHandler.ts#L15">lib/Structures/Base/SocketHandler.ts:15</a></li>
 						</ul>
@@ -180,18 +197,29 @@
 						</div>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="status" class="tsd-anchor"></a>
+					<h3>status</h3>
+					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <a href="../enums/serversocketstatus.html" class="tsd-signature-type">ServerSocketStatus</a><span class="tsd-signature-symbol"> =&nbsp;ServerSocketStatus.Disconnected</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/ServerSocket.ts#L16">lib/ServerSocket.ts:16</a></li>
+						</ul>
+					</aside>
+				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 					<a name="_handlemessage" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _handle<wbr>Message</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 						<li class="tsd-signature tsd-kind-icon">_handle<wbr>Message<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><a href="../interfaces/rawmessage.html" class="tsd-signature-type">RawMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Inherited from <a href="sockethandler.html">SocketHandler</a>.<a href="sockethandler.html#_handlemessage">_handleMessage</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/Structures/Base/SocketHandler.ts#L75">lib/Structures/Base/SocketHandler.ts:75</a></li>
 								</ul>
@@ -209,17 +237,35 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-					<a name="_ondata" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagAbstract">Abstract</span> _on<wbr>Data</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">_on<wbr>Data<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="_onclose" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _on<wbr>Close</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">_on<wbr>Close<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/Structures/Base/SocketHandler.ts#L86">lib/Structures/Base/SocketHandler.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/ServerSocket.ts#L102">lib/ServerSocket.ts:102</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+					<a name="_ondata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _on<wbr>Data</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">_on<wbr>Data<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="sockethandler.html">SocketHandler</a>.<a href="sockethandler.html#_ondata">_onData</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/ServerSocket.ts#L79">lib/ServerSocket.ts:79</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -232,15 +278,67 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="_onerror" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _on<wbr>Error</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">_on<wbr>Error<span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="../interfaces/networkerror.html" class="tsd-signature-type">NetworkError</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/ServerSocket.ts#L97">lib/ServerSocket.ts:97</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>error: <a href="../interfaces/networkerror.html" class="tsd-signature-type">NetworkError</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="disconnect" class="tsd-anchor"></a>
+					<h3>disconnect</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">disconnect<span class="tsd-signature-symbol">(</span>close<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/ServerSocket.ts#L58">lib/ServerSocket.ts:58</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Disconnect from the socket, this will also reject all messages</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> close: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="send" class="tsd-anchor"></a>
 					<h3>send</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 						<li class="tsd-signature tsd-kind-icon">send<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, __namedParameters<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Inherited from <a href="sockethandler.html">SocketHandler</a>.<a href="sockethandler.html#send">send</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/Structures/Base/SocketHandler.ts#L32">lib/Structures/Base/SocketHandler.ts:32</a></li>
 								</ul>
@@ -265,6 +363,23 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setup" class="tsd-anchor"></a>
+					<h3>setup</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">setup<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/69e986f/src/lib/ServerSocket.ts#L23">lib/ServerSocket.ts:23</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -298,39 +413,57 @@
 					<li class=" tsd-kind-class">
 						<a href="queue.html" class="tsd-kind-icon">Queue</a>
 					</li>
-					<li class=" tsd-kind-class">
-						<a href="serversocket.html" class="tsd-kind-icon">Server<wbr>Socket</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="sockethandler.html" class="tsd-kind-icon">Socket<wbr>Handler</a>
+						<a href="serversocket.html" class="tsd-kind-icon">Server<wbr>Socket</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="sockethandler.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+								<a href="serversocket.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="serversocket.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="serversocket.html#queue" class="tsd-kind-icon">queue</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sockethandler.html#name" class="tsd-kind-icon">name</a>
+								<a href="serversocket.html#server" class="tsd-kind-icon">server</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+								<a href="serversocket.html#socket" class="tsd-kind-icon">socket</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sockethandler.html#queue" class="tsd-kind-icon">queue</a>
+								<a href="serversocket.html#status" class="tsd-kind-icon">status</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sockethandler.html#socket" class="tsd-kind-icon">socket</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="serversocket.html#_handlemessage" class="tsd-kind-icon">_handle<wbr>Message</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-								<a href="sockethandler.html#_handlemessage" class="tsd-kind-icon">_handle<wbr>Message</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="serversocket.html#_onclose" class="tsd-kind-icon">_on<wbr>Close</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-								<a href="sockethandler.html#_ondata" class="tsd-kind-icon">_on<wbr>Data</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
+								<a href="serversocket.html#_ondata" class="tsd-kind-icon">_on<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="serversocket.html#_onerror" class="tsd-kind-icon">_on<wbr>Error</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="sockethandler.html#send" class="tsd-kind-icon">send</a>
+								<a href="serversocket.html#disconnect" class="tsd-kind-icon">disconnect</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="serversocket.html#send" class="tsd-kind-icon">send</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="serversocket.html#setup" class="tsd-kind-icon">setup</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class">
+						<a href="sockethandler.html" class="tsd-kind-icon">Socket<wbr>Handler</a>
+					</li>
 					<li class=" tsd-kind-interface">
 						<a href="../interfaces/broadcastoptions.html" class="tsd-kind-icon">Broadcast<wbr>Options</a>
 					</li>
