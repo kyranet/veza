@@ -1,4 +1,4 @@
-import { Server, Client, NodeClientOptions, ServerClientStatus, ClientSocketStatus } from '../dist/index';
+import { Server, Client, NodeClientOptions, ServerSocketStatus, ClientSocketStatus } from '../dist/index';
 import * as test from 'tape';
 import { create } from '../dist/lib/Util/Header';
 import { get, createServer } from 'http';
@@ -14,7 +14,7 @@ test('Basic Server', { timeout: 5000 }, async t => {
 	const nodeServer = new Server('Server');
 
 	try {
-		await nodeServer.open(++port);
+		await nodeServer.listen(++port);
 	} catch (error) {
 		t.error(error, 'Server should not crash.');
 	}
@@ -24,7 +24,7 @@ test('Basic Server', { timeout: 5000 }, async t => {
 	t.equal(nodeServer.name, 'Server', 'The server should be named after the node.');
 
 	try {
-		await nodeServer.open(++port);
+		await nodeServer.listen(++port);
 		t.fail('This call should definitely crash.');
 	} catch (error) {
 		t.true(error instanceof Error, 'The error should be an instance of Error.');
@@ -43,7 +43,7 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 
 	// Open server
 	try {
-		await nodeServer.open(++port);
+		await nodeServer.listen(++port);
 	} catch (error) {
 		t.error(error, 'Server should not crash.');
 	}
@@ -68,7 +68,7 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 		t.notEqual(mySocket, undefined, 'The node should exist.');
 		t.notEqual(mySocket.socket, null, 'The socket should not be null.');
 		t.equal(mySocket.name, 'Socket', 'The name of the node must be the name of the socket that connected to this server.');
-		t.equal(mySocket.status, ServerClientStatus.Connected, 'The socket should have a status of ready.');
+		t.equal(mySocket.status, ServerSocketStatus.Connected, 'The socket should have a status of ready.');
 		t.equal(nodeServer.get('Socket'), mySocket, 'Node#get should return the same instance.');
 		t.equal(nodeServer.get(mySocket), mySocket, 'When passing a NodeSocket, Node#get should return it.');
 	} catch (error) {
@@ -103,7 +103,7 @@ test('Socket Events', { timeout: 5000 }, async t => {
 
 	const nodeServer = new Server('Server');
 	const nodeSocket = new Client('Socket', { maximumRetries: 0 });
-	await nodeServer.open(++port);
+	await nodeServer.listen(++port);
 
 	// socket.connect and socket.ready are called when connecting
 	nodeSocket.on('connect', client => {
@@ -138,12 +138,12 @@ test('Client Events', { timeout: 5000 }, async t => {
 
 	const nodeServer = new Server('Server');
 	const nodeSocket = new Client('Socket');
-	await nodeServer.open(++port);
+	await nodeServer.listen(++port);
 
 	// client.connect is called when connecting
 	nodeServer.on('connect', client => {
 		t.equal(client.name, 'Socket', 'Connect is done after the identify step, the name should be available.');
-		t.equal(client.status, ServerClientStatus.Connected, 'When this event fires, the status should be "Connected".');
+		t.equal(client.status, ServerSocketStatus.Connected, 'When this event fires, the status should be "Connected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty during connection.');
 	});
 
@@ -151,7 +151,7 @@ test('Client Events', { timeout: 5000 }, async t => {
 	await nodeSocket.connectTo(port);
 	nodeServer.on('disconnect', async client => {
 		t.equal(client.name, 'Socket', 'The name should always be available, even after being disconnected.');
-		t.equal(client.status, ServerClientStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
+		t.equal(client.status, ServerSocketStatus.Disconnected, 'When this event fires, the status should be "Disconnected".');
 		t.equal(client.queue.size, 0, 'The queue must be empty during a disconnection.');
 		await nodeServer.close();
 	});
@@ -166,7 +166,7 @@ test('Server Events', { timeout: 5000 }, async t => {
 		t.equal(nodeServer.clients.size, 0, 'The amount of clients at start-up should be 0.');
 		t.equal(nodeServer.name, 'Server', 'The name of the server should be the same as the Node itself.');
 	});
-	await nodeServer.open(++port);
+	await nodeServer.listen(++port);
 
 	nodeServer.on('close', () => {
 		t.equal(nodeServer.clients.size, 0, 'The amount of clients at start-up should be 0.');
@@ -251,7 +251,7 @@ test('Socket Connection Retries (Successful Reconnect)', { timeout: 7500 }, asyn
 		nodeSocket
 			.once('connect', () => t.pass('Socket fired connect'))
 			.once('ready', () => t.pass('Socket fired Ready'));
-		await nodeServer.open(port);
+		await nodeServer.listen(port);
 		await new Promise(resolve => {
 			nodeServer.once('connect', resolve);
 		});
@@ -278,7 +278,7 @@ test('Socket Connection Retries (Successful Reconnect | Different Name)', { time
 		nodeSocket
 			.once('connect', () => t.pass('Socket fired connect'))
 			.once('ready', () => t.pass('Socket fired Ready'));
-		await nodeServerSecond.open(port);
+		await nodeServerSecond.listen(port);
 		await new Promise(resolve => {
 			nodeServerSecond.once('connect', resolve);
 		});
@@ -326,7 +326,7 @@ test('Server Connection Close', { timeout: 5000 }, async t => {
 test('HTTP Socket', { timeout: 5000 }, async t => {
 	t.plan(1);
 	const nodeServer = new Server('Server');
-	await nodeServer.open(++port);
+	await nodeServer.listen(++port);
 
 	try {
 		await new Promise((resolve, reject) => {
@@ -872,7 +872,7 @@ async function setup(t: test.Test, port: number, socketNodeOptions?: NodeClientO
 
 	try {
 		// Open server
-		await nodeServer.open(port);
+		await nodeServer.listen(port);
 		await nodeSocket.connectTo(port);
 
 		await new Promise(resolve => {

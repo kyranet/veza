@@ -4,7 +4,7 @@ import { Server } from './Server';
 import { makeError } from './Structures/MessageError';
 import { NetworkError, VCLOSE } from './Util/Shared';
 
-export enum ServerClientStatus {
+export enum ServerSocketStatus {
 	Connected,
 	Connecting,
 	Disconnected
@@ -13,7 +13,7 @@ export enum ServerClientStatus {
 export class ServerSocket extends SocketHandler {
 
 	public readonly server: Server;
-	public status = ServerClientStatus.Disconnected;
+	public status = ServerSocketStatus.Disconnected;
 
 	public constructor(server: Server, socket: Socket) {
 		super(null, socket);
@@ -21,7 +21,7 @@ export class ServerSocket extends SocketHandler {
 	}
 
 	public async setup() {
-		this.status = ServerClientStatus.Connecting;
+		this.status = ServerSocketStatus.Connecting;
 		this.socket!
 			.on('data', this._onData.bind(this))
 			.on('error', this._onError.bind(this))
@@ -35,7 +35,7 @@ export class ServerSocket extends SocketHandler {
 			if (typeof sName !== 'string') {
 				return this.disconnect();
 			}
-			this.status = ServerClientStatus.Connected;
+			this.status = ServerSocketStatus.Connected;
 			this.name = sName;
 
 			// Disconnect if a previous socket existed.
@@ -56,7 +56,7 @@ export class ServerSocket extends SocketHandler {
 	 * Disconnect from the socket, this will also reject all messages
 	 */
 	public disconnect(close?: boolean) {
-		if (this.status === ServerClientStatus.Disconnected) return false;
+		if (this.status === ServerSocketStatus.Disconnected) return false;
 
 		if (close) this.socket.end(VCLOSE);
 		this.socket.destroy();
@@ -65,7 +65,7 @@ export class ServerSocket extends SocketHandler {
 			for (const element of this.queue.values()) element.reject(rejectError);
 		}
 
-		this.status = ServerClientStatus.Disconnected;
+		this.status = ServerSocketStatus.Disconnected;
 		if (this.name) {
 			this.server.clients.delete(this.name);
 		}
@@ -81,7 +81,7 @@ export class ServerSocket extends SocketHandler {
 		for (const processed of this.queue.process(data)) {
 			if (processed.id === null) {
 				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
-				if (this.status === ServerClientStatus.Connected) {
+				if (this.status === ServerSocketStatus.Connected) {
 					this.server.emit('error', makeError('Failed to parse message', processed.data), this);
 				} else {
 					this.server.emit('error', makeError('Failed to process message during connection, calling disconnect', processed.data), this);
