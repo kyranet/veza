@@ -46,7 +46,7 @@
     "eslint": "^5.16.0",
     "eslint-config-bamboo": "^1.3.0",
     "nyc": "^14.1.1",
-    "source-map-support": "^0.5.12",
+    "source-map-support": "^0.5.13",
     "tap-nyc": "^1.0.3",
     "tap-xunit": "^2.4.1",
     "tape": "^4.11.0",
