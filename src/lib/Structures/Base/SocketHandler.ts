@@ -5,20 +5,36 @@ import { create, read } from '../../Util/Header';
 import { serialize } from 'binarytf';
 import { SendOptions } from '../../Util/Shared';
 
+/**
+ * The abstract socket handler for {@link ClientSocket} and {@link ServerSocket}.
+ * @since 0.0.1
+ * @private
+ */
 export abstract class SocketHandler {
 
+	/**
+	 * The name of this socket.
+	 * @since 0.0.1
+	 */
 	public name: string | null;
 
 	/**
-	 * The socket that connects Veza to the network
+	 * The internal socket that connects Veza to the network.
+	 * @since 0.0.1
 	 */
 	public socket: NetSocket;
 
 	/**
-	 * The incoming message queue for this handler
+	 * The incoming message queue for this handler.
+	 * @since 0.1.0
 	 */
 	public queue = new Queue();
 
+	/**
+	 * @since 0.0.1
+	 * @param name The name for this socket handler.
+	 * @param socket The socket that will manage this instance.
+	 */
 	public constructor(name: string | null, socket: NetSocket) {
 		this.name = name;
 		this.socket = socket;
@@ -29,11 +45,12 @@ export abstract class SocketHandler {
 	 * @param data The data to send to the socket
 	 * @param options The options for this message
 	 */
-	public send(data: any, { receptive = true, timeout = -1 }: SendOptions = {}) {
+	public send(data: any, options: SendOptions = {}) {
 		if (this.socket.destroyed) {
 			return Promise.reject(new Error('Cannot send a message to a missing socket.'));
 		}
 
+		const { receptive = true, timeout = -1 } = options;
 		return new Promise((resolve, reject) => {
 			let id: number;
 			try {

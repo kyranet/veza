@@ -5,12 +5,24 @@ import { makeError } from './Structures/MessageError';
 import { NetworkError, VCLOSE } from './Util/Shared';
 
 /**
- * The connection status of this server.
+ * The connection status of this socket.
  * @since 0.7.0
  */
 export enum ServerSocketStatus {
+	/**
+	 * The connected status, the socket is connected and identified.
+	 * @since 0.7.0
+	 */
 	Connected,
+	/**
+	 * The connecting status, the socket has connected but has not identified yet.
+	 * @since 0.7.0
+	 */
 	Connecting,
+	/**
+	 * The disconnected status, the socket has been disconnected and cannot operate anymore.
+	 * @since 0.7.0
+	 */
 	Disconnected
 }
 

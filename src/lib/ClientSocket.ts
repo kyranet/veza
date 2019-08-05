@@ -6,10 +6,30 @@ import { Client } from './Client';
 import { makeError } from './Structures/MessageError';
 import { receivedVClose } from './Util/Shared';
 
+/**
+ * The connection status of this socket.
+ * @since 0.7.0
+ */
 export enum ClientSocketStatus {
+	/**
+	 * The ready status, the socket has successfully connected and identified with the server.
+	 * @since 0.7.0
+	 */
 	Ready,
+	/**
+	 * The connected status, the socket has successfully connected, but has not identified yet.
+	 * @since 0.7.0
+	 */
 	Connected,
+	/**
+	 * The connecting status, the socket is not ready to operate but is attempting to connect.
+	 * @since 0.7.0
+	 */
 	Connecting,
+	/**
+	 * The disconnected status, the socket is idle and not ready to operate.
+	 * @since 0.7.0
+	 */
 	Disconnected
 }
 
@@ -36,8 +56,10 @@ export class ClientSocket extends SocketHandler {
 	}
 
 	/**
-	 * Connect to the socket
-	 * @param options The options to pass to connect
+	 * Connect to the socket.
+	 * @since 0.0.1
+	 * @param options The options to pass to connect.
+	 * @see https://nodejs.org/dist/latest/docs/api/net.html#net_socket_connect
 	 */
 	public async connect(options: SocketConnectOpts, connectionListener?: () => void): Promise<this>;
 	public async connect(port: number, host: string, connectionListener?: () => void): Promise<this>;
@@ -60,7 +82,8 @@ export class ClientSocket extends SocketHandler {
 	}
 
 	/**
-	 * Disconnect from the socket, this will also reject all messages
+	 * Disconnect from the socket, this will also reject all messages.
+	 * @since 0.0.1
 	 */
 	public disconnect() {
 		if (this.status === ClientSocketStatus.Disconnected) return false;

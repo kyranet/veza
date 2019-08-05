@@ -3,7 +3,7 @@ import { DeserializerError, DeserializerReason } from 'binarytf/dist/lib/errors/
 /**
  * The MessageError class for deserializer errors
  * @since 0.7.0
- * @extends {Error}
+ * @extends Error
  */
 export class MessageError extends Error {
 

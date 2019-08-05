@@ -1,13 +1,27 @@
 import { read } from '../Util/Header';
 import { deserializeWithMetadata } from 'binarytf';
 
+/**
+ * The queue class that manages messages.
+ * @since 0.1.0
+ */
 export class Queue extends Map<number, QueueEntry> {
 
+	/**
+	 * The offset for this message.
+	 * @since 0.1.0
+	 */
 	private offset: number = 0;
+
+	/**
+	 * The remaining buffer to truncate with other buffers.
+	 * @since 0.1.0
+	 */
 	private _rest: Uint8Array | null = null;
 
 	/**
 	 * Returns a new Iterator object that parses each value for this queue.
+	 * @since 0.1.0
 	 */
 	public *process(buffer: Uint8Array | null) {
 		if (this._rest) {
@@ -50,6 +64,9 @@ export class Queue extends Map<number, QueueEntry> {
 
 }
 
+/**
+ * An entry for this queue
+ */
 interface QueueEntry {
 	resolve: (value: any) => void;
 	reject: (error: Error) => void;
