@@ -91,7 +91,7 @@ export interface Client {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	on(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket | null) => void): this;
+	on(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket) => void): this;
 	/**
 	 * Emitted a connection to a server is in progress.
 	 */
@@ -120,7 +120,7 @@ export interface Client {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	once(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket | null) => void): this;
+	once(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket) => void): this;
 	/**
 	 * Emitted a connection to a server is in progress.
 	 */
@@ -149,7 +149,7 @@ export interface Client {
 	/**
 	 * Emitted when an error occurs.
 	 */
-	off(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket | null) => void): this;
+	off(event: 'error', listener: (error: Error | NetworkError, client: ClientSocket) => void): this;
 	/**
 	 * Emitted a connection to a server is in progress.
 	 */
