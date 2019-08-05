@@ -9,7 +9,7 @@ const sleep = promisify(setTimeout);
 const TIMES = 10000;
 
 const node = new Client('concurrent')
-	.on('error', (error, client) => console.error(`[IPC] Error from ${client!.name}:`, error))
+	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
 	.on('disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
 	.on('ready', async client => {
 		console.log(`[IPC] Connected to: ${client.name}`);

@@ -4,7 +4,7 @@
 import { Client } from '../src/index';
 
 const node = new Client('interactive')
-	.on('error', (error, client) => console.error(`[IPC] Error from ${client!.name}:`, error))
+	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
 	.on('disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
 	.on('ready', client => console.log(`[IPC] Connected to: ${client.name}`))
 	.on('message', message => {
