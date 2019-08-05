@@ -1,6 +1,6 @@
 import { NodeMessage } from '../NodeMessage';
 import { Queue } from '../Queue';
-import { Socket } from 'net';
+import { Socket as NetSocket } from 'net';
 import { create, read } from '../../Util/Header';
 import { serialize } from 'binarytf';
 import { SendOptions } from '../../Util/Shared';
@@ -12,14 +12,14 @@ export abstract class SocketHandler {
 	/**
 	 * The socket that connects Veza to the network
 	 */
-	public socket: Socket;
+	public socket: NetSocket;
 
 	/**
 	 * The incoming message queue for this handler
 	 */
 	public queue = new Queue();
 
-	public constructor(name: string | null, socket: Socket) {
+	public constructor(name: string | null, socket: NetSocket) {
 		this.name = name;
 		this.socket = socket;
 	}

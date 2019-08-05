@@ -20,7 +20,7 @@ test('Basic Server', { timeout: 5000 }, async t => {
 	}
 
 	// Connected
-	t.equal(nodeServer.clients.size, 0, 'The server should not have a connected client.');
+	t.equal(nodeServer.sockets.size, 0, 'The server should not have a connected client.');
 	t.equal(nodeServer.name, 'Server', 'The server should be named after the node.');
 
 	try {
@@ -64,7 +64,7 @@ test('Basic Socket', { timeout: 5000 }, async t => {
 			nodeServer.once('connect', resolve);
 		});
 
-		const mySocket = nodeServer.clients.get('Socket')!;
+		const mySocket = nodeServer.sockets.get('Socket')!;
 		t.notEqual(mySocket, undefined, 'The node should exist.');
 		t.notEqual(mySocket.socket, null, 'The socket should not be null.');
 		t.equal(mySocket.name, 'Socket', 'The name of the node must be the name of the socket that connected to this server.');
@@ -163,13 +163,13 @@ test('Server Events', { timeout: 5000 }, async t => {
 	t.plan(4);
 	const nodeServer = new Server('Server');
 	nodeServer.on('open', () => {
-		t.equal(nodeServer.clients.size, 0, 'The amount of clients at start-up should be 0.');
+		t.equal(nodeServer.sockets.size, 0, 'The amount of clients at start-up should be 0.');
 		t.equal(nodeServer.name, 'Server', 'The name of the server should be the same as the Node itself.');
 	});
 	await nodeServer.listen(++port);
 
 	nodeServer.on('close', () => {
-		t.equal(nodeServer.clients.size, 0, 'The amount of clients at start-up should be 0.');
+		t.equal(nodeServer.sockets.size, 0, 'The amount of clients at start-up should be 0.');
 		t.equal(nodeServer.name, 'Server', 'The name of the server should be the same as the Node itself.');
 	});
 

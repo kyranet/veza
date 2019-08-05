@@ -1,9 +1,13 @@
 import { SocketHandler } from './Structures/Base/SocketHandler';
-import { Socket } from 'net';
+import { Socket as NetSocket } from 'net';
 import { Server } from './Server';
 import { makeError } from './Structures/MessageError';
 import { NetworkError, VCLOSE } from './Util/Shared';
 
+/**
+ * The connection status of this server.
+ * @since 0.7.0
+ */
 export enum ServerSocketStatus {
 	Connected,
 	Connecting,
@@ -15,7 +19,7 @@ export class ServerSocket extends SocketHandler {
 	public readonly server: Server;
 	public status = ServerSocketStatus.Disconnected;
 
-	public constructor(server: Server, socket: Socket) {
+	public constructor(server: Server, socket: NetSocket) {
 		super(null, socket);
 		this.server = server;
 	}
@@ -39,13 +43,13 @@ export class ServerSocket extends SocketHandler {
 			this.name = sName;
 
 			// Disconnect if a previous socket existed.
-			const existing = this.server.clients.get(sName);
+			const existing = this.server.sockets.get(sName);
 			if (existing) {
 				existing.disconnect(true);
 			}
 
 			// Add this socket to the clients.
-			this.server.clients.set(sName, this);
+			this.server.sockets.set(sName, this);
 			this.server.emit('connect', this);
 		} catch {
 			this.disconnect();
@@ -67,7 +71,7 @@ export class ServerSocket extends SocketHandler {
 
 		this.status = ServerSocketStatus.Disconnected;
 		if (this.name) {
-			this.server.clients.delete(this.name);
+			this.server.sockets.delete(this.name);
 		}
 
 		this.socket.removeAllListeners();

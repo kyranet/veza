@@ -1,5 +1,5 @@
 import { SocketHandler } from './Structures/Base/SocketHandler';
-import { Socket, SocketConnectOpts } from 'net';
+import { Socket as NetSocket, SocketConnectOpts } from 'net';
 import { deserialize, serialize } from 'binarytf';
 import { createFromID, readID } from './Util/Header';
 import { Client } from './Client';
@@ -22,7 +22,7 @@ export class ClientSocket extends SocketHandler {
 	private _reconnectionTimeout!: NodeJS.Timer | null;
 
 	public constructor(client: Client) {
-		super(null, new Socket());
+		super(null, new NetSocket());
 		this.client = client;
 		this.retriesRemaining = client.maximumRetries === -1 ? Infinity : client.maximumRetries;
 
@@ -161,7 +161,7 @@ export class ClientSocket extends SocketHandler {
 			};
 			const onClose = () => reject(cleanup(this.socket!, this));
 			const onError = (error: any) => reject(cleanup(this.socket!, error));
-			function cleanup(socket: Socket, value: any) {
+			function cleanup(socket: NetSocket, value: any) {
 				socket.off('connect', onConnect);
 				socket.off('close', onClose);
 				socket.off('error', onError);

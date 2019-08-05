@@ -1,25 +1,85 @@
-import { Server as NetServer, Socket, ListenOptions } from 'net';
+import { Server as NetServer, Socket as NetSocket, ListenOptions } from 'net';
 import { ServerSocket } from './ServerSocket';
 import { BroadcastOptions, SendOptions, NetworkError } from './Util/Shared';
 import { EventEmitter } from 'events';
 import { NodeMessage } from './Structures/NodeMessage';
 
-enum ServerStatus {
+/**
+ * The connection status of this server.
+ * @since 0.7.0
+ */
+export enum ServerStatus {
+	/**
+	 * The server is opening, this is set immediately after calling listen.
+	 * @since 0.7.0
+	 */
 	Opening,
+	/**
+	 * The server is connected and ready to get connections.
+	 * @since 0.7.0
+	 */
 	Opened,
+	/**
+	 * The server is closing, this is set immediately after calling close.
+	 * @since 0.7.0
+	 */
 	Closing,
+	/**
+	 * The server is closed and free to listen to a port.
+	 * @since 0.7.0
+	 */
 	Closed
 }
 
+/**
+ * The server that receives connections.
+ */
 export class Server extends EventEmitter {
 
+	/**
+	 * The internal net.Server that powers this instance.
+	 * @since 0.7.0
+	 */
 	public server: NetServer;
+
+	/**
+	 * The name of this server. This is set as the first argument of the Server's constructor.
+	 * @since 0.7.0
+	 */
 	public readonly name: string;
-	public readonly clients: Map<string, ServerSocket> = new Map();
+
+	/**
+	 * The sockets map for this server. Each value is a ServerSocket instance that identifies as an incoming connection
+	 * to the server.
+	 * @since 0.7.0
+	 */
+	public readonly sockets: Map<string, ServerSocket> = new Map();
+
+	/**
+	 * The status of this server.
+	 * @since 0.7.0
+	 */
 	public status = ServerStatus.Closed;
 
-	public constructor(name: string, connectionListener?: (socket: Socket) => void);
-	public constructor(name: string, options?: { allowHalfOpen?: boolean; pauseOnConnect?: boolean }, connectionListener?: (socket: Socket) => void);
+	/**
+	 * Construct the server.
+	 * @since 0.7.0
+	 * @param name The name for this server.
+	 * @param connectionListener Automatically set as a listener for the 'connection' event.
+	 * @see https://nodejs.org/dist/latest/docs/api/net.html#net_net_createserver_options_connectionlistener
+	 */
+	public constructor(name: string, connectionListener?: (socket: NetSocket) => void);
+	/**
+	 * Construct the server.
+	 * @since 0.7.0
+	 * @param name The name for this server.
+	 * @param options The options for the internal server.
+	 * @param options.allowHalfOpen Indicates whether half-opened TCP connections are allowed. Default: false.
+	 * @param options.pauseOnConnect Indicates whether the socket should be paused on incoming connections. Default: false.
+	 * @param connectionListener Automatically set as a listener for the 'connection' event.
+	 * @see https://nodejs.org/dist/latest/docs/api/net.html#net_net_createserver_options_connectionlistener
+	 */
+	public constructor(name: string, options?: { allowHalfOpen?: boolean; pauseOnConnect?: boolean }, connectionListener?: (socket: NetSocket) => void);
 	public constructor(name: string, ...args: any[]) {
 		super();
 		this.name = name;
@@ -27,28 +87,31 @@ export class Server extends EventEmitter {
 	}
 
 	/**
-	 * Get a NodeSocket by its name or Socket
-	 * @param name The NodeSocket to get
+	 * Get a NodeSocket by its name or Socket.
+	 * @since 0.7.0
+	 * @param name The NodeSocket to get.
 	 */
 	public get(name: string | ServerSocket) {
-		if (typeof name === 'string') return this.clients.get(name) || null;
+		if (typeof name === 'string') return this.sockets.get(name) || null;
 		if (name instanceof ServerSocket) return name;
 		throw new TypeError('Expected a string or a ServerClient instance.');
 	}
 
 	/**
-	 * Check if a NodeSocket exists by its name of Socket
-	 * @param name The NodeSocket to get
+	 * Check if a NodeSocket exists by its name of Socket.
+	 * @since 0.7.0
+	 * @param name The NodeSocket to get.
 	 */
 	public has(name: string | ServerSocket) {
 		return Boolean(this.get(name));
 	}
 
 	/**
-	 * Send a message to a connected socket
-	 * @param name The label name of the socket to send the message to
-	 * @param data The data to send to the socket
-	 * @param options The options for this message
+	 * Send a message to a connected socket.
+	 * @since 0.7.0
+	 * @param name The label name of the socket to send the message to.
+	 * @param data The data to send to the socket.
+	 * @param options The options for this message.
 	 */
 	public sendTo(name: string | ServerSocket, data: any, options?: SendOptions): Promise<any> {
 		const nodeSocket = this.get(name);
@@ -58,9 +121,10 @@ export class Server extends EventEmitter {
 	}
 
 	/**
-	 * Broadcast a message to all connected sockets from this server
-	 * @param data The data to send to other sockets
-	 * @param options The options for this broadcast
+	 * Broadcast a message to all connected sockets from this server.
+	 * @since 0.7.0
+	 * @param data The data to send to other sockets.
+	 * @param options The options for this broadcast.
 	 */
 	public broadcast(data: any, { receptive, timeout, filter }: BroadcastOptions = {}): Promise<Array<any>> {
 		if (filter && !(filter instanceof RegExp)) {
@@ -69,7 +133,7 @@ export class Server extends EventEmitter {
 
 		const test = filter ? (name: string) => filter.test(name) : () => true;
 		const promises = [];
-		for (const [name, client] of this.clients.entries()) {
+		for (const [name, client] of this.sockets.entries()) {
 			if (test(name)) promises.push(client.send(data, { receptive, timeout }));
 		}
 		return Promise.all(promises);
@@ -77,7 +141,9 @@ export class Server extends EventEmitter {
 
 	/**
 	 * Create a server for this Node instance.
-	 * @param options The options to pass to net.Server#listen
+	 * @since 0.7.0
+	 * @param options The options to pass to net.Server#listen.
+	 * @see https://nodejs.org/dist/latest-v12.x/docs/api/net.html#net_server_listen
 	 */
 	public async listen(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): Promise<this>;
 	public async listen(port?: number, hostname?: string, listeningListener?: () => void): Promise<this>;
@@ -123,7 +189,8 @@ export class Server extends EventEmitter {
 	}
 
 	/**
-	 * Disconnect the server and rejects all current messages
+	 * Disconnect the server and rejects all current messages.
+	 * @since 0.7.0
 	 */
 	public async close(closeSockets?: boolean) {
 		// If it's closing or closed, do nothing
@@ -131,7 +198,7 @@ export class Server extends EventEmitter {
 		this.status = ServerStatus.Closing;
 
 		// Disconnect all sockets
-		for (const socket of this.clients.values()) {
+		for (const socket of this.sockets.values()) {
 			socket.disconnect(closeSockets);
 		}
 		await new Promise((resolve, reject) => {
@@ -149,15 +216,29 @@ export class Server extends EventEmitter {
 		return true;
 	}
 
-	private _onConnection(socket: Socket) {
+	/**
+	 * Connection listener.
+	 * @since 0.7.0
+	 * @param socket The received socket
+	 */
+	private _onConnection(socket: NetSocket) {
 		new ServerSocket(this, socket).setup();
 	}
 
+	/**
+	 * Error listener.
+	 * @since 0.7.0
+	 * @param error The error received.
+	 */
 	private _onError(error: Error) {
 		/* istanbul ignore next: Hard to reproduce in Azure. */
 		this.emit('error', error, null);
 	}
 
+	/**
+	 * The close listener.
+	 * @since 0.7.0
+	 */
 	private _onClose() {
 		this.close();
 	}
