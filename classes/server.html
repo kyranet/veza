@@ -64,6 +64,13 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The server that receives connections.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -90,9 +97,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#clients" class="tsd-kind-icon">clients</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#server-1" class="tsd-kind-icon">server</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#sockets" class="tsd-kind-icon">sockets</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="server.html#status" class="tsd-kind-icon">status</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="server.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
 							</ul>
@@ -143,16 +150,39 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L19">lib/Server.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L62">lib/Server.ts:62</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Construct the server.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="https://nodejs.org/dist/latest/docs/api/net.html#net_net_createserver_options_connectionlistener">https://nodejs.org/dist/latest/docs/api/net.html#net_net_createserver_options_connectionlistener</a></p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>The name for this server.</p>
+										</div>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> connectionListener: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Automatically set as a listener for the &#39;connection&#39; event.</p>
+										</div>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="server.html" class="tsd-signature-type">Server</a></h4>
@@ -160,19 +190,47 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L21">lib/Server.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L71">lib/Server.ts:71</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Construct the server.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="https://nodejs.org/dist/latest/docs/api/net.html#net_net_createserver_options_connectionlistener">https://nodejs.org/dist/latest/docs/api/net.html#net_net_createserver_options_connectionlistener</a></p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>The name for this server.</p>
+										</div>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>The options for the internal server.</p>
+										</div>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> connectionListener: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Automatically set as a listener for the &#39;connection&#39; event.</p>
+										</div>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="server.html" class="tsd-signature-type">Server</a></h4>
@@ -183,24 +241,24 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="clients" class="tsd-anchor"></a>
-					<h3>clients</h3>
-					<div class="tsd-signature tsd-kind-icon">clients<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="serversocket.html" class="tsd-signature-type">ServerSocket</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new Map()</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L18">lib/Server.ts:18</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L17">lib/Server.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L49">lib/Server.ts:49</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name of this server. This is set as the first argument of the Server&#39;s constructor.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="server-1" class="tsd-anchor"></a>
@@ -208,19 +266,60 @@
 					<div class="tsd-signature tsd-kind-icon">server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">NetServer</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L16">lib/Server.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L43">lib/Server.ts:43</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The internal net.Server that powers this instance.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="sockets" class="tsd-anchor"></a>
+					<h3>sockets</h3>
+					<div class="tsd-signature tsd-kind-icon">sockets<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="serversocket.html" class="tsd-signature-type">ServerSocket</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new Map()</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L56">lib/Server.ts:56</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The sockets map for this server. Each value is a ServerSocket instance that identifies as an incoming connection
+							to the server.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="status" class="tsd-anchor"></a>
 					<h3>status</h3>
-					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ServerStatus</span><span class="tsd-signature-symbol"> =&nbsp;ServerStatus.Closed</span></div>
+					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <a href="../enums/serverstatus.html" class="tsd-signature-type">ServerStatus</a><span class="tsd-signature-symbol"> =&nbsp;ServerStatus.Closed</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L19">lib/Server.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L62">lib/Server.ts:62</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The status of this server.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 					<a name="defaultmaxlisteners" class="tsd-anchor"></a>
@@ -246,9 +345,19 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L161">lib/Server.ts:161</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L242">lib/Server.ts:242</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The close listener.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -257,19 +366,32 @@
 					<a name="_onconnection" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _on<wbr>Connection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">_on<wbr>Connection<span class="tsd-signature-symbol">(</span>socket<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Socket</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">_on<wbr>Connection<span class="tsd-signature-symbol">(</span>socket<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NetSocket</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L152">lib/Server.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L224">lib/Server.ts:224</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Connection listener.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>socket: <span class="tsd-signature-type">Socket</span></h5>
+									<h5>socket: <span class="tsd-signature-type">NetSocket</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The received socket</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -286,13 +408,26 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L156">lib/Server.ts:156</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L233">lib/Server.ts:233</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Error listener.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>error: <span class="tsd-signature-type">Error</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The error received.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -355,20 +490,25 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L65">lib/Server.ts:65</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L129">lib/Server.ts:129</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Broadcast a message to all connected sockets from this server</p>
+									<p>Broadcast a message to all connected sockets from this server.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>data: <span class="tsd-signature-type">any</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The data to send to other sockets</p>
+										<p>The data to send to other sockets.</p>
 									</div>
 								</li>
 								<li>
@@ -391,13 +531,18 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L128">lib/Server.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L195">lib/Server.ts:195</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Disconnect the server and rejects all current messages</p>
+									<p>Disconnect the server and rejects all current messages.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -446,7 +591,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L262">lib/Server.ts:262</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L343">lib/Server.ts:343</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -472,7 +617,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L266">lib/Server.ts:266</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L347">lib/Server.ts:347</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -492,7 +637,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L270">lib/Server.ts:270</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L351">lib/Server.ts:351</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -512,7 +657,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L274">lib/Server.ts:274</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L355">lib/Server.ts:355</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -538,7 +683,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L278">lib/Server.ts:278</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L359">lib/Server.ts:359</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -561,7 +706,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L282">lib/Server.ts:282</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L363">lib/Server.ts:363</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -584,7 +729,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L286">lib/Server.ts:286</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L367">lib/Server.ts:367</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -637,20 +782,25 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L33">lib/Server.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L94">lib/Server.ts:94</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Get a NodeSocket by its name or Socket</p>
+									<p>Get a NodeSocket by its name or Socket.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="serversocket.html" class="tsd-signature-type">ServerSocket</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The NodeSocket to get</p>
+										<p>The NodeSocket to get.</p>
 									</div>
 								</li>
 							</ul>
@@ -690,20 +840,25 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L43">lib/Server.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L105">lib/Server.ts:105</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Check if a NodeSocket exists by its name of Socket</p>
+									<p>Check if a NodeSocket exists by its name of Socket.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="serversocket.html" class="tsd-signature-type">ServerSocket</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The NodeSocket to get</p>
+										<p>The NodeSocket to get.</p>
 									</div>
 								</li>
 							</ul>
@@ -729,13 +884,21 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L82">lib/Server.ts:82</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L148">lib/Server.ts:148</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Create a server for this Node instance.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+									<dt>see</dt>
+									<dd><p><a href="https://nodejs.org/dist/latest-v12.x/docs/api/net.html#net_server_listen">https://nodejs.org/dist/latest-v12.x/docs/api/net.html#net_server_listen</a></p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -757,7 +920,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L83">lib/Server.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L149">lib/Server.ts:149</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -777,7 +940,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L84">lib/Server.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L150">lib/Server.ts:150</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -797,7 +960,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L85">lib/Server.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L151">lib/Server.ts:151</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -814,7 +977,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L86">lib/Server.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L152">lib/Server.ts:152</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -834,7 +997,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L87">lib/Server.ts:87</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L153">lib/Server.ts:153</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -851,7 +1014,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L88">lib/Server.ts:88</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L154">lib/Server.ts:154</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -868,7 +1031,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L89">lib/Server.ts:89</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L155">lib/Server.ts:155</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -888,7 +1051,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L90">lib/Server.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L156">lib/Server.ts:156</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1009,7 +1172,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#off">off</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L233">lib/Server.ts:233</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L314">lib/Server.ts:314</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1053,7 +1216,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#off">off</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L237">lib/Server.ts:237</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L318">lib/Server.ts:318</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1088,7 +1251,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#off">off</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L241">lib/Server.ts:241</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L322">lib/Server.ts:322</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1123,7 +1286,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#off">off</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L245">lib/Server.ts:245</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L326">lib/Server.ts:326</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1167,7 +1330,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#off">off</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L249">lib/Server.ts:249</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L330">lib/Server.ts:330</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1208,7 +1371,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#off">off</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L253">lib/Server.ts:253</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L334">lib/Server.ts:334</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1249,7 +1412,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#off">off</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L257">lib/Server.ts:257</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L338">lib/Server.ts:338</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1346,7 +1509,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#on">on</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L171">lib/Server.ts:171</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L252">lib/Server.ts:252</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1390,7 +1553,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#on">on</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L175">lib/Server.ts:175</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L256">lib/Server.ts:256</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1425,7 +1588,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#on">on</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L179">lib/Server.ts:179</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L260">lib/Server.ts:260</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1460,7 +1623,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#on">on</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L183">lib/Server.ts:183</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L264">lib/Server.ts:264</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1504,7 +1667,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#on">on</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L187">lib/Server.ts:187</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L268">lib/Server.ts:268</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1545,7 +1708,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#on">on</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L191">lib/Server.ts:191</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L272">lib/Server.ts:272</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1586,7 +1749,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#on">on</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L195">lib/Server.ts:195</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L276">lib/Server.ts:276</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1684,7 +1847,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#once">once</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L200">lib/Server.ts:200</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L281">lib/Server.ts:281</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1728,7 +1891,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#once">once</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L204">lib/Server.ts:204</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L285">lib/Server.ts:285</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1763,7 +1926,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#once">once</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L208">lib/Server.ts:208</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L289">lib/Server.ts:289</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1798,7 +1961,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#once">once</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L212">lib/Server.ts:212</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L293">lib/Server.ts:293</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1842,7 +2005,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#once">once</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L216">lib/Server.ts:216</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L297">lib/Server.ts:297</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1883,7 +2046,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#once">once</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L220">lib/Server.ts:220</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L301">lib/Server.ts:301</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1924,7 +2087,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#once">once</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L224">lib/Server.ts:224</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L305">lib/Server.ts:305</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1959,7 +2122,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server.html">Server</a>.<a href="server.html#once">once</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L228">lib/Server.ts:228</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L309">lib/Server.ts:309</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2199,32 +2362,37 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/1e3df11/src/lib/Server.ts#L53">lib/Server.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L116">lib/Server.ts:116</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Send a message to a connected socket</p>
+									<p>Send a message to a connected socket.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.7.0</p>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="serversocket.html" class="tsd-signature-type">ServerSocket</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The label name of the socket to send the message to</p>
+										<p>The label name of the socket to send the message to.</p>
 									</div>
 								</li>
 								<li>
 									<h5>data: <span class="tsd-signature-type">any</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The data to send to the socket</p>
+										<p>The data to send to the socket.</p>
 									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/sendoptions.html" class="tsd-signature-type">SendOptions</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The options for this message</p>
+										<p>The options for this message.</p>
 									</div>
 								</li>
 							</ul>
@@ -2309,6 +2477,9 @@
 					<li class=" tsd-kind-enum">
 						<a href="../enums/serversocketstatus.html" class="tsd-kind-icon">Server<wbr>Socket<wbr>Status</a>
 					</li>
+					<li class=" tsd-kind-enum">
+						<a href="../enums/serverstatus.html" class="tsd-kind-icon">Server<wbr>Status</a>
+					</li>
 					<li class=" tsd-kind-class">
 						<a href="client.html" class="tsd-kind-icon">Client</a>
 					</li>
@@ -2333,13 +2504,13 @@
 								<a href="server.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="server.html#clients" class="tsd-kind-icon">clients</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="server.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="server.html#server-1" class="tsd-kind-icon">server</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="server.html#sockets" class="tsd-kind-icon">sockets</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="server.html#status" class="tsd-kind-icon">status</a>

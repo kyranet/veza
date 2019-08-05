@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SendOptions | veza</title>
+	<title>ServerStatus | veza</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="sendoptions.html">SendOptions</a>
+					<a href="serverstatus.html">ServerStatus</a>
 				</li>
 			</ul>
-			<h1>Interface SendOptions</h1>
+			<h1>Enumeration ServerStatus</h1>
 		</div>
 	</div>
 </header>
@@ -67,63 +67,112 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The send options.</p>
+						<p>The connection status of this server.</p>
 					</div>
 					<dl class="tsd-comment-tags">
 						<dt>since</dt>
-						<dd><p>0.0.1</p>
+						<dd><p>0.7.0</p>
 						</dd>
 					</dl>
 				</div>
-			</section>
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">SendOptions</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<a href="broadcastoptions.html" class="tsd-signature-type">BroadcastOptions</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendoptions.html#receptive" class="tsd-kind-icon">receptive</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendoptions.html#timeout" class="tsd-kind-icon">timeout</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serverstatus.html#closed" class="tsd-kind-icon">Closed</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serverstatus.html#closing" class="tsd-kind-icon">Closing</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serverstatus.html#opened" class="tsd-kind-icon">Opened</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serverstatus.html#opening" class="tsd-kind-icon">Opening</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="receptive" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> receptive</h3>
-					<div class="tsd-signature tsd-kind-icon">receptive<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="closed" class="tsd-anchor"></a>
+					<h3>Closed</h3>
+					<div class="tsd-signature tsd-kind-icon">Closed<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Util/Shared.ts#L9">lib/Util/Shared.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L31">lib/Server.ts:31</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The server is closed and free to listen to a port.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="timeout" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> timeout</h3>
-					<div class="tsd-signature tsd-kind-icon">timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="closing" class="tsd-anchor"></a>
+					<h3>Closing</h3>
+					<div class="tsd-signature tsd-kind-icon">Closing<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Util/Shared.ts#L10">lib/Util/Shared.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L26">lib/Server.ts:26</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The server is closing, this is set immediately after calling close.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="opened" class="tsd-anchor"></a>
+					<h3>Opened</h3>
+					<div class="tsd-signature tsd-kind-icon">Opened<span class="tsd-signature-symbol">:</span> </div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L21">lib/Server.ts:21</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The server is connected and ready to get connections.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="opening" class="tsd-anchor"></a>
+					<h3>Opening</h3>
+					<div class="tsd-signature tsd-kind-icon">Opening<span class="tsd-signature-symbol">:</span> </div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Server.ts#L16">lib/Server.ts:16</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The server is opening, this is set immediately after calling listen.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -138,14 +187,32 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-enum">
-						<a href="../enums/clientsocketstatus.html" class="tsd-kind-icon">Client<wbr>Socket<wbr>Status</a>
+						<a href="clientsocketstatus.html" class="tsd-kind-icon">Client<wbr>Socket<wbr>Status</a>
 					</li>
 					<li class=" tsd-kind-enum">
-						<a href="../enums/serversocketstatus.html" class="tsd-kind-icon">Server<wbr>Socket<wbr>Status</a>
+						<a href="serversocketstatus.html" class="tsd-kind-icon">Server<wbr>Socket<wbr>Status</a>
 					</li>
-					<li class=" tsd-kind-enum">
-						<a href="../enums/serverstatus.html" class="tsd-kind-icon">Server<wbr>Status</a>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-enum">
+						<a href="serverstatus.html" class="tsd-kind-icon">Server<wbr>Status</a>
+						<ul>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serverstatus.html#closed" class="tsd-kind-icon">Closed</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serverstatus.html#closing" class="tsd-kind-icon">Closing</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serverstatus.html#opened" class="tsd-kind-icon">Opened</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="serverstatus.html#opening" class="tsd-kind-icon">Opening</a>
+							</li>
+						</ul>
 					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-class">
 						<a href="../classes/client.html" class="tsd-kind-icon">Client</a>
 					</li>
@@ -171,32 +238,20 @@
 						<a href="../classes/sockethandler.html" class="tsd-kind-icon">Socket<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="broadcastoptions.html" class="tsd-kind-icon">Broadcast<wbr>Options</a>
+						<a href="../interfaces/broadcastoptions.html" class="tsd-kind-icon">Broadcast<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="networkerror.html" class="tsd-kind-icon">Network<wbr>Error</a>
+						<a href="../interfaces/networkerror.html" class="tsd-kind-icon">Network<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="nodeclientoptions.html" class="tsd-kind-icon">Node<wbr>Client<wbr>Options</a>
+						<a href="../interfaces/nodeclientoptions.html" class="tsd-kind-icon">Node<wbr>Client<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="rawmessage.html" class="tsd-kind-icon">Raw<wbr>Message</a>
+						<a href="../interfaces/rawmessage.html" class="tsd-kind-icon">Raw<wbr>Message</a>
 					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="sendoptions.html" class="tsd-kind-icon">Send<wbr>Options</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="sendoptions.html#receptive" class="tsd-kind-icon">receptive</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="sendoptions.html#timeout" class="tsd-kind-icon">timeout</a>
-							</li>
-						</ul>
+					<li class=" tsd-kind-interface">
+						<a href="../interfaces/sendoptions.html" class="tsd-kind-icon">Send<wbr>Options</a>
 					</li>
-				</ul>
-				<ul class="after-current">
 					<li class=" tsd-kind-variable tsd-is-private">
 						<a href="../globals.html#vclose" class="tsd-kind-icon">VCLOSE</a>
 					</li>
