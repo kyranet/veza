@@ -297,10 +297,10 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-binarytf@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/binarytf/-/binarytf-1.0.0.tgz#dcf339922fa286511fa8603e2d5ef8e4483eb623"
-  integrity sha512-H2b3ax8maE7AilKMAA0mSHECHWn1aEIgmiMsUcAVfseZ49pPZsVxRiwMyi3CqGyQQ9Syyg2UZXIc3TSaU2ohdA==
+binarytf@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/binarytf/-/binarytf-2.0.0.tgz#c5476cc5cdf023d075b9b8fa62612b86d36f666c"
+  integrity sha512-CS0MvijAFAHBBw4LgIHBP7wzdW3KWEB0KeMjblK0rHOyyhnkoMu3puW7uhJXlnS5WDn5M2XQFaQBtw00FwRfcA==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
