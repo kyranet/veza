@@ -1,11 +1,11 @@
 // This example must be run before interactive/world, since this serves the
 // IPC server the other sockets connect to.
-import { Node } from '../src/index';
+import { Server } from '../src/index';
 
 // eslint-disable-next-line no-unused-vars
-const node = new Node('hello')
-	.on('client.identify', client => console.log(`[IPC] Client Connected: ${client.name}`))
-	.on('client.destroy', client => console.log(`[IPC] Client Destroyed: ${client.name}`))
+const node = new Server('hello')
+	.on('connect', client => console.log(`[IPC] Client Connected: ${client.name}`))
+	.on('disconnect', client => console.log(`[IPC] Client Disconnected: ${client.name}`))
 	.on('message', message => {
 		// console.log(`Received data:`, message.data, typeof message.data);
 		// For World.js test
@@ -20,5 +20,5 @@ const node = new Node('hello')
 	})
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}`, error));
 
-node.serve(8001)
+node.listen(8001)
 	.catch(error => console.error('[IPC] Disconnected!', error));
