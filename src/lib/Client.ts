@@ -6,15 +6,15 @@ import { NodeMessage } from './Structures/NodeMessage';
 
 export interface NodeClientOptions {
 	/**
-	 * The maximum amount of attempts a client will perform to connect to a server
+	 * The maximum amount of attempts a client will perform to connect to a server.
 	 */
 	maximumRetries?: number;
 	/**
-	 * How many ms will a client wait to retry a connection
+	 * How many milliseconds will a client wait to retry a connection.
 	 */
 	retryTime?: number;
 	/**
-	 * How many ms  the client will wait for the server to initiate a handshake
+	 * How many milliseconds the client will wait for the server to initiate a handshake.
 	 */
 	handshakeTimeout?: number;
 }
@@ -27,15 +27,15 @@ export class Client extends EventEmitter {
 	 */
 	public readonly name: string;
 	/**
-	 * How many ms will a client wait to retry a connection
+	 * How many milliseconds will a client wait to retry a connection.
 	 */
 	public retryTime: number;
 	/**
-	 * The maximum amount of attempts a client will perform to connect to a server
+	 * The maximum amount of attempts a client will perform to connect to a server.
 	 */
 	public maximumRetries: number;
 	/**
-	 * How many ms  the client will wait for the server to initiate a handshake
+	 * How many milliseconds the client will wait for the server to initiate a handshake.
 	 */
 	public handshakeTimeout: number;
 	/**
