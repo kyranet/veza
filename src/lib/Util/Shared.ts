@@ -1,5 +1,6 @@
 import { createFromID } from './Header';
 import { serialize } from 'binarytf';
+import { RawMessage } from '../Structures/Base/SocketHandler';
 
 /**
  * The send options.
@@ -86,6 +87,6 @@ export const VCLOSE = createFromID(0, false, serialize(VCLOSE_SIGNAL));
  * @internal
  * @private
  */
-export function receivedVClose(processed: { id: number; receptive: boolean; data: unknown }) {
+export function receivedVClose(processed: RawMessage) {
 	return processed.id === 0 && processed.receptive === false && processed.data === VCLOSE_SIGNAL;
 }

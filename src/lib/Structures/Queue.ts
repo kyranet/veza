@@ -1,5 +1,6 @@
 import { read } from '../Util/Header';
 import { deserialize } from 'binarytf';
+import { RawMessage } from './Base/SocketHandler';
 
 /**
  * The queue class that manages messages.
@@ -17,7 +18,7 @@ export class Queue extends Map<number, QueueEntry> {
 	 * Returns a new Iterator object that parses each value for this queue.
 	 * @since 0.1.0
 	 */
-	public *process(buffer: Uint8Array) {
+	public process(buffer: Uint8Array) {
 		if (this._rest) {
 			const join = new Uint8Array(this._rest.byteLength + buffer.byteLength);
 			join.set(this._rest);
@@ -26,6 +27,7 @@ export class Queue extends Map<number, QueueEntry> {
 			this._rest = null;
 		}
 
+		const output: RawMessage[] = [];
 		while (buffer.byteLength !== 0) {
 			// If the header separator was not found, it may be due to an impartial message
 			/* istanbul ignore next: This is hard to reproduce in Azure, it needs the buffer to overflow and split to extremely precise byte lengths. */
@@ -44,12 +46,14 @@ export class Queue extends Map<number, QueueEntry> {
 
 			try {
 				const value = deserialize(buffer, 11);
-				yield { id, receptive, data: value };
+				output.push({ id, receptive, data: value });
 			} catch (error) {
-				yield { id: null, receptive: false, data: error };
+				output.push({ id: null, receptive: false, data: error });
 			}
 			buffer = buffer.subarray(byteLength + 11);
 		}
+
+		return output;
 	}
 
 }

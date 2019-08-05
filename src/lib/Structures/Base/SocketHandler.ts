@@ -91,13 +91,13 @@ export abstract class SocketHandler {
 
 	protected _handleMessage(message: RawMessage) {
 		// Response message
-		const queueData = this.queue.get(message.id);
+		const queueData = this.queue.get(message.id!);
 		if (queueData) {
 			queueData.resolve(message.data);
 			return null;
 		}
 
-		return new NodeMessage(this, message.id, message.receptive, message.data).freeze();
+		return new NodeMessage(this, message.id!, message.receptive, message.data).freeze();
 	}
 
 	protected abstract _onData(data: Uint8Array): void;
@@ -105,7 +105,7 @@ export abstract class SocketHandler {
 }
 
 export interface RawMessage {
-	id: number;
+	id: number | null;
 	receptive: boolean;
 	data: any;
 }
