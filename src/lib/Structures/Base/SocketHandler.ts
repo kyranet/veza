@@ -104,8 +104,24 @@ export abstract class SocketHandler {
 
 }
 
+/**
+ * A raw message
+ * @since 0.5.0
+ */
 export interface RawMessage {
+	/**
+	 * The message's ID
+	 * @since 0.5.0
+	 */
 	id: number;
+	/**
+	 * Whether the message should have a reply sent to it
+	 * @since 0.5.0
+	 */
 	receptive: boolean;
+	/**
+	 * The message's data
+	 * @since 0.5.0
+	 */
 	data: any;
 }
