@@ -660,6 +660,36 @@ test('Server Message (Multiple Large Buffer)', { timeout: 5000 }, async t => {
 	nodeSocket.disconnectFrom('Server');
 });
 
+test('Server Message (Spam)', { timeout: 10000 }, async t => {
+	t.plan(1);
+	const [nodeServer, nodeSocket] = await setup(t, ++port);
+
+	const AMOUNT_OF_MESSAGES = 10000;
+	let pendingMessages = AMOUNT_OF_MESSAGES;
+	nodeSocket.on('message', message => {
+		--pendingMessages;
+		message.reply(message.data);
+		if (pendingMessages < 0) t.fail('Received too many messages');
+	});
+
+	try {
+		const numbers = new Array(AMOUNT_OF_MESSAGES);
+		for (let i = 0; i < numbers.length; ++i) numbers[i] = i;
+
+		const socket = nodeServer.get('Socket')!;
+		await Promise.all(numbers.map(n => socket.send(n, { timeout: 10000 }).then(r => {
+			if (n !== r) t.fail(`Mismatching response. Expected ${n} but received ${r}`);
+		})));
+	} catch (error) {
+		t.error(error, 'This should not fail.');
+	}
+
+	t.equal(pendingMessages, 0, 'It should have decreased its pending messages to 0.');
+
+	await nodeServer.close();
+	nodeSocket.disconnectFrom('Server');
+});
+
 test('Socket Faulty Message', { timeout: 5000 }, async t => {
 	t.plan(3);
 	const [nodeServer, nodeSocket] = await setup(t, ++port);
