@@ -15,7 +15,7 @@ export enum ServerSocketStatus {
 	 */
 	Connected,
 	/**
-	 * The connecting status, the socket has connected but has not identified yet.
+	 * The identifying status, the socket has connected but has not identified yet.
 	 * @since 0.7.0
 	 */
 	Identifiying,
