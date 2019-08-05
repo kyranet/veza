@@ -1,4 +1,4 @@
-import { Server, Socket, ListenOptions } from 'net';
+import { Server as NetServer, Socket, ListenOptions } from 'net';
 import { ServerSocket } from './ServerSocket';
 import { BroadcastOptions, SendOptions, NetworkError } from './Util/Shared';
 import { EventEmitter } from 'events';
@@ -11,9 +11,9 @@ enum ServerStatus {
 	Closed
 }
 
-class NodeServer extends EventEmitter {
+export class Server extends EventEmitter {
 
-	public server: Server;
+	public server: NetServer;
 	public readonly name: string;
 	public readonly clients: Map<string, ServerSocket> = new Map();
 	public status = ServerStatus.Closed;
@@ -23,7 +23,7 @@ class NodeServer extends EventEmitter {
 	public constructor(name: string, ...args: any[]) {
 		super();
 		this.name = name;
-		this.server = new Server(...args);
+		this.server = new NetServer(...args);
 	}
 
 	/**
@@ -164,7 +164,7 @@ class NodeServer extends EventEmitter {
 
 }
 
-interface NodeServer {
+export interface Server {
 	/**
 	 * Emitted when the server receives data.
 	 */
@@ -285,5 +285,3 @@ interface NodeServer {
 	 */
 	emit(event: 'message', message: NodeMessage, client: ServerSocket): boolean;
 }
-
-export { NodeServer as Server };

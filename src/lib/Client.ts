@@ -10,7 +10,7 @@ export interface NodeClientOptions {
 	handshakeTimeout?: number;
 }
 
-class NodeClient extends EventEmitter {
+export class Client extends EventEmitter {
 
 	public readonly name: string;
 	public retryTime: number;
@@ -83,7 +83,7 @@ class NodeClient extends EventEmitter {
 
 }
 
-interface NodeClient {
+export interface Client {
 	/**
 	 * Emitted when the client receives data from any of the connected servers.
 	 */
@@ -200,5 +200,3 @@ interface NodeClient {
 	 */
 	emit(event: 'message', message: NodeMessage, client: ClientSocket): boolean;
 }
-
-export { NodeClient as Client };
