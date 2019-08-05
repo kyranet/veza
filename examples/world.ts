@@ -1,12 +1,11 @@
 // This example depends on hello.js to be running in another process.
 // This Node is a socket that replies to hello.js with "world!" when it receives "Hello".
-import { Node } from '../src/index';
+import { Client } from '../src/index';
 
-const node = new Node('world')
+const node = new Client('world')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
-	.on('socket.disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
-	.on('socket.destroy', client => console.error(`[IPC] Client Destroyed: ${client.name}`))
-	.on('socket.ready', async client => {
+	.on('disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('ready', async client => {
 		console.log(`[IPC] Connected to: ${client.name}`);
 		try {
 			const result = await client.send('Hello', { timeout: 5000 });
