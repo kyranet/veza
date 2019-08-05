@@ -2,16 +2,16 @@
 // This Node is a socket that replies to hello.js with "world!" when it receives "Hello".
 
 // This example tests concurrency with parallel messages in IPC.
-import { Node } from '../src/index';
+import { Client } from '../src/index';
 import { promisify } from 'util';
 
 const sleep = promisify(setTimeout);
 const TIMES = 10000;
 
-const node = new Node('concurrent')
+const node = new Client('concurrent')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
-	.on('socket.disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
-	.on('socket.ready', async client => {
+	.on('disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('ready', async client => {
 		console.log(`[IPC] Connected to: ${client.name}`);
 		console.log(`[IPC] Attempting to send and receive ${TIMES} messages...`);
 		let failed = 0;
