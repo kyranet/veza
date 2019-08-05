@@ -5,7 +5,6 @@ import { SendOptions, NetworkError } from './Util/Shared';
 import { NodeMessage } from './Structures/NodeMessage';
 
 export interface NodeClientOptions {
-
 	/**
 	 * The maximum amount of attempts a client will perform to connect to a server
 	 */
