@@ -64,6 +64,18 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The abstract socket handler for <a href="clientsocket.html">ClientSocket</a> and <a href="serversocket.html">ServerSocket</a>.</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>since</dt>
+						<dd><p>0.0.1</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -121,16 +133,33 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Structures/Base/SocketHandler.ts#L20">lib/Structures/Base/SocketHandler.ts:20</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/Structures/Base/SocketHandler.ts#L31">lib/Structures/Base/SocketHandler.ts:31</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>since</dt>
+									<dd><p>0.0.1</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>The name for this socket handler.</p>
+										</div>
+									</div>
 								</li>
 								<li>
 									<h5>socket: <span class="tsd-signature-type">NetSocket</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>The socket that will manage this instance.</p>
+										</div>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="sockethandler.html" class="tsd-signature-type">SocketHandler</a></h4>
@@ -146,9 +175,19 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Structures/Base/SocketHandler.ts#L10">lib/Structures/Base/SocketHandler.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/Structures/Base/SocketHandler.ts#L19">lib/Structures/Base/SocketHandler.ts:19</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The name of this socket.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.0.1</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="queue" class="tsd-anchor"></a>
@@ -156,13 +195,18 @@
 					<div class="tsd-signature tsd-kind-icon">queue<span class="tsd-signature-symbol">:</span> <a href="queue.html" class="tsd-signature-type">Queue</a><span class="tsd-signature-symbol"> =&nbsp;new Queue()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Structures/Base/SocketHandler.ts#L20">lib/Structures/Base/SocketHandler.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/Structures/Base/SocketHandler.ts#L31">lib/Structures/Base/SocketHandler.ts:31</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The incoming message queue for this handler</p>
+							<p>The incoming message queue for this handler.</p>
 						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.1.0</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
@@ -171,13 +215,18 @@
 					<div class="tsd-signature tsd-kind-icon">socket<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">NetSocket</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Structures/Base/SocketHandler.ts#L15">lib/Structures/Base/SocketHandler.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/Structures/Base/SocketHandler.ts#L25">lib/Structures/Base/SocketHandler.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The socket that connects Veza to the network</p>
+							<p>The internal socket that connects Veza to the network.</p>
 						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.0.1</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 			</section>
@@ -193,7 +242,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Structures/Base/SocketHandler.ts#L75">lib/Structures/Base/SocketHandler.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/Structures/Base/SocketHandler.ts#L92">lib/Structures/Base/SocketHandler.ts:92</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -219,7 +268,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Structures/Base/SocketHandler.ts#L86">lib/Structures/Base/SocketHandler.ts:86</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/Structures/Base/SocketHandler.ts#L103">lib/Structures/Base/SocketHandler.ts:103</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -236,13 +285,13 @@
 					<a name="send" class="tsd-anchor"></a>
 					<h3>send</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">send<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, __namedParameters<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">send<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/sendoptions.html" class="tsd-signature-type">SendOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/Structures/Base/SocketHandler.ts#L32">lib/Structures/Base/SocketHandler.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/Structures/Base/SocketHandler.ts#L48">lib/Structures/Base/SocketHandler.ts:48</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -259,9 +308,10 @@
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> __namedParameters: <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
-									<ul class="tsd-parameters">
-									</ul>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/sendoptions.html" class="tsd-signature-type">SendOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The options for this message</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -312,7 +362,7 @@
 					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class">
+					<li class="current tsd-kind-class tsd-is-private">
 						<a href="sockethandler.html" class="tsd-kind-icon">Socket<wbr>Handler</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">

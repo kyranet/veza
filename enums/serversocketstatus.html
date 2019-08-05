@@ -67,7 +67,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The connection status of this server.</p>
+						<p>The connection status of this socket.</p>
 					</div>
 					<dl class="tsd-comment-tags">
 						<dt>since</dt>
@@ -84,8 +84,8 @@
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversocketstatus.html#connected" class="tsd-kind-icon">Connected</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversocketstatus.html#connecting" class="tsd-kind-icon">Connecting</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversocketstatus.html#disconnected" class="tsd-kind-icon">Disconnected</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="serversocketstatus.html#identifiying" class="tsd-kind-icon">Identifiying</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,19 +99,19 @@
 					<div class="tsd-signature tsd-kind-icon">Connected<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/ServerSocket.ts#L12">lib/ServerSocket.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/ServerSocket.ts#L16">lib/ServerSocket.ts:16</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="connecting" class="tsd-anchor"></a>
-					<h3>Connecting</h3>
-					<div class="tsd-signature tsd-kind-icon">Connecting<span class="tsd-signature-symbol">:</span> </div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/ServerSocket.ts#L13">lib/ServerSocket.ts:13</a></li>
-						</ul>
-					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The connected status, the socket is connected and identified.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="disconnected" class="tsd-anchor"></a>
@@ -119,9 +119,39 @@
 					<div class="tsd-signature tsd-kind-icon">Disconnected<span class="tsd-signature-symbol">:</span> </div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/kyranet/veza/blob/78a70d1/src/lib/ServerSocket.ts#L14">lib/ServerSocket.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/ServerSocket.ts#L26">lib/ServerSocket.ts:26</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The disconnected status, the socket has been disconnected and cannot operate anymore.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="identifiying" class="tsd-anchor"></a>
+					<h3>Identifiying</h3>
+					<div class="tsd-signature tsd-kind-icon">Identifiying<span class="tsd-signature-symbol">:</span> </div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/kyranet/veza/blob/44364b4/src/lib/ServerSocket.ts#L21">lib/ServerSocket.ts:21</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The identifying status, the socket has connected but has not identified yet.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>since</dt>
+							<dd><p>0.7.0</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -147,10 +177,10 @@
 								<a href="serversocketstatus.html#connected" class="tsd-kind-icon">Connected</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="serversocketstatus.html#connecting" class="tsd-kind-icon">Connecting</a>
+								<a href="serversocketstatus.html#disconnected" class="tsd-kind-icon">Disconnected</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="serversocketstatus.html#disconnected" class="tsd-kind-icon">Disconnected</a>
+								<a href="serversocketstatus.html#identifiying" class="tsd-kind-icon">Identifiying</a>
 							</li>
 						</ul>
 					</li>
@@ -180,7 +210,7 @@
 					<li class=" tsd-kind-class">
 						<a href="../classes/serversocket.html" class="tsd-kind-icon">Server<wbr>Socket</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-private">
 						<a href="../classes/sockethandler.html" class="tsd-kind-icon">Socket<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-interface">
