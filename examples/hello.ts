@@ -18,7 +18,7 @@ const node = new Server('hello')
 			);
 		}
 	})
-	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}`, error));
+	.on('error', (error, client) => console.error(`[IPC] Error from ${client!.name}`, error));
 
 node.listen(8001)
 	.catch(error => console.error('[IPC] Disconnected!', error));
