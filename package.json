@@ -1,7 +1,7 @@
 {
   "name": "veza",
   "version": "0.7.0",
-  "description": "IPC/TCP Networking Utility to connect several processes with great concurrency.",
+  "description": "IPC/TCP Networking Utility to connect several processes with great speeds.",
   "main": "dist/index.js",
   "readme": "README.md",
   "types": "dist/index.d.ts",
