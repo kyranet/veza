@@ -4,6 +4,28 @@
   "description": "IPC/TCP Networking Utility to connect several processes with great concurrency.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "badges": [
+    {
+      "description": "Azure DevOps Tests",
+      "href": "https://dev.azure.com/kyranet/kyranet.public/_apis/build/status/kyranet.veza?branchName=master",
+      "url": "https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=9&branchName=master"
+    },
+    {
+      "description": "Azure DevOps Coverage",
+      "href": "https://img.shields.io/azure-devops/coverage/kyranet/kyranet.public/9/master.svg",
+      "url": "https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=9&branchName=master"
+    },
+    {
+      "description": "Total Alerts",
+      "href": "https://img.shields.io/lgtm/alerts/g/kyranet/veza.svg?logo=lgtm&logoWidth=18",
+      "url": "https://lgtm.com/projects/g/kyranet/veza/alerts/"
+    },
+    {
+      "description": "Dependabot Status",
+      "href": "https://api.dependabot.com/badges/status?host=github&repo=kyranet/veza",
+      "url": "https://dependabot.com"
+    }
+  ],
   "scripts": {
     "prepublishOnly": "yarn build",
     "test": "yarn build && yarn build:test && yarn test:run",
