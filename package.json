@@ -55,6 +55,6 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
-    "binarytf": "2.0.0"
+    "binarytf": "^2.0.0"
   }
 }
