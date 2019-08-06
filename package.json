@@ -36,7 +36,7 @@
   "bugs": {
     "url": "https://github.com/kyranet/veza/issues"
   },
-  "homepage": "https://github.com/kyranet/veza#readme",
+  "homepage": "https://veza.js.org",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^0.1.3",
     "@types/node": "^12.6.9",
