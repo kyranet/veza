@@ -112,17 +112,17 @@ export abstract class SocketHandler {
  */
 export interface RawMessage {
 	/**
-	 * The message's ID
+	 * The message's ID.
 	 * @since 0.5.0
 	 */
 	id: number | null;
 	/**
-	 * Whether the message should have a reply sent to it
+	 * Whether the message should have a reply sent to it.
 	 * @since 0.5.0
 	 */
 	receptive: boolean;
 	/**
-	 * The message's data
+	 * The message's data.
 	 * @since 0.5.0
 	 */
 	data: any;

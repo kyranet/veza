@@ -45,7 +45,7 @@ export class Client extends EventEmitter {
 	 */
 	public handshakeTimeout: number;
 	/**
-	 * A map of servers this client is connected to
+	 * A map of servers this client is connected to.
 	 * @since 0.7.0
 	 */
 	public servers = new Map<string, ClientSocket>();
@@ -74,7 +74,7 @@ export class Client extends EventEmitter {
 	}
 
 	/**
-	 * Disconnect from a socket, this will also reject all messages
+	 * Disconnect from a socket, this will also reject all messages.
 	 * @param name The label name of the socket to disconnect
 	 * @since 0.7.0
 	 */
@@ -85,7 +85,7 @@ export class Client extends EventEmitter {
 	}
 
 	/**
-	 * Get a NodeSocket by its name or Socket
+	 * Get a NodeSocket by its name or Socket.
 	 * @param name The NodeSocket to get
 	 * @since 0.7.0
 	 */
@@ -96,7 +96,7 @@ export class Client extends EventEmitter {
 	}
 
 	/**
-	 * Check if a NodeSocket exists by its name of Socket
+	 * Check if a NodeSocket exists by its name of Socket.
 	 * @param name The NodeSocket to get
 	 * @since 0.7.0
 	 */
@@ -105,7 +105,7 @@ export class Client extends EventEmitter {
 	}
 
 	/**
-	 * Send a message to a connected socket
+	 * Send a message to a connected socket.
 	 * @param name The label name of the socket to send the message to
 	 * @param data The data to send to the socket
 	 * @param options The options for this message
