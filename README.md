@@ -34,24 +34,43 @@
 
 ## About
 
-**Veza** is a lower level version of [IPC-Link](https://github.com/kyranet/ipc-link)
-that is lightning fast and operates with raw buffers as opposed to sending buffered
-stringified `JSON` objects. This library has [`binarytf`][binarytf] as the only
-dependency, which serves for fast and compact message serialization and deserialization,
-while using built-in modules (`net`, `events`...) to do the IPC / TCP operations.
+**Veza** is a protocol that operates over either [IPC] or [TCP] with the only difference of one line of code to switch
+between the two. Inspired on [node-ipc], it seeks to use modern, fast, and intuitive [API]s, as well as exposing all the
+underlying back-ends for much higher customizability and extensibility, as well as a HTTP-like protocol where you can
+send a message and optionally receive a response for it.
 
-In Veza, you have "nodes", which can either create a server (and receive messages)
-or connect to other servers, even both at the same time. Additionally, you have
-`client.send(data);` which will wait for the socket to reply back.
+## Socket Support
 
-> One of Veza's special features is the ability to glue truncated messages and split
-concatenated messages, for which it uses a delimiter detection from [`binarytf`][binarytf]
-to find where messages end at and where the next continues. Furthermore, it prepends a
-compressed 7-bit header for id matching and the receptivity of the message.
+- [x] Unix Socket or Windows Socket.
+- [x] TCP Socket.
+- [ ] TLS Socket.
+- [ ] UDP Sockets.
 
-## Examples
+> **TLS**: TLS sockets can be achieved by extending Veza to use SSL handshakes. To keep things simple and tidy, this is
+not shipped in core, but will be considered for future releases.
 
-All examples are written in TypeScript and are available [here](https://github.com/kyranet/veza/tree/master/examples).
+> **UPD**: UPD sockets are not supported due to Veza's requirement for messages to be reliably received in order.
+
+[API]: https://en.wikipedia.org/wiki/Application_programming_interface
+[IPC]: https://en.wikipedia.org/wiki/Inter-process_communication
+[TCP]: https://en.wikipedia.org/wiki/Transmission_Control_Protocol
+[node-ipc]: https://www.npmjs.com/package/node-ipc
+
+## Messaging
+
+All messages are encoded and decoded using [`binarytf`][binarytf], which allows a messages to be sent using the least
+amount of bytes possible, increasing throughput; plus a 11-byte header at the start of each message. More information
+available in [PROTOCOL].
+
+[binarytf]: https://www.npmjs.com/package/binarytf
+[PROTOCOL]: https://github.com/kyranet/veza/blob/master/PROTOCOL.md
+
+## Documentation
+
+All the documentation is available at [veza.js.org] and at [the wiki](https://github.com/kyranet/veza/wiki). You can
+find examples of code [here](https://github.com/kyranet/veza/tree/master/examples).
+
+[veza.js.org]: https://veza.js.org/
 
 ## Contributing
 
@@ -63,10 +82,12 @@ All examples are written in TypeScript and are available [here](https://github.c
 
 ## Author
 
-**veza** © [kyranet](https://github.com/kyranet), released under the
-[MIT](https://github.com/kyranet/veza/blob/master/LICENSE) License.
+**veza** © [kyranet][author], released under the
+[MIT][license] License.
 Authored and maintained by kyranet.
 
-> Github [kyranet](https://github.com/kyranet) - Twitter [@kyranet_](https://twitter.com/kyranet_)
+> Github [kyranet][author] - Twitter [@kyranet_][twitter]
 
-[binarytf]: https://www.npmjs.com/package/binarytf
+[license]: https://github.com/kyranet/veza/blob/master/LICENSE
+[author]: https://github.com/kyranet
+[twitter]: https://twitter.com/kyranet_
