@@ -41,7 +41,7 @@ export abstract class SocketHandler {
 	}
 
 	/**
-	 * Send a message to a connected socket
+	 * Send a message to a connected socket.
 	 * @param data The data to send to the socket
 	 * @param options The options for this message
 	 */
