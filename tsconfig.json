@@ -1,6 +1,7 @@
 {
 	"extends": "eslint-config-bamboo",
 	"compilerOptions": {
+		"newLine": "LF",
 		"sourceMap": true,
 		"declaration": true,
 		"removeComments": false,
