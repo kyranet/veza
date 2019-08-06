@@ -22,9 +22,7 @@ const node = new Client('concurrent')
 			// Let Node.js "breathe"
 			if (i % 1000 === 0) await sleep(1);
 
-			// eslint-disable-next-line promise/catch-or-return
 			client.send(`Test ${i}`)
-				// eslint-disable-next-line promise/prefer-await-to-then
 				.then(() => resolved++)
 				.catch(() => failed++)
 				.finally(() => {
