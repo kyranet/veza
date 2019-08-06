@@ -35,8 +35,20 @@ export enum ClientSocketStatus {
 
 export class ClientSocket extends SocketHandler {
 
+	/**
+	 * The socket's client
+	 * @since 0.7.0
+	 */
 	public readonly client: Client;
+	/**
+	 * The socket's status
+	 * @since 0.7.0
+	 */
 	public status = ClientSocketStatus.Disconnected;
+	/**
+	 * How many reconnection attempts this socket has remaining
+	 * @since 0.7.0
+	 */
 	public retriesRemaining: number;
 	private _expectClosing = false;
 	private _reconnectionTimeout!: NodeJS.Timer | null;
