@@ -35,6 +35,7 @@ static/
 azure-pipelines.yml
 PROTOCOL.md
 SECURITY.md
+CHANGELOG.md
 tsconfig.json
 
 # Source Code, only the dist is shipped
