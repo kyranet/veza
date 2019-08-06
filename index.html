@@ -95,22 +95,31 @@
 					</p>
 				</div>
 				<h2 id="about">About</h2>
-				<p><strong>Veza</strong> is a lower level version of <a href="https://github.com/kyranet/ipc-link">IPC-Link</a>
-					that is lightning fast and operates with raw buffers as opposed to sending buffered
-					stringified <code>JSON</code> objects. This library has <a href="https://www.npmjs.com/package/binarytf"><code>binarytf</code></a> as the only
-					dependency, which serves for fast and compact message serialization and deserialization,
-				while using built-in modules (<code>net</code>, <code>events</code>...) to do the IPC / TCP operations.</p>
-				<p>In Veza, you have &quot;nodes&quot;, which can either create a server (and receive messages)
-					or connect to other servers, even both at the same time. Additionally, you have
-				<code>client.send(data);</code> which will wait for the socket to reply back.</p>
+				<p><strong>Veza</strong> is a protocol that operates over either <a href="https://en.wikipedia.org/wiki/Inter-process_communication">IPC</a> or <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> with the only difference of one line of code to switch
+					between the two. Inspired on <a href="https://www.npmjs.com/package/node-ipc">node-ipc</a>, it seeks to use modern, fast, and intuitive <a href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a>s, as well as exposing all the
+					underlying back-ends for much higher customizability and extensibility, as well as a HTTP-like protocol where you can
+				send a message and optionally receive a response for it.</p>
+				<h2 id="socket-support">Socket Support</h2>
+				<ul>
+					<li><input checked="" disabled="" type="checkbox"> Unix Socket or Windows Socket.</li>
+					<li><input checked="" disabled="" type="checkbox"> TCP Socket.</li>
+					<li><input disabled="" type="checkbox"> TLS Socket.</li>
+					<li><input disabled="" type="checkbox"> UDP Sockets.</li>
+				</ul>
 				<blockquote>
-					<p>One of Veza&#39;s special features is the ability to glue truncated messages and split
-						concatenated messages, for which it uses a delimiter detection from <a href="https://www.npmjs.com/package/binarytf"><code>binarytf</code></a>
-						to find where messages end at and where the next continues. Furthermore, it prepends a
-					compressed 7-bit header for id matching and the receptivity of the message.</p>
+					<p><strong>TLS</strong>: TLS sockets can be achieved by extending Veza to use SSL handshakes. To keep things simple and tidy, this is
+					not shipped in core, but will be considered for future releases.</p>
 				</blockquote>
-				<h2 id="examples">Examples</h2>
-				<p>All examples are written in TypeScript and are available <a href="https://github.com/kyranet/veza/tree/master/examples">here</a>.</p>
+				<blockquote>
+					<p><strong>UPD</strong>: UPD sockets are not supported due to Veza&#39;s requirement for messages to be reliably received in order.</p>
+				</blockquote>
+				<h2 id="messaging">Messaging</h2>
+				<p>All messages are encoded and decoded using <a href="https://www.npmjs.com/package/binarytf"><code>binarytf</code></a>, which allows a messages to be sent using the least
+					amount of bytes possible, increasing throughput; plus a 11-byte header at the start of each message. More information
+				available in <a href="https://github.com/kyranet/veza/blob/master/PROTOCOL.md">PROTOCOL</a>.</p>
+				<h2 id="documentation">Documentation</h2>
+				<p>All the documentation is available at <a href="https://veza.js.org/">veza.js.org</a> and at <a href="https://github.com/kyranet/veza/wiki">the wiki</a>. You can
+				find examples of code <a href="https://github.com/kyranet/veza/tree/master/examples">here</a>.</p>
 				<h2 id="contributing">Contributing</h2>
 				<ol>
 					<li>Fork it!</li>
