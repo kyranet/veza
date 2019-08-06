@@ -108,6 +108,7 @@ export abstract class SocketHandler {
  * A raw message
  * @since 0.5.0
  * @private
+ * @internal
  */
 export interface RawMessage {
 	/**

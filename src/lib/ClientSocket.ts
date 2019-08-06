@@ -47,6 +47,7 @@ export class ClientSocket extends SocketHandler {
 	public status = ClientSocketStatus.Disconnected;
 	/**
 	 * How many reconnection attempts this socket has remaining
+	 * @since 0.7.0
 	 */
 	public retriesRemaining: number;
 	private _expectClosing = false;
