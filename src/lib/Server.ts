@@ -157,11 +157,11 @@ export class Server extends EventEmitter {
 	public async listen(...options: any[]): Promise<this> {
 		this.status = ServerStatus.Opening;
 		await new Promise((resolve, reject) => {
-			/* eslint-disable: @typescript-eslint/no-use-before-define */
+			/* eslint-disable @typescript-eslint/no-use-before-define */
 			const onListening = () => resolve(cleanup(this, ServerStatus.Opened));
 			const onClose = () => reject(cleanup(this, ServerStatus.Closed));
 			const onError = (error: any) => reject(cleanup(error, ServerStatus.Closed));
-			/* eslint-enable: @typescript-eslint/no-use-before-define */
+			/* eslint-enable @typescript-eslint/no-use-before-define */
 
 			const cleanup = (value: any, status: ServerStatus) => {
 				this.server.off('listening', onListening);
