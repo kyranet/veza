@@ -1,6 +1,5 @@
 {
 	"eslint.validate": [
-		"javascript",
 		{ language: "typescript", autofix: true }
 	]
 }
