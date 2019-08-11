@@ -63,7 +63,7 @@ export function read(header: Uint8Array) {
  * @private
  */
 export function writeDate(header: Uint8Array, date: number) {
-	write32At(header, date, 0);
+	write32At(header, date % 0xFFFFFFFF, 0);
 }
 
 /**

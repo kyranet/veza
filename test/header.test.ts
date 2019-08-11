@@ -38,7 +38,7 @@ test('Write and Read Date', t => {
 	const header = new Uint8Array(11);
 
 	writeDate(header, now);
-	t.equal(readDate(header), now & 0xFFFFFFFF, 'The date bytes must match.');
+	t.equal(readDate(header), now % 0xFFFFFFFF, 'The date bytes must match.');
 	t.equal(header[4], 0x00, 'The fifth byte should be zero, as it is unwritten.');
 	t.equal(header[5], 0x00, 'The sixth byte should be zero, as it is unwritten.');
 	t.equal(header[6], 0x00, 'The seventh byte should be zero, as it is unwritten.');
