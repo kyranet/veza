@@ -49,7 +49,7 @@ send a message and optionally receive a response for it.
 > **TLS**: TLS sockets can be achieved by extending Veza to use SSL handshakes. To keep things simple and tidy, this is
 not shipped in core, but will be considered for future releases.
 
-> **UPD**: UPD sockets are not supported due to Veza's requirement for messages to be reliably received in order.
+> **UDP**: UDP sockets are not supported due to Veza's requirement for messages to be reliably received in order.
 
 [API]: https://en.wikipedia.org/wiki/Application_programming_interface
 [IPC]: https://en.wikipedia.org/wiki/Inter-process_communication
