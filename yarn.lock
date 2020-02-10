@@ -166,10 +166,10 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/tape@^4.2.33":
-  version "4.2.33"
-  resolved "https://registry.yarnpkg.com/@types/tape/-/tape-4.2.33.tgz#3583953eaff5f8a77e65ad6ff197741457aaaab9"
-  integrity sha512-ltfyuY5BIkYlGuQfwqzTDT8f0q8Z5DGppvUnWGs39oqDmMd6/UWhNpX3ZMh/VYvfxs3rFGHMrLC/eGRdLiDGuw==
+"@types/tape@^4.2.34":
+  version "4.2.34"
+  resolved "https://registry.yarnpkg.com/@types/tape/-/tape-4.2.34.tgz#008459b661a239eb7de81b417e5d104a352994e4"
+  integrity sha512-d3mILzYSlsPEALCiDYkRnkiYN4cl62dkaCg00Uql/FShIvdMOBFGtjP0N/cm0aCXwaAPVBS5weD4ciHAD8RtsA==
   dependencies:
     "@types/node" "*"
 
