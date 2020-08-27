@@ -27,7 +27,6 @@ export enum ServerSocketStatus {
 }
 
 export class ServerSocket extends SocketHandler {
-
 	public readonly server: Server;
 	public status = ServerSocketStatus.Disconnected;
 
@@ -38,10 +37,7 @@ export class ServerSocket extends SocketHandler {
 
 	public async setup() {
 		this.status = ServerSocketStatus.Identifiying;
-		this.socket!
-			.on('data', this._onData.bind(this))
-			.on('error', this._onError.bind(this))
-			.on('close', this._onClose.bind(this));
+		this.socket!.on('data', this._onData.bind(this)).on('error', this._onError.bind(this)).on('close', this._onClose.bind(this));
 
 		try {
 			const sName = await this.send(this.server.name);
@@ -118,5 +114,4 @@ export class ServerSocket extends SocketHandler {
 	private _onClose() {
 		this.disconnect();
 	}
-
 }

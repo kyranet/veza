@@ -1,10 +1,23 @@
-{
-  "extends": "bamboo",
-  "rules": {
-    "no-useless-constructor": 0,
-    "@typescript-eslint/unified-signatures": 0
-  },
-  "globals": {
-    "BigInt": true
-  }
+{	
+  "extends": ["@skyra", "plugin:prettier/recommended"],
+	"rules": {
+		"@typescript-eslint/no-namespace": 0,
+		"@typescript-eslint/indent": 0,
+		"@typescript-eslint/naming-convention": 0,
+		"@typescript-eslint/ban-types": 0,
+		"@typescript-eslint/unified-signatures": 0
+	},
+	"globals": {
+		"BigInt": true,
+		"BigInt64Array": true,
+		"BigUint64Array": true
+	},
+	"overrides": [
+		{
+			"files": ["tests/*.test.ts"],
+			"rules": {
+				"@typescript-eslint/no-empty-function": 0
+			}
+		}
+	]
 }

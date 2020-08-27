@@ -7,7 +7,6 @@ import { RawMessage } from './Base/SocketHandler';
  * @since 0.1.0
  */
 export class Queue extends Map<number, QueueEntry> {
-
 	/**
 	 * The remaining buffer to truncate with other buffers.
 	 * @since 0.1.0
@@ -55,7 +54,6 @@ export class Queue extends Map<number, QueueEntry> {
 
 		return output;
 	}
-
 }
 
 /**

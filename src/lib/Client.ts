@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unified-signatures */
 import { SocketConnectOpts } from 'net';
 import { EventEmitter } from 'events';
 import { ClientSocket } from './ClientSocket';
@@ -23,7 +24,6 @@ export interface NodeClientOptions {
 }
 
 export class Client extends EventEmitter {
-
 	/**
 	 * The client's name
 	 * @since 0.7.0
@@ -69,7 +69,7 @@ export class Client extends EventEmitter {
 	public connectTo(port: number, connectionListener?: () => void): Promise<ClientSocket>;
 	public connectTo(path: string, connectionListener?: () => void): Promise<ClientSocket>;
 	public connectTo(...options: any[]) {
-		// @ts-ignore
+		// @ts-ignore The client socket is able to figure out itself the types of the params
 		return new ClientSocket(this).connect(...options);
 	}
 
@@ -117,7 +117,6 @@ export class Client extends EventEmitter {
 			? nodeSocket.send(data, options)
 			: Promise.reject(new Error('Failed to send to the socket: It is not connected to this client.'));
 	}
-
 }
 
 export interface Client {

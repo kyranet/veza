@@ -34,7 +34,6 @@ export enum ClientSocketStatus {
 }
 
 export class ClientSocket extends SocketHandler {
-
 	/**
 	 * The socket's client
 	 * @since 0.7.0
@@ -84,8 +83,7 @@ export class ClientSocket extends SocketHandler {
 		this.client.servers.set(this.name!, this);
 		this.status = ClientSocketStatus.Ready;
 		this.client.emit('ready', this);
-		this.socket!
-			.on('data', this._onData.bind(this))
+		this.socket!.on('data', this._onData.bind(this))
 			.on('connect', this._onConnect.bind(this))
 			.on('close', () => this._onClose(...options))
 			.on('error', this._onError.bind(this));
@@ -203,10 +201,7 @@ export class ClientSocket extends SocketHandler {
 				return value;
 			}
 
-			this.socket!
-				.on('connect', onConnect)
-				.on('close', onClose)
-				.on('error', onError);
+			this.socket!.on('connect', onConnect).on('close', onClose).on('error', onError);
 
 			this._attemptConnection(...options);
 		});
@@ -214,7 +209,7 @@ export class ClientSocket extends SocketHandler {
 
 	private async _handshake() {
 		await new Promise((resolve, reject) => {
-			let timeout: NodeJS.Timeout;
+			let timeout: NodeJS.Timeout | undefined = undefined;
 			if (this.client.handshakeTimeout !== -1) {
 				timeout = setTimeout(() => {
 					// eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -237,7 +232,7 @@ export class ClientSocket extends SocketHandler {
 						// eslint-disable-next-line @typescript-eslint/no-use-before-define
 						return resolve(cleanup());
 					}
-				} catch { }
+				} catch {}
 				// eslint-disable-next-line @typescript-eslint/no-use-before-define
 				onError(new Error('Unexpected response from the server.'));
 				this.socket!.destroy();
@@ -254,10 +249,7 @@ export class ClientSocket extends SocketHandler {
 				return value;
 			};
 
-			this.socket!
-				.on('data', onData)
-				.on('close', onClose)
-				.on('error', onError);
+			this.socket!.on('data', onData).on('close', onClose).on('error', onError);
 		});
 	}
 
@@ -273,5 +265,4 @@ export class ClientSocket extends SocketHandler {
 			this.client.emit('connect', this);
 		}
 	}
-
 }

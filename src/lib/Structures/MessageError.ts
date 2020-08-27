@@ -6,7 +6,6 @@ import { DeserializerError, DeserializerReason } from 'binarytf/dist/lib/errors/
  * @extends Error
  */
 export class MessageError extends Error {
-
 	/**
 	 * The kind of error from BinaryTF's error.
 	 * @since 0.7.0
@@ -23,7 +22,6 @@ export class MessageError extends Error {
 		super(`${prefix}: ${error.message} [${error.kind}]`);
 		this.kind = error.kind;
 	}
-
 }
 
 /**

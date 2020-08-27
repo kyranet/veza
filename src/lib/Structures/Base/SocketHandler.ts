@@ -11,7 +11,6 @@ import { SendOptions } from '../../Util/Shared';
  * @private
  */
 export abstract class SocketHandler {
-
 	/**
 	 * The name of this socket.
 	 * @since 0.0.1
@@ -52,7 +51,7 @@ export abstract class SocketHandler {
 
 		const { receptive = true, timeout = -1 } = options;
 		return new Promise((resolve, reject) => {
-			let id: number;
+			let id = 0;
 			try {
 				const serialized = serialize(data);
 				const message = create(receptive, serialized);
@@ -64,10 +63,11 @@ export abstract class SocketHandler {
 					return;
 				}
 
-				const timer = timeout === -1
-					? null
-					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					: setTimeout(() => send(reject, true, new Error('Timed out.')), timeout);
+				const timer =
+					timeout === -1
+						? null
+						: // eslint-disable-next-line @typescript-eslint/no-use-before-define
+						  setTimeout(() => send(reject, true, new Error('Timed out.')), timeout);
 				const send = (fn: Function, fromTimer: boolean, response: any) => {
 					if (timer && !fromTimer) clearTimeout(timer);
 					this.queue.delete(id);
@@ -83,8 +83,7 @@ export abstract class SocketHandler {
 				const entry = this.queue.get(id!);
 				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
 				if (entry) entry.reject(error);
-				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
-				else reject(error);
+				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */ else reject(error);
 			}
 		});
 	}
@@ -101,7 +100,6 @@ export abstract class SocketHandler {
 	}
 
 	protected abstract _onData(data: Uint8Array): void;
-
 }
 
 /**

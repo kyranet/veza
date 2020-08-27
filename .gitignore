@@ -1,13 +1,30 @@
+# Ignore a blackhole and the folder for development
 node_modules/
-package-lock.json
 .vs/
 .idea/
-dist/
-*.js
-*.js.map
-*.tsbuildinfo
-*.tgz
+*.iml
+coverage/
+docs/
 
-# Test and Coverage results and files
+# Build code
+dist/
+
+# Ignore JavaScript files
+**/*.js
+**/*.mjs
+!scripts/*.mjs
+**/*.js.map
+**/*.d.ts
+!src/**/*.d.ts
+**/*.tsbuildinfo
+!jest.config.js
+
+# Ignore heapsnapshot and log files
+*.heapsnapshot
+*.log
+
+# Ignore package locks
+package-lock.json
+
+# Test results
 test.xml
-.nyc_output/

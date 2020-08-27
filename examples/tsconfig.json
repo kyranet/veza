@@ -1,10 +1,8 @@
 {
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"noEmit": true,
-		"incremental": false,
-		"baseUrl": ".",
-		"target": "ESNext"
+		"tsBuildInfoFile": "./tsbuildinfo.examples.json",
+		"baseUrl": "."
 	},
 	"include": [".", "../src/**/*"],
 	"references": [{ "path": "../src" }]
