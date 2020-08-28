@@ -15,7 +15,6 @@ export function create(receptive: boolean, bytes: Uint8Array) {
 	writeReceptive(header, receptive);
 	write32At(header, bytes.byteLength, 7);
 	header.set(bytes, 11);
-	/* istanbul ignore next: Basic arithmetic, but needs to run 458745 times for the other branch to run. */
 	i = i < 0xffff ? i + 1 : 0;
 	return header;
 }

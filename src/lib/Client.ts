@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unified-signatures */
 import { SocketConnectOpts } from 'net';
 import { EventEmitter } from 'events';
 import { ClientSocket } from './ClientSocket';

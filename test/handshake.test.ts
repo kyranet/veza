@@ -1,3 +1,4 @@
+/* eslint-global fail*/
 import { Server, Client, NodeClientOptions, ServerSocketStatus, ClientSocketStatus } from '../src/index';
 import { create } from '../src/lib/Util/Header';
 import { get, createServer } from 'http';
@@ -7,8 +8,7 @@ import { readFileSync } from 'fs';
 
 let port = 8000;
 
-beforeEach;
-test('Basic Server', async (done) => {
+test('Basic Server', async () => {
 	expect.assertions(5);
 
 	const nodeServer = new Server('Server');
@@ -25,7 +25,8 @@ test('Basic Server', async (done) => {
 
 	try {
 		await nodeServer.listen(++port);
-		done.fail('This call should definitely crash.');
+		// eslint-disable-next-line no-undef
+		fail('This call should definitely crash.');
 	} catch (error) {
 		expect(error instanceof Error).toBeTruthy();
 		expect(error.message).toBe('Listen method has been called more than once without closing.');
@@ -36,7 +37,7 @@ test('Basic Server', async (done) => {
 });
 
 test('Basic Socket', async () => {
-	// expect.assertions(16);
+	expect.assertions(16);
 
 	const nodeServer = new Server('Server');
 	const nodeSocket = new Client('Socket');
@@ -98,7 +99,7 @@ test('Socket Unknown Server Disconnection (Invalid)', () => {
 });
 
 test('Socket Events', async () => {
-	// expect.assertions(11);
+	expect.assertions(11);
 
 	const nodeServer = new Server('Server');
 	const nodeSocket = new Client('Socket', { maximumRetries: 0 });
@@ -133,7 +134,7 @@ test('Socket Events', async () => {
 });
 
 test('Client Events', async () => {
-	// expect.assertions(6);
+	expect.assertions(6);
 
 	const nodeServer = new Server('Server');
 	const nodeSocket = new Client('Socket');
@@ -159,7 +160,7 @@ test('Client Events', async () => {
 });
 
 test('Server Events', async () => {
-	// expect.assertions(4);
+	expect.assertions(4);
 	const nodeServer = new Server('Server');
 	nodeServer.on('open', () => {
 		expect(nodeServer.sockets.size).toBe(0);
@@ -191,7 +192,7 @@ test('Socket Double Disconnection', async (done) => {
 });
 
 test('Server Double Disconnection', async (done) => {
-	// expect.assertions(2);
+	expect.assertions(2);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 	const server = nodeServer;
 
@@ -210,7 +211,7 @@ test('Server Double Disconnection', async (done) => {
 });
 
 test('Socket Connection Retries', async (done) => {
-	// expect.assertions(4);
+	expect.assertions(4);
 	const [nodeServer, nodeSocket] = await setup(done, ++port, { maximumRetries: 3, retryTime: 0 });
 	await nodeServer.close();
 
@@ -222,7 +223,7 @@ test('Socket Connection Retries', async (done) => {
 });
 
 test('Socket Connection No Retries', async (done) => {
-	// expect.assertions(1);
+	expect.assertions(1);
 	const [nodeServer, nodeSocket] = await setup(done, ++port, { maximumRetries: 0 });
 	await nodeServer.close();
 
@@ -233,7 +234,7 @@ test('Socket Connection No Retries', async (done) => {
 });
 
 test('Socket Connection Retries (Successful Reconnect)', async (done) => {
-	// expect.assertions(4);
+	expect.assertions(4);
 	const [nodeServer, nodeSocket] = await setup(done, ++port, { maximumRetries: 3, retryTime: 200 });
 	await nodeServer.close();
 
@@ -254,7 +255,7 @@ test('Socket Connection Retries (Successful Reconnect)', async (done) => {
 });
 
 test('Socket Connection Retries (Successful Reconnect | Different Name)', async (done) => {
-	// expect.assertions(8);
+	expect.assertions(8);
 	const [nodeServerFirst, nodeSocket] = await setup(done, ++port, { maximumRetries: 3, retryTime: 200 });
 
 	const socketServer = nodeSocket.get('Server')!;
@@ -281,7 +282,7 @@ test('Socket Connection Retries (Successful Reconnect | Different Name)', async 
 });
 
 test('Socket Connection Retries (Abrupt Close)', async (done) => {
-	// expect.assertions(3);
+	expect.assertions(3);
 	const [nodeServer, nodeSocket] = await setup(done, ++port, { maximumRetries: -1, retryTime: 200 });
 	await nodeServer.close();
 
@@ -300,7 +301,7 @@ test('Socket Connection Retries (Abrupt Close)', async (done) => {
 });
 
 test('Server Connection Close', async (done) => {
-	// expect.assertions(1);
+	expect.assertions(1);
 	const [nodeServer, nodeSocket] = await setup(done, ++port, undefined);
 
 	nodeServer.on('disconnect', async (socket) => {
@@ -311,7 +312,7 @@ test('Server Connection Close', async (done) => {
 });
 
 test('HTTP Socket', async (done) => {
-	// expect.assertions(1);
+	expect.assertions(1);
 	const nodeServer = new Server('Server');
 	await nodeServer.listen(++port);
 
@@ -330,7 +331,7 @@ test('HTTP Socket', async (done) => {
 });
 
 test('HTTP Server', async (done) => {
-	// expect.assertions(5);
+	expect.assertions(5);
 	const nodeSocket = new Client('Socket', { handshakeTimeout: 250 });
 	const server = createServer(() => {
 		done.fail('This should not be called - in Veza, the server sends the message, and the socket replies.');
@@ -353,7 +354,7 @@ test('HTTP Server', async (done) => {
 });
 
 test('HTTP Server (Incorrect Handshake)', async (done) => {
-	// expect.assertions(5);
+	expect.assertions(5);
 	const nodeSocket = new Client('Socket', { handshakeTimeout: -1 });
 	const server = createServer(() => {
 		done.fail('This should not be called - in Veza, the server sends the message, and the socket replies.');
@@ -380,7 +381,7 @@ test('HTTP Server (Incorrect Handshake)', async (done) => {
 });
 
 test('HTTP Server (Malicious Forged Handshake)', async (done) => {
-	// expect.assertions(5);
+	expect.assertions(5);
 	const nodeSocket = new Client('Socket', { handshakeTimeout: -1 });
 	const server = createServer(() => {
 		done.fail('This should not be called - in Veza, the server sends the message, and the socket replies.');
@@ -411,7 +412,7 @@ test('HTTP Server (Malicious Forged Handshake)', async (done) => {
 });
 
 test('ClientSocket Socket Retrieval', async (done) => {
-	// expect.assertions(6);
+	expect.assertions(6);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 	const server = nodeSocket.get('Server')!;
 
@@ -435,7 +436,7 @@ test('ClientSocket Socket Retrieval', async (done) => {
 });
 
 test('NodeServer Socket Retrieval', async (done) => {
-	// expect.assertions(6);
+	expect.assertions(6);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 	const socket = nodeServer.get('Socket')!;
 
@@ -459,7 +460,7 @@ test('NodeServer Socket Retrieval', async (done) => {
 });
 
 test('Socket Message', async (done) => {
-	// expect.assertions(14);
+	expect.assertions(14);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 
 	// Test receptive (default) message delivery
@@ -521,7 +522,7 @@ test('Socket Message', async (done) => {
 });
 
 test('Socket Unknown Server Message Sending (Invalid)', async () => {
-	// expect.assertions(1);
+	expect.assertions(1);
 
 	const nodeSocket = new Client('Socket');
 
@@ -533,7 +534,7 @@ test('Socket Unknown Server Message Sending (Invalid)', async () => {
 });
 
 test('Server Messages', async (done) => {
-	// expect.assertions(5);
+	expect.assertions(5);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 
 	nodeSocket.on('message', (message) => {
@@ -562,7 +563,7 @@ test('Server Messages', async (done) => {
 });
 
 test('Server Message (Large Buffer)', async (done) => {
-	// expect.assertions(5);
+	expect.assertions(5);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 	const buffer = readFileSync('./static/logo.png');
 
@@ -592,7 +593,7 @@ test('Server Message (Large Buffer)', async (done) => {
 });
 
 test('Server Message (Multiple Large Buffer)', async (done) => {
-	// expect.assertions(8);
+	expect.assertions(8);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 	const bufferLogo = readFileSync('./static/logo.png');
 	const bufferTest = readFileSync('./test/test.png');
@@ -633,7 +634,7 @@ test('Server Message (Multiple Large Buffer)', async (done) => {
 });
 
 test('Server Message (Spam)', async (done) => {
-	// expect.assertions(1);
+	expect.assertions(1);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 
 	const AMOUNT_OF_MESSAGES = 10000;
@@ -667,7 +668,7 @@ test('Server Message (Spam)', async (done) => {
 });
 
 test('Socket Faulty Message', async (done) => {
-	// expect.assertions(3);
+	expect.assertions(3);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 	nodeServer.on('error', async (error, socket) => {
 		expect(socket!.name).toBe('Socket');
@@ -682,7 +683,7 @@ test('Socket Faulty Message', async (done) => {
 });
 
 test('Server Faulty Message', async (done) => {
-	// expect.assertions(3);
+	expect.assertions(3);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 	nodeSocket.on('error', async (error, socket) => {
 		expect(socket!.name).toBe('Server');
@@ -697,7 +698,7 @@ test('Server Faulty Message', async (done) => {
 });
 
 test('Socket Concurrent Messages', async (done) => {
-	// expect.assertions(6);
+	expect.assertions(6);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 
 	const messages = ['Hello', 'High'];
@@ -717,7 +718,7 @@ test('Socket Concurrent Messages', async (done) => {
 });
 
 test('Message Broadcast', async (done) => {
-	// expect.assertions(9);
+	expect.assertions(9);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 
 	nodeSocket.once('message', (message) => {
@@ -756,7 +757,7 @@ test('Message Broadcast', async (done) => {
 });
 
 test('Message Broadcast (From Server)', async (done) => {
-	// expect.assertions(9);
+	expect.assertions(9);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 
 	nodeSocket.once('message', (message) => {
@@ -795,7 +796,7 @@ test('Message Broadcast (From Server)', async (done) => {
 });
 
 test('Message Timeout', async (done) => {
-	// expect.assertions(4);
+	expect.assertions(4);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 
 	try {
@@ -829,7 +830,7 @@ test('Message Timeout', async (done) => {
 });
 
 test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async (done) => {
-	// expect.assertions(3);
+	expect.assertions(3);
 	const [nodeServer, nodeSocket] = await setup(done, ++port);
 
 	nodeServer.on('message', (message) => {
@@ -850,7 +851,7 @@ test('Abrupt Disconnection (Disconnected Without Clearing Messages)', async (don
 });
 
 test('Duplicated Socket', async (done) => {
-	// expect.assertions(1);
+	expect.assertions(1);
 	const [nodeServer, nodeSocketFirst] = await setup(done, ++port, undefined);
 	const nodeSocketSecond = new Client('Socket');
 

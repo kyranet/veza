@@ -133,7 +133,6 @@ export class ClientSocket extends SocketHandler {
 
 	private _onConnect() {
 		this.retriesRemaining = this.client.maximumRetries;
-		/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 		if (this._reconnectionTimeout) {
 			clearTimeout(this._reconnectionTimeout);
 			this._reconnectionTimeout = null;
@@ -144,7 +143,6 @@ export class ClientSocket extends SocketHandler {
 	}
 
 	private _onClose(...options: [any, any?, any?]) {
-		/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 		if (!this._expectClosing && this.canReconnect) {
 			this._reconnect(...options);
 		} else if (this.status !== ClientSocketStatus.Disconnected) {
@@ -157,7 +155,6 @@ export class ClientSocket extends SocketHandler {
 	private _reconnect(...options: [any, any?, any?]) {
 		if (this._reconnectionTimeout) clearTimeout(this._reconnectionTimeout);
 		this._reconnectionTimeout = setTimeout(async () => {
-			/* istanbul ignore else: Safe guard for race-conditions or unexpected behaviour. */
 			if (this.status !== ClientSocketStatus.Disconnected) {
 				--this.retriesRemaining;
 				try {
@@ -176,7 +173,6 @@ export class ClientSocket extends SocketHandler {
 
 	private _onError(error: any) {
 		const { code } = error;
-		/* istanbul ignore next: This is mostly guard code, it's very hard for all cases to be covered. Open to a fix. */
 		if (code === 'ECONNRESET' || code === 'ECONNREFUSED') {
 			if (this.status !== ClientSocketStatus.Disconnected) return;
 			this.status = ClientSocketStatus.Disconnected;
