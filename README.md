@@ -41,19 +41,19 @@ send a message and optionally receive a response for it.
 
 ## Socket Support
 
-- [x] Unix Socket or Windows Socket.
-- [x] TCP Socket.
-- [ ] TLS Socket.
-- [ ] UDP Sockets.
+-   [x] Unix Socket or Windows Socket.
+-   [x] TCP Socket.
+-   [ ] TLS Socket.
+-   [ ] UDP Sockets.
 
 > **TLS**: TLS sockets can be achieved by extending Veza to use SSL handshakes. To keep things simple and tidy, this is
-not shipped in core, but will be considered for future releases.
+> not shipped in core, but will be considered for future releases.
 
 > **UDP**: UDP sockets are not supported due to Veza's requirement for messages to be reliably received in order.
 
-[API]: https://en.wikipedia.org/wiki/Application_programming_interface
-[IPC]: https://en.wikipedia.org/wiki/Inter-process_communication
-[TCP]: https://en.wikipedia.org/wiki/Transmission_Control_Protocol
+[api]: https://en.wikipedia.org/wiki/Application_programming_interface
+[ipc]: https://en.wikipedia.org/wiki/Inter-process_communication
+[tcp]: https://en.wikipedia.org/wiki/Transmission_Control_Protocol
 [node-ipc]: https://www.npmjs.com/package/node-ipc
 
 ## Messaging
@@ -63,7 +63,7 @@ amount of bytes possible, increasing throughput; plus a 11-byte header at the st
 available in [PROTOCOL].
 
 [binarytf]: https://www.npmjs.com/package/binarytf
-[PROTOCOL]: https://github.com/kyranet/veza/blob/master/PROTOCOL.md
+[protocol]: https://github.com/kyranet/veza/blob/master/PROTOCOL.md
 
 ## Documentation
 
@@ -86,7 +86,7 @@ find examples of code [here](https://github.com/kyranet/veza/tree/master/example
 [MIT][license] License.
 Authored and maintained by kyranet.
 
-> Github [kyranet][author] - Twitter [@kyranet_][twitter]
+> Github [kyranet][author] - Twitter [@kyranet\_][twitter]
 
 [license]: https://github.com/kyranet/veza/blob/master/LICENSE.md
 [author]: https://github.com/kyranet

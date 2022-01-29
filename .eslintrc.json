@@ -1,10 +1,10 @@
 {
-  "extends": "@sapphire",
-  "rules": {
-    "no-useless-constructor": 0,
-    "@typescript-eslint/unified-signatures": 0
-  },
-  "globals": {
-    "BigInt": true
-  }
+	"extends": "@sapphire",
+	"rules": {
+		"no-useless-constructor": 0,
+		"@typescript-eslint/unified-signatures": 0
+	},
+	"globals": {
+		"BigInt": true
+	}
 }

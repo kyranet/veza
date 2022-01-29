@@ -55,15 +55,15 @@ exclusively, since they define a socket connection.
 Each socket is a [duplex][] connection, so they have both a message sender and a receiver. The composition of messages
 using the Veza protocol is the following:
 
-| ID      | Receptive | Byte-Length | Bytes ...           |
+|   ID    | Receptive | Byte-Length |      Bytes ...      |
 | :-----: | :-------: | :---------: | :-----------------: |
-| 6 bytes | 1 byte    | 4 bytes     | `Byte-Length` bytes |
+| 6 bytes |  1 byte   |   4 bytes   | `Byte-Length` bytes |
 
 1. Implementation-wise there is no restriction about what `ID` may be, it can be a [Cryptographic Nonce][crypto_nonce],
-it may be an incremental number, it may be anything, as long as two messages from the same sender do not conflict and is
-strictly 6 bytes long.
+   it may be an incremental number, it may be anything, as long as two messages from the same sender do not conflict and is
+   strictly 6 bytes long.
 1. `Receptive` header defines whether the message is `read-only` or the server is awaiting its response,
-will always be `0x00` for non-receptive, or `0x01` for receptive.
+   will always be `0x00` for non-receptive, or `0x01` for receptive.
 1. `Byte-Length` is used to define how long the message is in bytes.
 1. `Bytes` is the message encoded with [Binary Term Format][binarytf].
 
@@ -85,10 +85,10 @@ The connection between the `Client` and the `Server` is done over TCP but has an
 
 The handshake has two purposes:
 
-- **Verify**: This step helps identifying if the counterpart "understands" the same language. The slight decode error or
-type mismatch should end on a prompt disconnection.
-- **Identify**: Veza nodes have a name for which they are identified as. For example if a `Server` is named `master`,
-all `Server`s connected to it may send messages to it using `master` as its name.
+-   **Verify**: This step helps identifying if the counterpart "understands" the same language. The slight decode error or
+    type mismatch should end on a prompt disconnection.
+-   **Identify**: Veza nodes have a name for which they are identified as. For example if a `Server` is named `master`,
+    all `Server`s connected to it may send messages to it using `master` as its name.
 
 ```java
 // Stablish a TCP connection by connecting Client
