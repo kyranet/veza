@@ -1,9 +1,18 @@
-# Change Log
+# Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
+## [1.2.0](https://github.com/kyranet/veza/compare/v1.1.0...v1.2.0) (2022-01-29)
+
+
+### Features
+
+* update everything in the repo ([#316](https://github.com/kyranet/veza/issues/316)) ([45bf8dd](https://github.com/kyranet/veza/commit/45bf8dd92ffe1a2aa676c137a9635863a79cab41))
+
+
+### Bug Fixes
+
+* ensure client socket is writeable before writing to it ([405190b](https://github.com/kyranet/veza/commit/405190bbf1e4a174f46c75baf8b3b75621bf02fb)), closes [#231](https://github.com/kyranet/veza/issues/231)
 
 ## 1.1.0
 

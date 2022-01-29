@@ -1,6 +1,6 @@
 {
 	"name": "veza",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "IPC/TCP Networking Utility to connect several processes with great speeds.",
 	"author": "kyranet <kyradiscord@gmail.com>",
 	"license": "MIT",
