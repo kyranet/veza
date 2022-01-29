@@ -200,7 +200,6 @@ export class Server extends EventEmitter {
 		}
 		await new Promise<void>((resolve, reject) => {
 			this.server.close((error) => {
-				/* istanbul ignore next: Hard to reproduce, it is a safe guard. */
 				if (error) {
 					reject(error);
 				} else {
@@ -228,7 +227,6 @@ export class Server extends EventEmitter {
 	 * @param error The error received.
 	 */
 	private _onError(error: Error) {
-		/* istanbul ignore next: Hard to reproduce in Azure. */
 		this.emit('error', error, null);
 	}
 

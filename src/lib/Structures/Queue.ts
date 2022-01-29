@@ -29,7 +29,6 @@ export class Queue extends Map<number, QueueEntry> {
 		const output: RawMessage[] = [];
 		while (buffer.byteLength !== 0) {
 			// If the header separator was not found, it may be due to an impartial message
-			/* istanbul ignore next: This is hard to reproduce in Azure, it needs the buffer to overflow and split to extremely precise byte lengths. */
 			if (buffer.length <= 11) {
 				this._rest = buffer;
 				break;

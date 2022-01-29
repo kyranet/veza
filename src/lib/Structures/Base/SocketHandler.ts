@@ -79,11 +79,12 @@ export abstract class SocketHandler {
 					reject: send.bind(null, reject, false)
 				});
 			} catch (error) {
-				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
 				const entry = this.queue.get(id!);
-				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
-				if (entry) entry.reject(error as Error);
-				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */ else reject(error);
+				if (entry) {
+					entry.reject(error as Error);
+				} else {
+					reject(error);
+				}
 			}
 		});
 	}

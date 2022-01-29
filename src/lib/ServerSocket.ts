@@ -43,7 +43,6 @@ export class ServerSocket extends SocketHandler {
 			const sName = await this.send(this.server.name);
 
 			// sName must never be anything that is not a string
-			/* istanbul ignore next: Will do other day. */
 			if (typeof sName !== 'string') {
 				return this.disconnect();
 			}
@@ -93,7 +92,6 @@ export class ServerSocket extends SocketHandler {
 		this.server.emit('raw', data, this);
 		for (const processed of this.queue.process(data)) {
 			if (processed.id === null) {
-				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
 				if (this.status === ServerSocketStatus.Connected) {
 					this.server.emit('error', makeError('Failed to parse message', processed.data), this);
 				} else {
@@ -108,7 +106,6 @@ export class ServerSocket extends SocketHandler {
 	}
 
 	private _onError(error: NetworkError) {
-		/* istanbul ignore next: Hard to reproduce in Azure. */
 		this.server.emit('error', error, this);
 	}
 
