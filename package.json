@@ -14,7 +14,7 @@
 		"format": "prettier --write \"{src,test,examples}/**/*.ts\"",
 		"update": "yarn upgrade-interactive",
 		"build": "tsc -b src",
-		"docs": "typedoc --excludeNotExported --exclude \"./src/utils/**/*.ts\" --mode file --out \"./dist/\" \"./src/\""
+		"docs": "typedoc"
 	},
 	"dependencies": {
 		"binarytf": "^2.1.1"

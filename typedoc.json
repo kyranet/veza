@@ -1,0 +1,7 @@
+{
+	"out": "./docs/",
+	"readme": "./README.md",
+	"name": "binarytf",
+	"entryPoints": ["src/index.ts"],
+	"tsconfig": "./src/tsconfig.json"
+}
