@@ -4,8 +4,5 @@
 
 # Project setup
 .yarnrc.yml @favna
-jest.config.mjs @favna
 tsconfig.base.json @favna
 tsconfig.eslint.json @favna
-tsup.config.ts @favna
-typedoc.json @favna
