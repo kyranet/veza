@@ -1,5 +1,0 @@
-{
-	"eslint.validate": [
-		{ "language": "typescript", "autofix": true }
-	]
-}
