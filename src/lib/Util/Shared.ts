@@ -1,6 +1,6 @@
-import { createFromID } from './Header';
 import { serialize } from 'binarytf';
 import type { RawMessage } from '../Structures/Base/SocketHandler';
+import { createFromID } from './Header';
 
 /**
  * The send options.

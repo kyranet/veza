@@ -2,8 +2,8 @@
 // This Node is a socket that replies to hello.js with "world!" when it receives "Hello".
 
 // This example tests concurrency with parallel messages in IPC.
+import { promisify } from 'node:util';
 import { Client } from '../src/index';
-import { promisify } from 'util';
 
 const sleep = promisify(setTimeout);
 const TIMES = 10000;
