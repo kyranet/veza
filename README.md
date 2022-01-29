@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/kyranet/veza/main/static/logo.png" width="30%">
+<img src="https://raw.githubusercontent.com/kyranet/veza/main/static/logo.png" height="200">
 
 # Veza
 
