@@ -1,6 +1,6 @@
+import type { Socket as NetSocket } from 'node:net';
+import type { Server } from './Server';
 import { SocketHandler } from './Structures/Base/SocketHandler';
-import { Socket as NetSocket } from 'net';
-import { Server } from './Server';
 import { makeError } from './Structures/MessageError';
 import { NetworkError, VCLOSE } from './Util/Shared';
 
@@ -27,7 +27,6 @@ export enum ServerSocketStatus {
 }
 
 export class ServerSocket extends SocketHandler {
-
 	public readonly server: Server;
 	public status = ServerSocketStatus.Disconnected;
 
@@ -38,19 +37,16 @@ export class ServerSocket extends SocketHandler {
 
 	public async setup() {
 		this.status = ServerSocketStatus.Identifiying;
-		this.socket!
-			.on('data', this._onData.bind(this))
-			.on('error', this._onError.bind(this))
-			.on('close', this._onClose.bind(this));
+		this.socket!.on('data', this._onData.bind(this)).on('error', this._onError.bind(this)).on('close', this._onClose.bind(this));
 
 		try {
 			const sName = await this.send(this.server.name);
 
 			// sName must never be anything that is not a string
-			/* istanbul ignore next: Will do other day. */
 			if (typeof sName !== 'string') {
 				return this.disconnect();
 			}
+
 			this.status = ServerSocketStatus.Connected;
 			this.name = sName;
 
@@ -62,9 +58,9 @@ export class ServerSocket extends SocketHandler {
 
 			// Add this socket to the clients.
 			this.server.sockets.set(sName, this);
-			this.server.emit('connect', this);
+			return this.server.emit('connect', this);
 		} catch {
-			this.disconnect();
+			return this.disconnect();
 		}
 	}
 
@@ -96,7 +92,6 @@ export class ServerSocket extends SocketHandler {
 		this.server.emit('raw', data, this);
 		for (const processed of this.queue.process(data)) {
 			if (processed.id === null) {
-				/* istanbul ignore else: Hard to reproduce, this is a safe-guard. */
 				if (this.status === ServerSocketStatus.Connected) {
 					this.server.emit('error', makeError('Failed to parse message', processed.data), this);
 				} else {
@@ -111,12 +106,10 @@ export class ServerSocket extends SocketHandler {
 	}
 
 	private _onError(error: NetworkError) {
-		/* istanbul ignore next: Hard to reproduce in Azure. */
 		this.server.emit('error', error, this);
 	}
 
 	private _onClose() {
 		this.disconnect();
 	}
-
 }

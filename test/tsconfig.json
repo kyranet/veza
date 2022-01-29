@@ -1,8 +1,0 @@
-{
-	"extends": "eslint-config-bamboo",
-	"compilerOptions": {
-		"sourceMap": true,
-		"declaration": false,
-		"types": ["node", "tape"]
-	}
-}

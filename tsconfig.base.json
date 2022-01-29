@@ -1,0 +1,6 @@
+{
+	"extends": "@sapphire/ts-config",
+	"compilerOptions": {
+		"target": "ES2021"
+	}
+}

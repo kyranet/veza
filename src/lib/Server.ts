@@ -1,8 +1,8 @@
-import { Server as NetServer, Socket as NetSocket, ListenOptions } from 'net';
-import { ServerSocket } from './ServerSocket';
-import { BroadcastOptions, SendOptions, NetworkError } from './Util/Shared';
 import { EventEmitter } from 'events';
-import { NodeMessage } from './Structures/NodeMessage';
+import { ListenOptions, Server as NetServer, Socket as NetSocket } from 'net';
+import { ServerSocket } from './ServerSocket';
+import type { NodeMessage } from './Structures/NodeMessage';
+import type { BroadcastOptions, NetworkError, SendOptions } from './Util/Shared';
 
 /**
  * The connection status of this server.
@@ -35,7 +35,6 @@ export enum ServerStatus {
  * The server that receives connections.
  */
 export class Server extends EventEmitter {
-
 	/**
 	 * The internal net.Server that powers this instance.
 	 * @since 0.7.0
@@ -79,7 +78,12 @@ export class Server extends EventEmitter {
 	 * @param connectionListener Automatically set as a listener for the 'connection' event.
 	 * @see https://nodejs.org/dist/latest/docs/api/net.html#net_net_createserver_options_connectionlistener
 	 */
-	public constructor(name: string, options?: { allowHalfOpen?: boolean; pauseOnConnect?: boolean }, connectionListener?: (socket: NetSocket) => void);
+	public constructor(
+		name: string,
+		options?: { allowHalfOpen?: boolean; pauseOnConnect?: boolean },
+		connectionListener?: (socket: NetSocket) => void
+	);
+
 	public constructor(name: string, ...args: any[]) {
 		super();
 		this.name = name;
@@ -170,19 +174,13 @@ export class Server extends EventEmitter {
 				this.status = status;
 				return value;
 			};
-			this.server
-				.on('listening', onListening)
-				.on('close', onClose)
-				.on('error', onError);
+			this.server.on('listening', onListening).on('close', onClose).on('error', onError);
 
 			this.server.listen(...options);
 		});
 
 		this.emit('open');
-		this.server
-			.on('connection', this._onConnection.bind(this))
-			.on('error', this._onError.bind(this))
-			.on('close', this._onClose.bind(this));
+		this.server.on('connection', this._onConnection.bind(this)).on('error', this._onError.bind(this)).on('close', this._onClose.bind(this));
 
 		return this;
 	}
@@ -200,9 +198,8 @@ export class Server extends EventEmitter {
 		for (const socket of this.sockets.values()) {
 			socket.disconnect(closeSockets);
 		}
-		await new Promise((resolve, reject) => {
-			this.server.close(error => {
-				/* istanbul ignore next: Hard to reproduce, it is a safe guard. */
+		await new Promise<void>((resolve, reject) => {
+			this.server.close((error) => {
 				if (error) {
 					reject(error);
 				} else {
@@ -221,7 +218,7 @@ export class Server extends EventEmitter {
 	 * @param socket The received socket
 	 */
 	private _onConnection(socket: NetSocket) {
-		new ServerSocket(this, socket).setup();
+		void new ServerSocket(this, socket).setup();
 	}
 
 	/**
@@ -230,7 +227,6 @@ export class Server extends EventEmitter {
 	 * @param error The error received.
 	 */
 	private _onError(error: Error) {
-		/* istanbul ignore next: Hard to reproduce in Azure. */
 		this.emit('error', error, null);
 	}
 
@@ -239,9 +235,8 @@ export class Server extends EventEmitter {
 	 * @since 0.7.0
 	 */
 	private _onClose() {
-		this.close();
+		void this.close();
 	}
-
 }
 
 export interface Server {

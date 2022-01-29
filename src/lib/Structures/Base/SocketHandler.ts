@@ -1,9 +1,9 @@
+import { serialize } from 'binarytf';
+import type { Socket as NetSocket } from 'node:net';
+import { create, read } from '../../Util/Header';
+import type { SendOptions } from '../../Util/Shared';
 import { NodeMessage } from '../NodeMessage';
 import { Queue } from '../Queue';
-import { Socket as NetSocket } from 'net';
-import { create, read } from '../../Util/Header';
-import { serialize } from 'binarytf';
-import { SendOptions } from '../../Util/Shared';
 
 /**
  * The abstract socket handler for {@link ClientSocket} and {@link ServerSocket}.
@@ -11,7 +11,6 @@ import { SendOptions } from '../../Util/Shared';
  * @private
  */
 export abstract class SocketHandler {
-
 	/**
 	 * The name of this socket.
 	 * @since 0.0.1
@@ -64,11 +63,12 @@ export abstract class SocketHandler {
 					return;
 				}
 
-				const timer = timeout === -1
-					? null
-					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					: setTimeout(() => send(reject, true, new Error('Timed out.')), timeout);
-				const send = (fn: Function, fromTimer: boolean, response: any) => {
+				const timer =
+					timeout === -1
+						? null
+						: // eslint-disable-next-line @typescript-eslint/no-use-before-define
+						  setTimeout(() => send(reject, true, new Error('Timed out.')), timeout);
+				const send = (fn: AnyFunction, fromTimer: boolean, response: any) => {
 					if (timer && !fromTimer) clearTimeout(timer);
 					this.queue.delete(id);
 					return fn(response);
@@ -79,12 +79,12 @@ export abstract class SocketHandler {
 					reject: send.bind(null, reject, false)
 				});
 			} catch (error) {
-				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
 				const entry = this.queue.get(id!);
-				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
-				if (entry) entry.reject(error);
-				/* istanbul ignore next: Hard to reproduce, this is a safe-guard. */
-				else reject(error);
+				if (entry) {
+					entry.reject(error as Error);
+				} else {
+					reject(error);
+				}
 			}
 		});
 	}
@@ -101,7 +101,6 @@ export abstract class SocketHandler {
 	}
 
 	protected abstract _onData(data: Uint8Array): void;
-
 }
 
 /**
@@ -127,3 +126,5 @@ export interface RawMessage {
 	 */
 	data: any;
 }
+
+type AnyFunction = (...args: any[]) => any;

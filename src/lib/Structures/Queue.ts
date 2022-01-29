@@ -1,13 +1,12 @@
-import { read } from '../Util/Header';
 import { deserialize } from 'binarytf';
-import { RawMessage } from './Base/SocketHandler';
+import { read } from '../Util/Header';
+import type { RawMessage } from './Base/SocketHandler';
 
 /**
  * The queue class that manages messages.
  * @since 0.1.0
  */
 export class Queue extends Map<number, QueueEntry> {
-
 	/**
 	 * The remaining buffer to truncate with other buffers.
 	 * @since 0.1.0
@@ -30,7 +29,6 @@ export class Queue extends Map<number, QueueEntry> {
 		const output: RawMessage[] = [];
 		while (buffer.byteLength !== 0) {
 			// If the header separator was not found, it may be due to an impartial message
-			/* istanbul ignore next: This is hard to reproduce in Azure, it needs the buffer to overflow and split to extremely precise byte lengths. */
 			if (buffer.length <= 11) {
 				this._rest = buffer;
 				break;
@@ -55,7 +53,6 @@ export class Queue extends Map<number, QueueEntry> {
 
 		return output;
 	}
-
 }
 
 /**

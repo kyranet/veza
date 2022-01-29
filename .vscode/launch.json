@@ -10,9 +10,7 @@
 			"name": "Debug - Tests",
 			"program": "${workspaceFolder}/test/suite.ts",
 			"preLaunchTask": "tsc: build - tsconfig.json",
-			"outFiles": [
-				"${workspaceFolder}/test/*.js"
-			]
+			"outFiles": ["${workspaceFolder}/test/*.js"]
 		}
 	]
 }
