@@ -1,6 +1,6 @@
+import type { Socket as NetSocket } from 'node:net';
+import type { Server } from './Server';
 import { SocketHandler } from './Structures/Base/SocketHandler';
-import { Socket as NetSocket } from 'net';
-import { Server } from './Server';
 import { makeError } from './Structures/MessageError';
 import { NetworkError, VCLOSE } from './Util/Shared';
 
@@ -27,7 +27,6 @@ export enum ServerSocketStatus {
 }
 
 export class ServerSocket extends SocketHandler {
-
 	public readonly server: Server;
 	public status = ServerSocketStatus.Disconnected;
 
@@ -38,10 +37,7 @@ export class ServerSocket extends SocketHandler {
 
 	public async setup() {
 		this.status = ServerSocketStatus.Identifiying;
-		this.socket!
-			.on('data', this._onData.bind(this))
-			.on('error', this._onError.bind(this))
-			.on('close', this._onClose.bind(this));
+		this.socket!.on('data', this._onData.bind(this)).on('error', this._onError.bind(this)).on('close', this._onClose.bind(this));
 
 		try {
 			const sName = await this.send(this.server.name);
@@ -51,6 +47,7 @@ export class ServerSocket extends SocketHandler {
 			if (typeof sName !== 'string') {
 				return this.disconnect();
 			}
+
 			this.status = ServerSocketStatus.Connected;
 			this.name = sName;
 
@@ -62,9 +59,9 @@ export class ServerSocket extends SocketHandler {
 
 			// Add this socket to the clients.
 			this.server.sockets.set(sName, this);
-			this.server.emit('connect', this);
+			return this.server.emit('connect', this);
 		} catch {
-			this.disconnect();
+			return this.disconnect();
 		}
 	}
 
@@ -118,5 +115,4 @@ export class ServerSocket extends SocketHandler {
 	private _onClose() {
 		this.disconnect();
 	}
-
 }

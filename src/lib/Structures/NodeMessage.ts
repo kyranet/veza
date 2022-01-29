@@ -1,9 +1,8 @@
-import { SocketHandler } from './Base/SocketHandler';
-import { createFromID } from '../Util/Header';
 import { serialize } from 'binarytf';
+import { createFromID } from '../Util/Header';
+import type { SocketHandler } from './Base/SocketHandler';
 
 export class NodeMessage {
-
 	/**
 	 * The client that received this message.
 	 * @since 0.0.1
@@ -83,5 +82,4 @@ export class NodeMessage {
 	public toString() {
 		return `NodeMessage<${this.id}>`;
 	}
-
 }

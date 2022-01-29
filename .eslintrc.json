@@ -1,5 +1,5 @@
 {
-  "extends": "bamboo",
+  "extends": "@sapphire",
   "rules": {
     "no-useless-constructor": 0,
     "@typescript-eslint/unified-signatures": 0

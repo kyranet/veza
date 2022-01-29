@@ -1,8 +1,8 @@
-import { SocketConnectOpts } from 'net';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
+import type { SocketConnectOpts } from 'node:net';
 import { ClientSocket } from './ClientSocket';
-import { SendOptions, NetworkError } from './Util/Shared';
-import { NodeMessage } from './Structures/NodeMessage';
+import type { NodeMessage } from './Structures/NodeMessage';
+import type { NetworkError, SendOptions } from './Util/Shared';
 
 export interface NodeClientOptions {
 	/**
@@ -23,7 +23,6 @@ export interface NodeClientOptions {
 }
 
 export class Client extends EventEmitter {
-
 	/**
 	 * The client's name
 	 * @since 0.7.0
@@ -69,7 +68,7 @@ export class Client extends EventEmitter {
 	public connectTo(port: number, connectionListener?: () => void): Promise<ClientSocket>;
 	public connectTo(path: string, connectionListener?: () => void): Promise<ClientSocket>;
 	public connectTo(...options: any[]) {
-		// @ts-ignore
+		// @ts-expect-error This is valid code
 		return new ClientSocket(this).connect(...options);
 	}
 
@@ -117,7 +116,6 @@ export class Client extends EventEmitter {
 			? nodeSocket.send(data, options)
 			: Promise.reject(new Error('Failed to send to the socket: It is not connected to this client.'));
 	}
-
 }
 
 export interface Client {

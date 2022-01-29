@@ -1,17 +1,7 @@
 import * as test from 'tape';
-import {
-	create,
-	createFromID,
-	read,
-	readDate,
-	readIncrement,
-	writeDate,
-	writeIncrement,
-	writeReceptive,
-	read32At
-} from '../dist/lib/Util/Header';
+import { create, createFromID, read, read32At, readDate, readIncrement, writeDate, writeIncrement, writeReceptive } from '../dist/lib/Util/Header';
 
-test('Create Basic Header', t => {
+test('Create Basic Header', (t) => {
 	t.plan(6);
 
 	// Receptive header
@@ -31,14 +21,14 @@ test('Create Basic Header', t => {
 	}
 });
 
-test('Write and Read Date', t => {
+test('Write and Read Date', (t) => {
 	t.plan(8);
 
 	const now = Date.now();
 	const header = new Uint8Array(11);
 
 	writeDate(header, now);
-	t.equal(readDate(header), now % 0xFFFFFFFF, 'The date bytes must match.');
+	t.equal(readDate(header), now % 0xffffffff, 'The date bytes must match.');
 	t.equal(header[4], 0x00, 'The fifth byte should be zero, as it is unwritten.');
 	t.equal(header[5], 0x00, 'The sixth byte should be zero, as it is unwritten.');
 	t.equal(header[6], 0x00, 'The seventh byte should be zero, as it is unwritten.');
@@ -48,7 +38,7 @@ test('Write and Read Date', t => {
 	t.equal(header[10], 0x00, 'The eleventh byte should be zero, as it is unwritten.');
 });
 
-test('Write and Read Increment', t => {
+test('Write and Read Increment', (t) => {
 	t.plan(10);
 
 	const increment = 0x1234;
@@ -67,7 +57,7 @@ test('Write and Read Increment', t => {
 	t.equal(header[10], 0x00, 'The eleventh byte should be zero, as it is unwritten.');
 });
 
-test('Write and Read Increment', t => {
+test('Write and Read Increment', (t) => {
 	t.plan(12);
 
 	const header = new Uint8Array(11);
@@ -90,7 +80,7 @@ test('Write and Read Increment', t => {
 	t.equal(header[10], 0x00, 'The eleventh byte should be zero, as it is unwritten.');
 });
 
-test('Create Header From ID', t => {
+test('Create Header From ID', (t: any) => {
 	t.plan(15);
 
 	const header = create(true, new Uint8Array(0));

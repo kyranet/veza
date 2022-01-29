@@ -1,14 +1,8 @@
 {
-	"extends": "eslint-config-bamboo",
+	"extends": "@sapphire/ts-config",
 	"compilerOptions": {
-		"newLine": "LF",
-		"sourceMap": true,
-		"declaration": true,
-		"removeComments": false,
 		"outDir": "./dist",
-		"types": ["node"]
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
 	},
-	"include": [
-		"./src/**/*"
-	]
+	"include": ["src"]
 }

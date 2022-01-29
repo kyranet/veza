@@ -1,13 +1,12 @@
-import { read } from '../Util/Header';
 import { deserialize } from 'binarytf';
-import { RawMessage } from './Base/SocketHandler';
+import { read } from '../Util/Header';
+import type { RawMessage } from './Base/SocketHandler';
 
 /**
  * The queue class that manages messages.
  * @since 0.1.0
  */
 export class Queue extends Map<number, QueueEntry> {
-
 	/**
 	 * The remaining buffer to truncate with other buffers.
 	 * @since 0.1.0
@@ -55,7 +54,6 @@ export class Queue extends Map<number, QueueEntry> {
 
 		return output;
 	}
-
 }
 
 /**

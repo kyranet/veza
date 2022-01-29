@@ -4,8 +4,8 @@ import { Client } from '../src/index';
 
 const node = new Client('world')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
-	.on('disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
-	.on('ready', async client => {
+	.on('disconnect', (client) => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('ready', async (client) => {
 		console.log(`[IPC] Connected to: ${client.name}`);
 		try {
 			const result = await client.send('Hello', { timeout: 5000 });
@@ -15,5 +15,4 @@ const node = new Client('world')
 		}
 	});
 
-node.connectTo(8001)
-	.catch(error => console.error('[IPC] Disconnected!', error));
+node.connectTo(8001).catch((error) => console.error('[IPC] Disconnected!', error));

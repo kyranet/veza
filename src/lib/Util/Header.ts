@@ -16,7 +16,7 @@ export function create(receptive: boolean, bytes: Uint8Array) {
 	write32At(header, bytes.byteLength, 7);
 	header.set(bytes, 11);
 	/* istanbul ignore next: Basic arithmetic, but needs to run 458745 times for the other branch to run. */
-	i = i < 0xFFFF ? i + 1 : 0;
+	i = i < 0xffff ? i + 1 : 0;
 	return header;
 }
 
@@ -32,7 +32,7 @@ export function create(receptive: boolean, bytes: Uint8Array) {
 export function createFromID(id: number, receptive: boolean, bytes: Uint8Array) {
 	const header = new Uint8Array(11 + bytes.byteLength);
 	writeDate(header, Number(BigInt(id) >> 0o20n));
-	writeIncrement(header, id & 0xFFFF);
+	writeIncrement(header, id & 0xffff);
 	writeReceptive(header, receptive);
 	write32At(header, bytes.byteLength, 7);
 	header.set(bytes, 11);
@@ -63,7 +63,7 @@ export function read(header: Uint8Array) {
  * @private
  */
 export function writeDate(header: Uint8Array, date: number) {
-	write32At(header, date % 0xFFFFFFFF, 0);
+	write32At(header, date % 0xffffffff, 0);
 }
 
 /**
@@ -75,9 +75,9 @@ export function writeDate(header: Uint8Array, date: number) {
  * @private
  */
 export function writeIncrement(header: Uint8Array, increment: number) {
-	header[5] = increment & 0xFF;
+	header[5] = increment & 0xff;
 	increment >>= 8;
-	header[4] = increment & 0xFF;
+	header[4] = increment & 0xff;
 }
 
 /**
@@ -153,8 +153,5 @@ export function readIncrement(header: Uint8Array) {
  * @private
  */
 export function read32At(buffer: Uint8Array, offset: number) {
-	return (buffer[offset++] * (2 ** 24)) +
-		(buffer[offset++] * (2 ** 16)) +
-		(buffer[offset++] * (2 ** 8)) +
-		buffer[offset++];
+	return buffer[offset++] * 2 ** 24 + buffer[offset++] * 2 ** 16 + buffer[offset++] * 2 ** 8 + buffer[offset++];
 }

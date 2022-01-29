@@ -10,8 +10,8 @@ const TIMES = 10000;
 
 const node = new Client('concurrent')
 	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}:`, error))
-	.on('disconnect', client => console.error(`[IPC] Disconnected from ${client.name}`))
-	.on('ready', async client => {
+	.on('disconnect', (client) => console.error(`[IPC] Disconnected from ${client.name}`))
+	.on('ready', async (client) => {
 		console.log(`[IPC] Connected to: ${client.name}`);
 		console.log(`[IPC] Attempting to send and receive ${TIMES} messages...`);
 		let failed = 0;
@@ -22,7 +22,8 @@ const node = new Client('concurrent')
 			// Let Node.js "breathe"
 			if (i % 1000 === 0) await sleep(1);
 
-			client.send(`Test ${i}`)
+			client
+				.send(`Test ${i}`)
 				.then(() => resolved++)
 				.catch(() => failed++)
 				.finally(() => {
@@ -37,5 +38,4 @@ const node = new Client('concurrent')
 	});
 
 // Connect to hello
-node.connectTo(8001)
-	.catch(error => console.error('[IPC] Disconnected!', error));
+node.connectTo(8001).catch((error) => console.error('[IPC] Disconnected!', error));

@@ -88,6 +88,6 @@ Authored and maintained by kyranet.
 
 > Github [kyranet][author] - Twitter [@kyranet_][twitter]
 
-[license]: https://github.com/kyranet/veza/blob/master/LICENSE
+[license]: https://github.com/kyranet/veza/blob/master/LICENSE.md
 [author]: https://github.com/kyranet
 [twitter]: https://twitter.com/kyranet_

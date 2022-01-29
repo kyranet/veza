@@ -3,11 +3,7 @@ export * from './lib/Server';
 export * from './lib/ServerSocket';
 export * from './lib/Client';
 export * from './lib/ClientSocket';
-export {
-	SendOptions,
-	BroadcastOptions,
-	NetworkError
-} from './lib/Util/Shared';
+export { SendOptions, BroadcastOptions, NetworkError } from './lib/Util/Shared';
 
 /**
  * Node.js' server.

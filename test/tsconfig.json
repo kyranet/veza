@@ -1,8 +1,9 @@
 {
-	"extends": "eslint-config-bamboo",
+	"extends": "@sapphire/ts-config",
 	"compilerOptions": {
-		"sourceMap": true,
 		"declaration": false,
+		"declarationMap": false,
+		"sourceMap": false,
 		"types": ["node", "tape"]
 	}
 }
