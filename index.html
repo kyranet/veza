@@ -1,314 +1,75 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>veza</title>
-	<meta name="description" content="">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="index.html" class="title">veza</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="globals.html">Globals</a>
-				</li>
-			</ul>
-			<h1> veza</h1>
-		</div>
-	</div>
-</header>
-<div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<h1 id="veza-img-src-https-github-com-kyranet-veza-blob-master-static-logo-png-raw-true-align-right-width-30-">Veza <img src="https://github.com/kyranet/veza/blob/master/static/logo.png?raw=true" align="right" width="30%"></h1>
-				<div align="center">
-					<p>
-						<a href="https://discord.gg/pE5sfxK">
-							<img src="https://discordapp.com/api/guilds/582495121698717696/embed.png" alt="Discord" />
-						</a>
-						<a href="https://www.npmjs.com/package/veza">
-							<img src="https://img.shields.io/npm/v/veza.svg?maxAge=3600" alt="NPM version" />
-						</a>
-						<a href="https://www.npmjs.com/package/veza">
-							<img src="https://img.shields.io/npm/dt/veza.svg?maxAge=3600" alt="NPM downloads" />
-						</a>
-						<a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=9&branchName=master">
-							<img src="https://dev.azure.com/kyranet/kyranet.public/_apis/build/status/kyranet.veza?branchName=master" alt="Build status" />
-						</a>
-						<a href="https://dev.azure.com/kyranet/kyranet.public/_build/latest?definitionId=9&branchName=master">
-							<img src="https://img.shields.io/azure-devops/coverage/kyranet/kyranet.public/9/master.svg" alt="Azure DevOps coverage">
-						</a>
-						<a href="https://lgtm.com/projects/g/kyranet/veza/alerts/">
-							<img src="https://img.shields.io/lgtm/alerts/g/kyranet/veza.svg?logo=lgtm&logoWidth=18" alt="Total alerts">
-						</a>
-						<a href="https://dependabot.com">
-							<img src="https://api.dependabot.com/badges/status?host=github&repo=kyranet/veza" alt="Dependabot Status">
-						</a>
-						<a href="https://www.patreon.com/kyranet">
-							<img src="https://img.shields.io/badge/donate-patreon-F96854.svg" alt="Patreon" />
-						</a>
-					</p>
-					<p>
-						<a href="https://nodei.co/npm/veza/"><img src="https://nodei.co/npm/veza.png?downloads=true&stars=true" alt="npm installnfo" /></a>
-					</p>
-				</div>
-				<h2 id="about">About</h2>
-				<p><strong>Veza</strong> is a protocol that operates over either <a href="https://en.wikipedia.org/wiki/Inter-process_communication">IPC</a> or <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> with the only difference of one line of code to switch
-					between the two. Inspired on <a href="https://www.npmjs.com/package/node-ipc">node-ipc</a>, it seeks to use modern, fast, and intuitive <a href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a>s, as well as exposing all the
-					underlying back-ends for much higher customizability and extensibility, as well as a HTTP-like protocol where you can
-				send a message and optionally receive a response for it.</p>
-				<h2 id="socket-support">Socket Support</h2>
-				<ul>
-					<li><input checked="" disabled="" type="checkbox"> Unix Socket or Windows Socket.</li>
-					<li><input checked="" disabled="" type="checkbox"> TCP Socket.</li>
-					<li><input disabled="" type="checkbox"> TLS Socket.</li>
-					<li><input disabled="" type="checkbox"> UDP Sockets.</li>
-				</ul>
-				<blockquote>
-					<p><strong>TLS</strong>: TLS sockets can be achieved by extending Veza to use SSL handshakes. To keep things simple and tidy, this is
-					not shipped in core, but will be considered for future releases.</p>
-				</blockquote>
-				<blockquote>
-					<p><strong>UDP</strong>: UDP sockets are not supported due to Veza&#39;s requirement for messages to be reliably received in order.</p>
-				</blockquote>
-				<h2 id="messaging">Messaging</h2>
-				<p>All messages are encoded and decoded using <a href="https://www.npmjs.com/package/binarytf"><code>binarytf</code></a>, which allows a messages to be sent using the least
-					amount of bytes possible, increasing throughput; plus a 11-byte header at the start of each message. More information
-				available in <a href="https://github.com/kyranet/veza/blob/master/PROTOCOL.md">PROTOCOL</a>.</p>
-				<h2 id="documentation">Documentation</h2>
-				<p>All the documentation is available at <a href="https://veza.js.org/">veza.js.org</a> and at <a href="https://github.com/kyranet/veza/wiki">the wiki</a>. You can
-				find examples of code <a href="https://github.com/kyranet/veza/tree/master/examples">here</a>.</p>
-				<h2 id="contributing">Contributing</h2>
-				<ol>
-					<li>Fork it!</li>
-					<li>Create your feature branch: <code>git checkout -b my-new-feature</code></li>
-					<li>Commit your changes: <code>git commit -am &#39;Add some feature&#39;</code></li>
-					<li>Push to the branch: <code>git push origin my-new-feature</code></li>
-					<li>Submit a pull request!</li>
-				</ol>
-				<h2 id="author">Author</h2>
-				<p><strong>veza</strong> © <a href="https://github.com/kyranet">kyranet</a>, released under the
-					<a href="https://github.com/kyranet/veza/blob/master/LICENSE">MIT</a> License.
-				Authored and maintained by kyranet.</p>
-				<blockquote>
-					<p>Github <a href="https://github.com/kyranet">kyranet</a> - Twitter <a href="https://twitter.com/kyranet_">@kyranet_</a></p>
-				</blockquote>
-			</div>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-					<li class=" tsd-kind-enum">
-						<a href="enums/clientsocketstatus.html" class="tsd-kind-icon">Client<wbr>Socket<wbr>Status</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/serversocketstatus.html" class="tsd-kind-icon">Server<wbr>Socket<wbr>Status</a>
-					</li>
-					<li class=" tsd-kind-enum">
-						<a href="enums/serverstatus.html" class="tsd-kind-icon">Server<wbr>Status</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/client.html" class="tsd-kind-icon">Client</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/clientsocket.html" class="tsd-kind-icon">Client<wbr>Socket</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/messageerror.html" class="tsd-kind-icon">Message<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/nodemessage.html" class="tsd-kind-icon">Node<wbr>Message</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/queue.html" class="tsd-kind-icon">Queue</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/server.html" class="tsd-kind-icon">Server</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/serversocket.html" class="tsd-kind-icon">Server<wbr>Socket</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-private">
-						<a href="classes/sockethandler.html" class="tsd-kind-icon">Socket<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/broadcastoptions.html" class="tsd-kind-icon">Broadcast<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/networkerror.html" class="tsd-kind-icon">Network<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/nodeclientoptions.html" class="tsd-kind-icon">Node<wbr>Client<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-private">
-						<a href="interfaces/rawmessage.html" class="tsd-kind-icon">Raw<wbr>Message</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/sendoptions.html" class="tsd-kind-icon">Send<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-private">
-						<a href="globals.html#vclose" class="tsd-kind-icon">VCLOSE</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-private">
-						<a href="globals.html#vclose_signal" class="tsd-kind-icon">VCLOSE_<wbr>SIGNAL</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#create" class="tsd-kind-icon">create</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#createfromid" class="tsd-kind-icon">create<wbr>FromID</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#makeerror" class="tsd-kind-icon">make<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#read" class="tsd-kind-icon">read</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#read32at" class="tsd-kind-icon">read32<wbr>At</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#readdate" class="tsd-kind-icon">read<wbr>Date</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#readid" class="tsd-kind-icon">readID</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#readincrement" class="tsd-kind-icon">read<wbr>Increment</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#receivedvclose" class="tsd-kind-icon">receivedVClose</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#write32at" class="tsd-kind-icon">write32<wbr>At</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#writedate" class="tsd-kind-icon">write<wbr>Date</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#writeincrement" class="tsd-kind-icon">write<wbr>Increment</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-private">
-						<a href="globals.html#writereceptive" class="tsd-kind-icon">write<wbr>Receptive</a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-	</div>
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>binarytf</title><meta name="description" content="Documentation for binarytf"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">binarytf</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>binarytf</h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography"><div align="center">
+
+<img src="https://raw.githubusercontent.com/kyranet/veza/main/static/logo.png" height="200">
+
+
+<a href="#veza" id="veza" style="color: inherit; text-decoration: none;">
+  <h1>Veza</h1>
+</a>
+<p><a href="https://discord.gg/pE5sfxK"><img src="https://discordapp.com/api/guilds/582495121698717696/embed.png" alt="Discord"></a>
+<a href="https://www.npmjs.com/package/veza"><img src="https://img.shields.io/npm/v/veza?color=crimson&logo=npm&style=flat-square" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/veza"><img src="https://img.shields.io/npm/dt/veza?color=crimson&logo=npm&style=flat-square" alt="npm downloads"></a>
+<a href="https://lgtm.com/projects/g/kyranet/veza/alerts/"><img src="https://img.shields.io/lgtm/alerts/g/kyranet/veza.svg?logo=lgtm&logoWidth=18" alt="lgtm"></a>
+<a href="https://donate.skyra.pw/patreon"><img src="https://img.shields.io/badge/donate-patreon-F96854.svg?logo=patreon" alt="Patreon"></a></p>
 </div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
-</body>
-</html>
+
+
+<a href="#about" id="about" style="color: inherit; text-decoration: none;">
+  <h2>About</h2>
+</a>
+<p><strong>Veza</strong> is a protocol that operates over either <a href="https://en.wikipedia.org/wiki/Inter-process_communication">IPC</a> or <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> with the only difference of one line of code to switch
+between the two. Inspired on <a href="https://www.npmjs.com/package/node-ipc">node-ipc</a>, it seeks to use modern, fast, and intuitive <a href="https://en.wikipedia.org/wiki/Application_programming_interface">API</a>s, as well as exposing all the
+underlying back-ends for much higher customizability and extensibility, as well as a HTTP-like protocol where you can
+send a message and optionally receive a response for it.</p>
+
+<a href="#socket-support" id="socket-support" style="color: inherit; text-decoration: none;">
+  <h2>Socket Support</h2>
+</a>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Unix Socket or Windows Socket.</li>
+<li><input checked="" disabled="" type="checkbox"> TCP Socket.</li>
+<li><input disabled="" type="checkbox"> TLS Socket.</li>
+<li><input disabled="" type="checkbox"> UDP Sockets.</li>
+</ul>
+<blockquote>
+<p><strong>TLS</strong>: TLS sockets can be achieved by extending Veza to use SSL handshakes. To keep things simple and tidy, this is
+not shipped in core, but will be considered for future releases.</p>
+</blockquote>
+<blockquote>
+<p><strong>UDP</strong>: UDP sockets are not supported due to Veza&#39;s requirement for messages to be reliably received in order.</p>
+</blockquote>
+
+<a href="#messaging" id="messaging" style="color: inherit; text-decoration: none;">
+  <h2>Messaging</h2>
+</a>
+<p>All messages are encoded and decoded using <a href="https://www.npmjs.com/package/binarytf"><code>binarytf</code></a>, which allows a messages to be sent using the least
+amount of bytes possible, increasing throughput; plus a 11-byte header at the start of each message. More information
+available in <a href="https://github.com/kyranet/veza/blob/master/PROTOCOL.md">PROTOCOL</a>.</p>
+
+<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+  <h2>Documentation</h2>
+</a>
+<p>All the documentation is available at <a href="https://veza.js.org/">veza.js.org</a> and at <a href="https://github.com/kyranet/veza/wiki">the wiki</a>. You can
+find examples of code <a href="https://github.com/kyranet/veza/tree/master/examples">here</a>.</p>
+
+<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+  <h2>Contributing</h2>
+</a>
+<ol>
+<li>Fork it!</li>
+<li>Create your feature branch: <code>git checkout -b my-new-feature</code></li>
+<li>Commit your changes: <code>git commit -am &#39;Add some feature&#39;</code></li>
+<li>Push to the branch: <code>git push origin my-new-feature</code></li>
+<li>Submit a pull request!</li>
+</ol>
+
+<a href="#author" id="author" style="color: inherit; text-decoration: none;">
+  <h2>Author</h2>
+</a>
+<p><strong>veza</strong> © <a href="https://github.com/kyranet">kyranet</a>, released under the
+<a href="https://github.com/kyranet/veza/blob/master/LICENSE.md">MIT</a> License.
+Authored and maintained by kyranet.</p>
+<blockquote>
+<p>Github <a href="https://github.com/kyranet">kyranet</a> - Twitter <a href="https://twitter.com/kyranet_">@kyranet_</a></p>
+</blockquote>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-enum"><a href="enums/ClientSocketStatus.html" class="tsd-kind-icon">Client<wbr/>Socket<wbr/>Status</a></li><li class="tsd-kind-enum"><a href="enums/ServerSocketStatus.html" class="tsd-kind-icon">Server<wbr/>Socket<wbr/>Status</a></li><li class="tsd-kind-enum"><a href="enums/ServerStatus.html" class="tsd-kind-icon">Server<wbr/>Status</a></li><li class="tsd-kind-class"><a href="classes/Client.html" class="tsd-kind-icon">Client</a></li><li class="tsd-kind-class"><a href="classes/ClientSocket.html" class="tsd-kind-icon">Client<wbr/>Socket</a></li><li class="tsd-kind-class"><a href="classes/NodeMessage.html" class="tsd-kind-icon">Node<wbr/>Message</a></li><li class="tsd-kind-class"><a href="classes/Server.html" class="tsd-kind-icon">Server</a></li><li class="tsd-kind-class"><a href="classes/ServerSocket.html" class="tsd-kind-icon">Server<wbr/>Socket</a></li><li class="tsd-kind-interface"><a href="interfaces/BroadcastOptions.html" class="tsd-kind-icon">Broadcast<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/NetworkError.html" class="tsd-kind-icon">Network<wbr/>Error</a></li><li class="tsd-kind-interface"><a href="interfaces/NodeClientOptions.html" class="tsd-kind-icon">Node<wbr/>Client<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/SendOptions.html" class="tsd-kind-icon">Send<wbr/>Options</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
