@@ -1,9 +1,3 @@
 {
-	"extends": "@sapphire/ts-config",
-	"compilerOptions": {
-		"declaration": false,
-		"declarationMap": false,
-		"sourceMap": false,
-		"types": ["node", "tape"]
-	}
+	"extends": "../tsconfig.json"
 }

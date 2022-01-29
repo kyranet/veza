@@ -1,13 +1,21 @@
+# Ignore a blackhole and the folder for development
 node_modules/
-package-lock.json
 .vs/
 .idea/
-dist/
-*.js
-*.js.map
-*.tsbuildinfo
-*.tgz
+*.iml
+coverage/
+docs/
 
-# Test and Coverage results and files
-test.xml
-.nyc_output/
+# Build code
+dist/
+
+# Yarn files
+.yarn/install-state.gz
+.yarn/build-state.yml
+
+# Ignore heapsnapshot and log files
+*.heapsnapshot
+*.log
+
+# Ignore package locks
+package-lock.json

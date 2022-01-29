@@ -1,108 +1,107 @@
-import * as test from 'tape';
-import { create, createFromID, read, read32At, readDate, readIncrement, writeDate, writeIncrement, writeReceptive } from '../dist/lib/Util/Header';
+import { create, createFromID, read, read32At, readDate, readIncrement, writeDate, writeIncrement, writeReceptive } from '../src/lib/Util/Header';
 
-test('Create Basic Header', (t) => {
-	t.plan(6);
+test('Create Basic Header', () => {
+	expect.assertions(6);
 
 	// Receptive header
 	{
 		const header = create(true, new Uint8Array(0));
-		t.equal(header.byteLength, 11, 'Headers must always be made of 7 bytes.');
-		t.equal(header[6], 1, 'The last byte must be 1 for a receptive message.');
-		t.equal(read32At(header, 7), 0, 'The byte length header must be 0.');
+		expect(header.byteLength).toBe(11);
+		expect(header[6]).toBe(1);
+		expect(read32At(header, 7)).toBe(0);
 	}
 
 	// Non-receptive header
 	{
 		const header = create(false, new Uint8Array(0));
-		t.equal(header.byteLength, 11, 'Headers must always be made of 7 bytes.');
-		t.equal(header[6], 0, 'The last byte must be 1 for a receptive message.');
-		t.equal(read32At(header, 7), 0, 'The byte length header must be 0.');
+		expect(header.byteLength).toBe(11);
+		expect(header[6]).toBe(0);
+		expect(read32At(header, 7)).toBe(0);
 	}
 });
 
-test('Write and Read Date', (t) => {
-	t.plan(8);
+test('Write and Read Date', () => {
+	expect.assertions(8);
 
 	const now = Date.now();
 	const header = new Uint8Array(11);
 
 	writeDate(header, now);
-	t.equal(readDate(header), now % 0xffffffff, 'The date bytes must match.');
-	t.equal(header[4], 0x00, 'The fifth byte should be zero, as it is unwritten.');
-	t.equal(header[5], 0x00, 'The sixth byte should be zero, as it is unwritten.');
-	t.equal(header[6], 0x00, 'The seventh byte should be zero, as it is unwritten.');
-	t.equal(header[7], 0x00, 'The eighth byte should be zero, as it is unwritten.');
-	t.equal(header[8], 0x00, 'The ninth byte should be zero, as it is unwritten.');
-	t.equal(header[9], 0x00, 'The tenth byte should be zero, as it is unwritten.');
-	t.equal(header[10], 0x00, 'The eleventh byte should be zero, as it is unwritten.');
+	expect(readDate(header)).toBe(now % 0xffffffff);
+	expect(header[4]).toBe(0x00);
+	expect(header[5]).toBe(0x00);
+	expect(header[6]).toBe(0x00);
+	expect(header[7]).toBe(0x00);
+	expect(header[8]).toBe(0x00);
+	expect(header[9]).toBe(0x00);
+	expect(header[10]).toBe(0x00);
 });
 
-test('Write and Read Increment', (t) => {
-	t.plan(10);
+test('Write and Read Increment', () => {
+	expect.assertions(10);
 
 	const increment = 0x1234;
 	const header = new Uint8Array(11);
 
 	writeIncrement(header, increment);
-	t.equal(readIncrement(header), increment, 'The date bytes must match.');
-	t.equal(header[0], 0x00, 'The first byte should be zero, as it is unwritten.');
-	t.equal(header[1], 0x00, 'The second byte should be zero, as it is unwritten.');
-	t.equal(header[2], 0x00, 'The third byte should be zero, as it is unwritten.');
-	t.equal(header[3], 0x00, 'The fourth byte should be zero, as it is unwritten.');
-	t.equal(header[6], 0x00, 'The seventh byte should be zero, as it is unwritten.');
-	t.equal(header[7], 0x00, 'The eighth byte should be zero, as it is unwritten.');
-	t.equal(header[8], 0x00, 'The ninth byte should be zero, as it is unwritten.');
-	t.equal(header[9], 0x00, 'The tenth byte should be zero, as it is unwritten.');
-	t.equal(header[10], 0x00, 'The eleventh byte should be zero, as it is unwritten.');
+	expect(readIncrement(header)).toBe(increment);
+	expect(header[0]).toBe(0x00);
+	expect(header[1]).toBe(0x00);
+	expect(header[2]).toBe(0x00);
+	expect(header[3]).toBe(0x00);
+	expect(header[6]).toBe(0x00);
+	expect(header[7]).toBe(0x00);
+	expect(header[8]).toBe(0x00);
+	expect(header[9]).toBe(0x00);
+	expect(header[10]).toBe(0x00);
 });
 
-test('Write and Read Increment', (t) => {
-	t.plan(12);
+test('Write and Read Increment', () => {
+	expect.assertions(12);
 
 	const header = new Uint8Array(11);
 
 	writeReceptive(header, false);
-	t.equal(header[6], 0x00, 'The seventh byte should be zero, as it is marked as not receptive.');
+	expect(header[6]).toBe(0x00);
 
 	writeReceptive(header, true);
-	t.equal(header[6], 0x01, 'The seventh byte should be one, as it is marked as receptive.');
+	expect(header[6]).toBe(0x01);
 
-	t.equal(header[0], 0x00, 'The first byte should be zero, as it is unwritten.');
-	t.equal(header[1], 0x00, 'The second byte should be zero, as it is unwritten.');
-	t.equal(header[2], 0x00, 'The third byte should be zero, as it is unwritten.');
-	t.equal(header[3], 0x00, 'The fourth byte should be zero, as it is unwritten.');
-	t.equal(header[4], 0x00, 'The seventh byte should be zero, as it is unwritten.');
-	t.equal(header[5], 0x00, 'The seventh byte should be zero, as it is unwritten.');
-	t.equal(header[7], 0x00, 'The eighth byte should be zero, as it is unwritten.');
-	t.equal(header[8], 0x00, 'The ninth byte should be zero, as it is unwritten.');
-	t.equal(header[9], 0x00, 'The tenth byte should be zero, as it is unwritten.');
-	t.equal(header[10], 0x00, 'The eleventh byte should be zero, as it is unwritten.');
+	expect(header[0]).toBe(0x00);
+	expect(header[1]).toBe(0x00);
+	expect(header[2]).toBe(0x00);
+	expect(header[3]).toBe(0x00);
+	expect(header[4]).toBe(0x00);
+	expect(header[5]).toBe(0x00);
+	expect(header[7]).toBe(0x00);
+	expect(header[8]).toBe(0x00);
+	expect(header[9]).toBe(0x00);
+	expect(header[10]).toBe(0x00);
 });
 
-test('Create Header From ID', (t: any) => {
-	t.plan(15);
+test('Create Header From ID', () => {
+	expect.assertions(15);
 
 	const header = create(true, new Uint8Array(0));
 	const { id, receptive } = read(header);
-	t.equal(typeof id, 'number', 'The IDs are always numbers.');
-	t.equal(receptive, true, 'The header should have receptive as true.');
+	expect(typeof id).toBe('number');
+	expect(receptive).toBe(true);
 
 	const cloned = createFromID(id, false, new Uint8Array(0));
 	const { id: clonedID, receptive: clonedReceptive } = read(cloned);
-	t.equal(typeof clonedID, 'number', 'The IDs are always numbers.');
-	t.equal(clonedReceptive, false, 'The cloned header should have receptive as false.');
+	expect(typeof clonedID).toBe('number');
+	expect(clonedReceptive).toBe(false);
 
-	t.equal(clonedID, id, 'They must have the same ID.');
+	expect(clonedID).toBe(id);
 
-	t.equal(cloned[0], header[0], 'First byte should be the same.');
-	t.equal(cloned[1], header[1], 'Second byte should be the same.');
-	t.equal(cloned[2], header[2], 'Third byte should be the same.');
-	t.equal(cloned[3], header[3], 'Fourth byte should be the same.');
-	t.equal(cloned[4], header[4], 'Fifth byte should be the same.');
-	t.equal(cloned[5], header[5], 'Sixth byte should be the same.');
-	t.equal(header[7], header[7], 'Eighth byte should be the same.');
-	t.equal(header[8], header[8], 'Ninth byte should be the same.');
-	t.equal(header[9], header[9], 'Tenth byte should be the same.');
-	t.equal(header[10], header[10], 'Eleventh byte should be the same.');
+	expect(cloned[0]).toBe(header[0]);
+	expect(cloned[1]).toBe(header[1]);
+	expect(cloned[2]).toBe(header[2]);
+	expect(cloned[3]).toBe(header[3]);
+	expect(cloned[4]).toBe(header[4]);
+	expect(cloned[5]).toBe(header[5]);
+	expect(header[7]).toBe(header[7]);
+	expect(header[8]).toBe(header[8]);
+	expect(header[9]).toBe(header[9]);
+	expect(header[10]).toBe(header[10]);
 });
