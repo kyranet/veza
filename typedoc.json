@@ -1,7 +1,6 @@
 {
 	"out": "./docs/",
 	"readme": "./README.md",
-	"name": "veza",
 	"entryPoints": ["src/index.ts"],
 	"tsconfig": "./src/tsconfig.json"
 }
