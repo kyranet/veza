@@ -21,7 +21,7 @@
 	},
 	"devDependencies": {
 		"@sapphire/eslint-config": "^4.4.2",
-		"@sapphire/prettier-config": "^1.4.5",
+		"@sapphire/prettier-config": "^2.0.0",
 		"@sapphire/ts-config": "^3.3.4",
 		"@types/node": "^18.16.19",
 		"@typescript-eslint/eslint-plugin": "^5.60.1",
