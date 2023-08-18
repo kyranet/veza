@@ -1,5 +1,5 @@
 {
-	"extends": "@sapphire/ts-config",
+	"extends": "@sapphire/ts-config/extra-strict",
 	"compilerOptions": {
 		"target": "ES2021"
 	}

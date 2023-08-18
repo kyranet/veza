@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events';
-import { ListenOptions, Server as NetServer, Socket as NetSocket } from 'node:net';
+import { Server as NetServer, Socket as NetSocket, type ListenOptions } from 'node:net';
 import { ServerSocket } from './ServerSocket';
 import type { NodeMessage } from './Structures/NodeMessage';
 import type { BroadcastOptions, NetworkError, SendOptions } from './Util/Shared';

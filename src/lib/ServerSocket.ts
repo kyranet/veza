@@ -2,7 +2,7 @@ import type { Socket as NetSocket } from 'node:net';
 import type { Server } from './Server';
 import { SocketHandler } from './Structures/Base/SocketHandler';
 import { makeError } from './Structures/MessageError';
-import { NetworkError, VCLOSE } from './Util/Shared';
+import { VCLOSE, type NetworkError } from './Util/Shared';
 
 /**
  * The connection status of this socket.

@@ -1,5 +1,5 @@
 import { deserialize, serialize } from 'binarytf';
-import { Socket as NetSocket, SocketConnectOpts } from 'node:net';
+import { Socket as NetSocket, type SocketConnectOpts } from 'node:net';
 import type { Client } from './Client';
 import { SocketHandler } from './Structures/Base/SocketHandler';
 import { makeError } from './Structures/MessageError';

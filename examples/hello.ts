@@ -15,6 +15,6 @@ const node = new Server('hello')
 			setTimeout(() => message.reply(`Reply!: ${message.data}`), Math.min(9000, Math.floor(Math.random() * 1000)));
 		}
 	})
-	.on('error', (error, client) => console.error(`[IPC] Error from ${client.name}`, error));
+	.on('error', (error, client) => console.error(`[IPC] Error from ${client?.name}`, error));
 
 node.listen(8001).catch((error) => console.error('[IPC] Disconnected!', error));
