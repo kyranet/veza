@@ -178,13 +178,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/ts-config@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "@sapphire/ts-config@npm:4.0.1"
+"@sapphire/ts-config@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@sapphire/ts-config@npm:5.0.0"
   dependencies:
-    tslib: ^2.6.0
-    typescript: ^5.1.6
-  checksum: f8fae2d8c7cd85c254898cb9007681e35c8b093e1538f8ee7d1e2c22a5e2235b8e0f6e17fd37366dccc77a14762ad61e06382605347d4a49f8cf9a3f0a99b7d0
+    tslib: ^2.6.2
+    typescript: ^5.2.2
+  checksum: 5295e70762ec4e710c44d62c0706debb3d651d994b40c55586bfa93e7fae34c4f4f63d047b4fe3e66c4f545ad696485c904e79d2ed4e9ea45c89a0bf305ca945
   languageName: node
   linkType: hard
 
@@ -2960,10 +2960,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.5.0, tslib@npm:^2.6.0":
-  version: 2.6.1
-  resolution: "tslib@npm:2.6.1"
-  checksum: b0d176d176487905b66ae4d5856647df50e37beea7571c53b8d10ba9222c074b81f1410fb91da13debaf2cbc970663609068bdebafa844ea9d69b146527c38fe
+"tslib@npm:^2.5.0, tslib@npm:^2.6.0, tslib@npm:^2.6.2":
+  version: 2.6.2
+  resolution: "tslib@npm:2.6.2"
+  checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
   languageName: node
   linkType: hard
 
@@ -3027,23 +3027,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.1.6":
-  version: 5.1.6
-  resolution: "typescript@npm:5.1.6"
+"typescript@npm:^5.1.6, typescript@npm:^5.2.2":
+  version: 5.2.2
+  resolution: "typescript@npm:5.2.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
+  checksum: 7912821dac4d962d315c36800fe387cdc0a6298dba7ec171b350b4a6e988b51d7b8f051317786db1094bd7431d526b648aba7da8236607febb26cf5b871d2d3c
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.1.6#~builtin<compat/typescript>":
-  version: 5.1.6
-  resolution: "typescript@patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"
+"typescript@patch:typescript@^5.1.6#~builtin<compat/typescript>, typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
+  version: 5.2.2
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=f3b441"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: f53bfe97f7c8b2b6d23cf572750d4e7d1e0c5fff1c36d859d0ec84556a827b8785077bc27676bf7e71fae538e517c3ecc0f37e7f593be913d884805d931bc8be
+  checksum: 0f4da2f15e6f1245e49db15801dbee52f2bbfb267e1c39225afdab5afee1a72839cd86000e65ee9d7e4dfaff12239d28beaf5ee431357fcced15fb08583d72ca
   languageName: node
   linkType: hard
 
@@ -3095,7 +3095,7 @@ __metadata:
   dependencies:
     "@sapphire/eslint-config": ^5.0.1
     "@sapphire/prettier-config": ^2.0.0
-    "@sapphire/ts-config": ^4.0.1
+    "@sapphire/ts-config": ^5.0.0
     "@types/node": ^18.17.6
     "@typescript-eslint/eslint-plugin": ^6.4.0
     "@typescript-eslint/parser": ^6.4.0
