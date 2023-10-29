@@ -50,7 +50,7 @@ export class ClientSocket extends SocketHandler {
 	 */
 	public retriesRemaining: number;
 	private _expectClosing = false;
-	private _reconnectionTimeout!: NodeJS.Timer | null;
+	private _reconnectionTimeout!: NodeJS.Timeout | null;
 
 	public constructor(client: Client) {
 		super(null, new NetSocket());
