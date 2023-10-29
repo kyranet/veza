@@ -57,5 +57,5 @@
 		"url": "https://github.com/kyranet/veza/issues"
 	},
 	"prettier": "@sapphire/prettier-config",
-	"packageManager": "yarn@3.6.2"
+	"packageManager": "yarn@4.0.1"
 }
