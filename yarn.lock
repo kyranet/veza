@@ -626,6 +626,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commit-and-tag-version@npm:^9.5.0":
+  version: 9.6.0
+  resolution: "commit-and-tag-version@npm:9.6.0"
+  dependencies:
+    chalk: "npm:^2.4.2"
+    conventional-changelog: "npm:3.1.25"
+    conventional-changelog-config-spec: "npm:2.1.0"
+    conventional-changelog-conventionalcommits: "npm:4.6.3"
+    conventional-recommended-bump: "npm:6.1.0"
+    detect-indent: "npm:^6.0.0"
+    detect-newline: "npm:^3.1.0"
+    dotgitignore: "npm:^2.1.0"
+    figures: "npm:^3.1.0"
+    find-up: "npm:^5.0.0"
+    git-semver-tags: "npm:^4.0.0"
+    semver: "npm:^7.1.1"
+    stringify-package: "npm:^1.0.1"
+    yargs: "npm:^16.0.0"
+  bin:
+    commit-and-tag-version: bin/cli.js
+  checksum: 11e508f9b94bade103648c1895f697b5056200b0d59c494b66fc97bfd444f1bbb1a8ea6c4eb42e80983d36c5371e6029b2860334beaab292a242283d89d5eaec
+  languageName: node
+  linkType: hard
+
 "compare-func@npm:^2.0.0":
   version: 2.0.0
   resolution: "compare-func@npm:2.0.0"
@@ -2757,30 +2781,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"standard-version@npm:^9.5.0":
-  version: 9.5.0
-  resolution: "standard-version@npm:9.5.0"
-  dependencies:
-    chalk: "npm:^2.4.2"
-    conventional-changelog: "npm:3.1.25"
-    conventional-changelog-config-spec: "npm:2.1.0"
-    conventional-changelog-conventionalcommits: "npm:4.6.3"
-    conventional-recommended-bump: "npm:6.1.0"
-    detect-indent: "npm:^6.0.0"
-    detect-newline: "npm:^3.1.0"
-    dotgitignore: "npm:^2.1.0"
-    figures: "npm:^3.1.0"
-    find-up: "npm:^5.0.0"
-    git-semver-tags: "npm:^4.0.0"
-    semver: "npm:^7.1.1"
-    stringify-package: "npm:^1.0.1"
-    yargs: "npm:^16.0.0"
-  bin:
-    standard-version: bin/cli.js
-  checksum: a59fc3a3046007d376bf164b053011db8f6c1417b3512db697e36ea574ec47fca55086513f602ba237c62a2e61f4c60480eb84793fd0450a715bac9dd8634aa2
-  languageName: node
-  linkType: hard
-
 "string-width@npm:^4.1.0, string-width@npm:^4.2.0":
   version: 4.2.3
   resolution: "string-width@npm:4.2.3"
@@ -3117,11 +3117,11 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
     "@typescript-eslint/parser": "npm:^6.9.0"
     binarytf: "npm:^2.1.3"
+    commit-and-tag-version: "npm:^9.5.0"
     eslint: "npm:^8.52.0"
     eslint-config-prettier: "npm:^9.0.0"
     eslint-plugin-prettier: "npm:^5.0.1"
     prettier: "npm:^3.0.3"
-    standard-version: "npm:^9.5.0"
     typedoc: "npm:^0.25.2"
     typescript: "npm:^5.2.2"
   languageName: unknown

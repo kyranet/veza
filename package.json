@@ -30,7 +30,7 @@
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-prettier": "^5.0.1",
 		"prettier": "^3.0.3",
-		"standard-version": "^9.5.0",
+		"commit-and-tag-version": "^9.5.0",
 		"typedoc": "^0.25.2",
 		"typescript": "^5.2.2"
 	},
